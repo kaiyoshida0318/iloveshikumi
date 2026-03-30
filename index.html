@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>i❤仕組み</title>
+<title>I❤仕組み</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -46,22 +46,9 @@
   .logo {
     display: flex;
     align-items: center;
-    gap: 2px;
-    font-size: 1.35rem;
-    font-weight: 700;
     text-decoration: none;
-    color: var(--text);
-    letter-spacing: -0.5px;
   }
-  .logo .i-letter { color: var(--text); }
-  .logo .heart {
-    color: var(--red);
-    font-style: normal;
-    font-size: 1.2rem;
-    margin: 0 1px;
-    line-height: 1;
-  }
-  .logo .brand { color: var(--text); }
+  .logo svg { display: block; }
 
   nav.header-nav {
     display: flex;
@@ -261,10 +248,19 @@
 <!-- Header -->
 <header>
   <a href="#" class="logo">
-    <span class="i-letter">i</span><span class="heart">❤</span><span class="brand">仕組み</span>
+    <svg viewBox="0 0 380 58" xmlns="http://www.w3.org/2000/svg" height="36">
+      <rect x="2"  y="5"  width="22" height="7" rx="3" fill="#1a1a1a"/>
+      <rect x="8"  y="12" width="10" height="31" fill="#1a1a1a"/>
+      <rect x="2"  y="43" width="22" height="7" rx="3" fill="#1a1a1a"/>
+      <g transform="translate(30, 5)">
+        <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
+        <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
+      </g>
+      <text x="78" y="47" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
+    </svg>
   </a>
   <nav class="header-nav">
-    <a href="https://github.com" target="_blank">GitHub</a>
+    <a href="https://github.com/kaiyoshida0318/iloveshikumi" target="_blank">GitHub</a>
   </nav>
 </header>
 
