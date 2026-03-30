@@ -1,0 +1,11 @@
+<svg viewBox="0 0 380 58" xmlns="http://www.w3.org/2000/svg" width="760" height="116">
+    <rect fill="white" width="760" height="116"/>
+    <rect x="2"  y="5"  width="22" height="7" rx="3" fill="#1a1a1a"/>
+    <rect x="8"  y="12" width="10" height="31" fill="#1a1a1a"/>
+    <rect x="2"  y="43" width="22" height="7" rx="3" fill="#1a1a1a"/>
+    <g transform="translate(30, 5)">
+          <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
+          <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
+    </g>
+    <text x="82" y="50" font-family="Hiragino Kaku Gothic ProN,Noto Sans JP,sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
+</svg>
