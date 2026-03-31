@@ -9,386 +9,112 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --red: #E94C3D;
-    --red-light: #ffeeed;
-    --red-mid: #f9a49e;
-    --bg: #f7f5f2;
-    --surface: #ffffff;
-    --text: #1a1a1a;
-    --text-muted: #6b6b6b;
-    --border: #e0ddd8;
-    --tab-active-bg: #ffffff;
-    --tab-hover-bg: #eeebe6;
-    --radius: 12px;
-    --shadow: 0 2px 12px rgba(0,0,0,0.07);
-  }
-
-  body {
-    font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── Header ── */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    height: 60px;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-  }
+  :root { --red: #E94C3D; --red-light: #ffeeed; --bg: #f7f5f2; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6b6b6b; --border: #e0ddd8; --tab-hover-bg: #eeebe6; --radius: 12px; }
+  body { font-family: 'DM Sans', 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; }
+  .logo { display: flex; align-items: center; text-decoration: none; }
   .logo svg { display: block; }
-
-  nav.header-nav {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  nav.header-nav a {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.15s;
-  }
+  nav.header-nav a { font-size: 0.875rem; color: var(--text-muted); text-decoration: none; transition: color 0.15s; }
   nav.header-nav a:hover { color: var(--text); }
-
-
-
-  /* ── Tab bar ── */
-  .tab-bar-wrapper {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .tab-bar-wrapper::-webkit-scrollbar { display: none; }
-
-  .tab-bar {
-    display: inline-flex;
-    gap: 0;
-    height: 46px;
-    align-items: stretch;
-  }
-
-  .tab {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 1.1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    cursor: pointer;
-    border-bottom: 2.5px solid transparent;
-    transition: color 0.15s, border-color 0.15s, background 0.15s;
-    white-space: nowrap;
-    user-select: none;
-    border-radius: 0;
-  }
-  .tab:hover {
-    color: var(--text);
-    background: var(--tab-hover-bg);
-  }
-  .tab.active {
-    color: var(--red);
-    border-bottom-color: var(--red);
-    background: transparent;
-  }
-  .tab .tab-icon {
-    font-size: 14px;
-    opacity: 0.7;
-  }
-  .tab.active .tab-icon { opacity: 1; }
-
-  /* ── Main content ── */
-  main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-  }
-
-  .tool-panel {
-    display: none;
-    animation: fadeIn 0.2s ease;
-  }
+  .tab-section { background: var(--surface); border-bottom: 1px solid var(--border); }
+  .tab-row { display: flex; align-items: stretch; padding: 0 2rem; overflow-x: auto; scrollbar-width: none; }
+  .tab-row::-webkit-scrollbar { display: none; }
+  .tab-row + .tab-row { border-top: 1px solid var(--border); }
+  .row-label { display: flex; align-items: center; padding: 0 1rem 0 0; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; letter-spacing: 0.4px; border-right: 1px solid var(--border); margin-right: 0.5rem; min-width: 72px; }
+  .row-label.before { color: #2563eb; }
+  .row-label.after { color: #16a34a; }
+  .tab { display: flex; align-items: center; gap: 6px; padding: 0 1.1rem; height: 44px; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2.5px solid transparent; transition: color 0.15s, border-color 0.15s, background 0.15s; white-space: nowrap; user-select: none; }
+  .tab:hover { color: var(--text); background: var(--tab-hover-bg); }
+  .tab.active { color: var(--red); border-bottom-color: var(--red); }
+  main { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+  .tool-panel { display: none; animation: fadeIn 0.2s ease; }
   .tool-panel.active { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── Hero section inside panel ── */
-  .panel-hero {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
-  .panel-hero h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.6rem;
-    letter-spacing: -0.5px;
-  }
-  .panel-hero p {
-    font-size: 1rem;
-    color: var(--text-muted);
-    line-height: 1.65;
-    max-width: 580px;
-    margin: 0 auto;
-  }
-  .panel-hero .tag-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin-top: 0.9rem;
-  }
-  .tag {
-    background: var(--red-light);
-    color: var(--red);
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .tag:hover { background: #ffd4d1; }
-
-  /* ── Drop zone ── */
-  .dropzone {
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    min-height: 220px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    padding: 2.5rem;
-  }
-  .dropzone:hover {
-    border-color: var(--red);
-    background: var(--red-light);
-  }
-  .dropzone .dz-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--red-light);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .panel-hero { text-align: center; margin-bottom: 2.5rem; }
+  .panel-hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.6rem; letter-spacing: -0.5px; }
+  .panel-hero p { font-size: 1rem; color: var(--text-muted); line-height: 1.65; max-width: 580px; margin: 0 auto; }
+  .panel-hero .tag-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 0.9rem; }
+  .tag { background: var(--red-light); color: var(--red); padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+  .dropzone { border: 2px dashed var(--border); border-radius: var(--radius); background: var(--surface); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; cursor: pointer; transition: border-color 0.2s, background 0.2s; padding: 2.5rem; }
+  .dropzone:hover { border-color: var(--red); background: var(--red-light); }
+  .dropzone .dz-icon { width: 56px; height: 56px; background: var(--red-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
   .dropzone .dz-icon svg { width: 26px; height: 26px; color: var(--red); }
-  .dropzone .dz-label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .dropzone .dz-sub {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-  .dropzone .btn-select {
-    background: var(--red);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.5rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: opacity 0.15s;
-  }
+  .dropzone .dz-label { font-size: 1rem; font-weight: 600; }
+  .dropzone .dz-sub { font-size: 0.85rem; color: var(--text-muted); }
+  .dropzone .btn-select { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 0.6rem 1.5rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
   .dropzone .btn-select:hover { opacity: 0.88; }
-
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    border-top: 1px solid var(--border);
-    margin-top: 4rem;
-  }
+  footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 4rem; }
   footer .heart { color: var(--red); }
-
-  /* ── Responsive ── */
-  @media (max-width: 600px) {
-    header { padding: 0 1rem; }
-    nav.header-nav { gap: 1rem; }
-    main { padding: 2rem 1rem; }
-    .panel-hero h1 { font-size: 1.5rem; }
-  }
+  @media (max-width: 600px) { header { padding: 0 1rem; } main { padding: 2rem 1rem; } .panel-hero h1 { font-size: 1.5rem; } .tab-row { padding: 0 1rem; } .row-label { min-width: 60px; font-size: 0.65rem; } }
 </style>
 </head>
 <body>
-
-<!-- Header -->
 <header>
   <a href="#" class="logo">
-    <svg viewBox="0 0 380 58" xmlns="http://www.w3.org/2000/svg" height="36">
-      <rect x="2"  y="5"  width="22" height="7" rx="3" fill="#1a1a1a"/>
-      <rect x="8"  y="12" width="10" height="31" fill="#1a1a1a"/>
-      <rect x="2"  y="43" width="22" height="7" rx="3" fill="#1a1a1a"/>
+    <svg viewBox="0 0 236 58" xmlns="http://www.w3.org/2000/svg" height="36">
+      <rect x="2" y="5" width="22" height="7" rx="3" fill="#1a1a1a"/>
+      <rect x="8" y="12" width="10" height="31" fill="#1a1a1a"/>
+      <rect x="2" y="43" width="22" height="7" rx="3" fill="#1a1a1a"/>
       <g transform="translate(30, 5)">
         <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
         <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
       </g>
-      <text x="78" y="47" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
+      <text x="82" y="50" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
     </svg>
   </a>
   <nav class="header-nav">
     <a href="https://github.com/kaiyoshida0318/iloveshikumi" target="_blank">GitHub</a>
   </nav>
 </header>
-
-<!-- Tab bar -->
-<div class="tab-bar-wrapper">
-  <div class="tab-bar">
-    <div class="tab active" data-panel="compress" onclick="switchTab(this)">
-      <span class="tab-icon">📦</span> 圧縮
-    </div>
-    <div class="tab" data-panel="resize" onclick="switchTab(this)">
-      <span class="tab-icon">↔️</span> リサイズ
-    </div>
-    <div class="tab" data-panel="crop" onclick="switchTab(this)">
-      <span class="tab-icon">✂️</span> 切り抜き
-    </div>
-    <div class="tab" data-panel="analyze" onclick="switchTab(this)">
-      <span class="tab-icon">🔍</span> 解析
-    </div>
+<div class="tab-section">
+  <div class="tab-row">
+    <span class="row-label before">【出品前】</span>
+    <div class="tab active" data-panel="set-code" onclick="switchTab(this)">📦 セット商品コード作成</div>
+  </div>
+  <div class="tab-row">
+    <span class="row-label after">【出品後】</span>
+    <div class="tab" data-panel="ranking-data" onclick="switchTab(this)">📊 商品・ランキングデータ作成</div>
   </div>
 </div>
-
-<!-- Main -->
 <main>
-
-  <!-- Panel: 圧縮 -->
-  <div class="tool-panel active" id="panel-compress">
+  <div class="tool-panel active" id="panel-set-code">
     <div class="panel-hero">
-      <h1>画像を圧縮する</h1>
-      <p>画質を保ちながらファイルサイズを大幅に削減。ウェブ用・SNS用に最適化できます。</p>
-      <div class="tag-row">
-        <span class="tag">JPG圧縮</span>
-        <span class="tag">PNG圧縮</span>
-        <span class="tag">WEBP圧縮</span>
-        <span class="tag">一括処理</span>
-      </div>
+      <h1>セット商品コード作成</h1>
+      <p>複数の商品コードからセット商品用のコードを自動生成します。</p>
+      <div class="tag-row"><span class="tag">一括生成</span><span class="tag">CSV出力</span></div>
     </div>
     <div class="dropzone">
       <div class="dz-icon">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
         </svg>
       </div>
-      <div class="dz-label">圧縮したい画像をドロップ</div>
-      <div class="dz-sub">最大 50MB・複数ファイル対応</div>
-      <button class="btn-select">画像を選択</button>
+      <div class="dz-label">ファイルをドロップ、または選択</div>
+      <div class="dz-sub">CSV, Excel 対応</div>
+      <button class="btn-select">ファイルを選択</button>
     </div>
   </div>
-
-  <!-- Panel: リサイズ -->
-  <div class="tool-panel" id="panel-resize">
+  <div class="tool-panel" id="panel-ranking-data">
     <div class="panel-hero">
-      <h1>画像をリサイズする</h1>
-      <p>ピクセル指定・パーセント指定でかんたんにサイズ変更。アスペクト比を維持したままリサイズできます。</p>
-      <div class="tag-row">
-        <span class="tag">px指定</span>
-        <span class="tag">%指定</span>
-        <span class="tag">比率維持</span>
-        <span class="tag">一括処理</span>
-      </div>
+      <h1>商品・ランキングデータ作成</h1>
+      <p>出品後の商品データやランキング情報を整形・集計して出力します。</p>
+      <div class="tag-row"><span class="tag">ランキング集計</span><span class="tag">データ整形</span><span class="tag">CSV出力</span></div>
     </div>
     <div class="dropzone">
       <div class="dz-icon">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
         </svg>
       </div>
-      <div class="dz-label">リサイズしたい画像をドロップ</div>
-      <div class="dz-sub">JPG, PNG, WEBP, GIF 対応</div>
-      <button class="btn-select">画像を選択</button>
+      <div class="dz-label">ファイルをドロップ、または選択</div>
+      <div class="dz-sub">CSV, Excel 対応</div>
+      <button class="btn-select">ファイルを選択</button>
     </div>
   </div>
-
-  <!-- Panel: 切り抜き -->
-  <div class="tool-panel" id="panel-crop">
-    <div class="panel-hero">
-      <h1>画像を切り抜く</h1>
-      <p>ドラッグ操作で直感的にトリミング範囲を指定。正方形・16:9などのアスペクト比固定にも対応。</p>
-      <div class="tag-row">
-        <span class="tag">自由切り抜き</span>
-        <span class="tag">1:1 正方形</span>
-        <span class="tag">16:9</span>
-        <span class="tag">4:3</span>
-        <span class="tag">円形</span>
-      </div>
-    </div>
-    <div class="dropzone">
-      <div class="dz-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14 10H3m10 0v11m0-11l7-7M7 3v7"/>
-        </svg>
-      </div>
-      <div class="dz-label">切り抜きたい画像をドロップ</div>
-      <div class="dz-sub">JPG, PNG, WEBP 対応</div>
-      <button class="btn-select">画像を選択</button>
-    </div>
-  </div>
-
-  <!-- Panel: 解析 -->
-  <div class="tool-panel" id="panel-analyze">
-    <div class="panel-hero">
-      <h1>画像を解析する</h1>
-      <p>画像のメタデータ・色分布・EXIF情報・解像度など詳細情報を一覧表示します。</p>
-      <div class="tag-row">
-        <span class="tag">EXIF情報</span>
-        <span class="tag">色分析</span>
-        <span class="tag">解像度</span>
-        <span class="tag">ファイルサイズ</span>
-        <span class="tag">GPS情報</span>
-      </div>
-    </div>
-    <div class="dropzone">
-      <div class="dz-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-      </div>
-      <div class="dz-label">解析したい画像をドロップ</div>
-      <div class="dz-sub">JPG, PNG, WEBP, HEIC, RAW 対応</div>
-      <button class="btn-select">画像を選択</button>
-    </div>
-  </div>
-
 </main>
-
 <footer>
-  <span>©2025 i<span class="heart">❤</span>仕組み — あなたの画像ツール</span>
+  <span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span>
 </footer>
-
 <script>
 function switchTab(el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
