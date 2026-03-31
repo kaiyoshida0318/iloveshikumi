@@ -22,6 +22,7 @@
   .row-label { display: flex; align-items: center; padding: 0 .75rem 0 0; font-size: .7rem; font-weight: 700; white-space: nowrap; border-right: 1px solid var(--border); margin-right: .5rem; min-width: 66px; }
   .row-label.before { color: #2563eb; }
   .row-label.after { color: #16a34a; }
+  .row-label.kanri { color: #E94C3D; }
   .tab { display: flex; align-items: center; gap: 5px; padding: 0 1rem; height: 42px; font-size: .85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2.5px solid transparent; transition: color .15s,border-color .15s,background .15s; white-space: nowrap; user-select: none; }
   .tab:hover { color: var(--text); background: var(--tab-hover-bg); }
   .tab.active { color: var(--red); border-bottom-color: var(--red); }
@@ -105,12 +106,15 @@
   <div class="tab-row">
     <span class="row-label before">【出品前】</span>
     <div class="tab" data-panel="set-code" onclick="switchTab(this)">📦 セット商品コード作成</div>
-    <div class="tab" data-panel="shohin-kanri" onclick="switchTab(this)">📊 【商品管理】売上・広告・確認用</div>
   </div>
   <div class="tab-row">
     <span class="row-label after">【出品後】</span>
     <div class="tab active" data-panel="ranking-data" onclick="switchTab(this)">📊 商品・ランキングデータ作成</div>
     <div class="tab" data-panel="master-kw" onclick="switchTab(this)">🔑 マスターKW入力用</div>
+  </div>
+  <div class="tab-row">
+    <span class="row-label kanri">【商品管理】</span>
+    <div class="tab" data-panel="shohin-kanri" onclick="switchTab(this)">📊 売上・広告・確認用</div>
   </div>
 </div>
 <main>
