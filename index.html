@@ -121,6 +121,7 @@
           <tr><td class="label">商品番号</td><td><input type="text" id="product-no" placeholder="例: tape-24-01"></td></tr>
           <tr><td class="label">商品名・分類</td><td><input type="text" id="product-name" placeholder="例: 防水テープ"></td></tr>
           <tr><td class="label">weeklyランク</td><td><input type="url" id="weekly-rank" placeholder="例: https://ranking.rakuten.co.jp/weekly/201609/"></td></tr>
+          <tr><td class="label">ランキング補足数</td><td><select id="ranking-supplement"><option value="複数補足">複数補足</option><option value="不実施">不実施</option><option value="自社のみ">自社のみ</option></select></td></tr>
         </table>
       </div>
 
@@ -193,6 +194,7 @@ function getBasic() {
     productNo: document.getElementById('product-no').value,
     productName: document.getElementById('product-name').value,
     weeklyRank: document.getElementById('weekly-rank').value,
+    rankingSupplement: document.getElementById('ranking-supplement').value,
   };
 }
 
@@ -209,8 +211,8 @@ function getRivals() {
 function downloadGeneral() {
   const b = getBasic();
   const rivals = getRivals();
-  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類', 'weeklyランク'];
-  const row = [b.shop, b.mgmtNo, b.productNo, b.productName, b.weeklyRank];
+  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類', 'weeklyランク', 'ランキング補足数'];
+  const row = [b.shop, b.mgmtNo, b.productNo, b.productName, b.weeklyRank, b.rankingSupplement];
   const rows = [header, row];
   if (rivals.length > 0) {
     rows.push([]);
@@ -223,8 +225,8 @@ function downloadGeneral() {
 function downloadRanking() {
   const b = getBasic();
   const rivals = getRivals();
-  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類', 'weeklyランク'];
-  const row = [b.shop, b.mgmtNo, b.productNo, b.productName, b.weeklyRank];
+  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類', 'weeklyランク', 'ランキング補足数'];
+  const row = [b.shop, b.mgmtNo, b.productNo, b.productName, b.weeklyRank, b.rankingSupplement];
   const rows = [header, row];
   if (rivals.length > 0) {
     rows.push([]);
