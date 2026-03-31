@@ -131,7 +131,8 @@
     </div>
     <div class="form-actions">
       <button class="btn-secondary" onclick="clearForm()">クリア</button>
-      <button class="btn-primary" onclick="submitForm()">データを作成</button>
+      <button class="btn-primary" onclick="downloadGeneral()">📥 【データ分析】両ショップ対応全般</button>
+      <button class="btn-primary" onclick="downloadRanking()">📥 【データ分析】両ショップ-ランキング</button>
     </div>
   </div>
 </main>
@@ -170,7 +171,62 @@ function removeRival(id) {
 function clearForm() {
   document.querySelectorAll('#panel-ranking-data input').forEach(el => { el.value = ''; });
 }
-function submitForm() { alert('データ作成機能は実装予定です。'); }
+function downloadCSV(filename, rows) {
+  const bom = '\uFEFF';
+  const csv = bom + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename + '.csv';
+  a.click();
+}
+
+function getBasic() {
+  return {
+    shop: document.getElementById('shop-name').value,
+    mgmt: document.getElementById('mgmt-no').value,
+    productNo: document.getElementById('product-no').value,
+    productName: document.getElementById('product-name').value,
+  };
+}
+
+function getRivals() {
+  return Array.from(document.querySelectorAll('.rival-card')).map((card, i) => ({
+    no: i + 1,
+    shop: card.querySelector('.rival-shop')?.value ?? '',
+    name: card.querySelector('.rival-name')?.value ?? '',
+    url: card.querySelector('.rival-url')?.value ?? '',
+    rank: card.querySelector('.rival-rank')?.value ?? '',
+  }));
+}
+
+function downloadGeneral() {
+  const b = getBasic();
+  const rivals = getRivals();
+  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類'];
+  const row = [b.shop, b.mgmt, b.productNo, b.productName];
+  const rows = [header, row];
+  if (rivals.length > 0) {
+    rows.push([]);
+    rows.push(['ライバルNo', 'ショップ名', '商品名', '商品URL', 'weeklyランク']);
+    rivals.forEach(r => rows.push([r.no, r.shop, r.name, r.url, r.rank]));
+  }
+  downloadCSV('【データ分析】両ショップ対応全般', rows);
+}
+
+function downloadRanking() {
+  const b = getBasic();
+  const rivals = getRivals();
+  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類'];
+  const row = [b.shop, b.mgmt, b.productNo, b.productName];
+  const rows = [header, row];
+  if (rivals.length > 0) {
+    rows.push([]);
+    rows.push(['ライバルNo', 'ショップ名', '商品名', 'weeklyランク']);
+    rivals.forEach(r => rows.push([r.no, r.shop, r.name, r.rank]));
+  }
+  downloadCSV('【データ分析】両ショップ-ランキング', rows);
+}
 </script>
 </body>
 </html>
