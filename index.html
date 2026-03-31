@@ -9,125 +9,74 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --red: #E94C3D; --red-light: #ffeeed; --bg: #f7f5f2; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6b6b6b; --border: #e0ddd8; --tab-hover-bg: #eeebe6; --radius: 10px; }
-  body { font-family: 'DM Sans', 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-  header { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 56px; }
+  :root {
+    --red: #E94C3D; --red-light: #ffeeed; --bg: #f7f5f2;
+    --surface: #ffffff; --text: #1a1a1a; --text-muted: #6b6b6b;
+    --border: #e0ddd8; --tab-hover-bg: #eeebe6; --radius: 10px;
+    --rival-header: #f0f4ff; --rival-accent: #2563eb;
+  }
+  body { font-family: 'DM Sans','Noto Sans JP',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; height: 56px; }
   .logo { display: flex; align-items: center; text-decoration: none; }
-  nav.header-nav a { font-size: 0.875rem; color: var(--text-muted); text-decoration: none; }
+  nav.header-nav a { font-size: .875rem; color: var(--text-muted); text-decoration: none; }
   nav.header-nav a:hover { color: var(--text); }
-
   .tab-section { background: var(--surface); border-bottom: 1px solid var(--border); }
-  .tab-row { display: flex; align-items: stretch; padding: 0 2rem; overflow-x: auto; scrollbar-width: none; }
+  .tab-row { display: flex; align-items: stretch; padding: 0 1.5rem; overflow-x: auto; scrollbar-width: none; }
   .tab-row::-webkit-scrollbar { display: none; }
   .tab-row + .tab-row { border-top: 1px solid var(--border); }
-  .row-label { display: flex; align-items: center; padding: 0 0.75rem 0 0; font-size: 0.7rem; font-weight: 700; white-space: nowrap; border-right: 1px solid var(--border); margin-right: 0.5rem; min-width: 68px; }
+  .row-label { display: flex; align-items: center; padding: 0 .75rem 0 0; font-size: .7rem; font-weight: 700; white-space: nowrap; border-right: 1px solid var(--border); margin-right: .5rem; min-width: 66px; }
   .row-label.before { color: #2563eb; }
-  .row-label.after { color: #16a34a; }
-  .tab { display: flex; align-items: center; gap: 6px; padding: 0 1rem; height: 42px; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2.5px solid transparent; transition: color 0.15s, border-color 0.15s, background 0.15s; white-space: nowrap; user-select: none; }
+  .row-label.after  { color: #16a34a; }
+  .tab { display: flex; align-items: center; gap: 5px; padding: 0 1rem; height: 42px; font-size: .85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2.5px solid transparent; transition: color .15s,border-color .15s,background .15s; white-space: nowrap; user-select: none; }
   .tab:hover { color: var(--text); background: var(--tab-hover-bg); }
   .tab.active { color: var(--red); border-bottom-color: var(--red); }
-
   main { padding: 1.25rem 1.5rem; }
-  .tool-panel { display: none; }
+  .tool-panel { display: none; animation: fadeIn .2s ease; }
   .tool-panel.active { display: block; }
-
-  /* ── グリッドレイアウト ── */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    align-items: start;
-  }
-
-  /* カード */
-  .form-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .form-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.55rem 0.9rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-  .form-card-header.basic { background: #fff8f8; color: var(--red); }
-  .form-card-header.rival { background: #f0f4ff; color: #2563eb; }
-
-  .btn-remove-rival { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; padding: 0.1rem 0.4rem; border-radius: 4px; line-height: 1; }
-  .btn-remove-rival:hover { background: var(--red-light); color: var(--red); }
-
-  /* フォームテーブル */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+  .data-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1rem; align-items: start; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: .55rem .9rem; font-size: .75rem; font-weight: 700; border-bottom: 1px solid var(--border); }
+  .card-header.basic { background: #fff8f7; color: var(--red); }
+  .card-header.rival { background: var(--rival-header); color: var(--rival-accent); }
   .form-table { width: 100%; border-collapse: collapse; }
   .form-table tr { border-bottom: 1px solid var(--border); }
   .form-table tr:last-child { border-bottom: none; }
-  .form-table td { padding: 0.5rem 0.9rem; vertical-align: middle; }
-  .form-table td.label { width: 90px; font-size: 0.78rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .form-table td { padding: .5rem .9rem; vertical-align: middle; }
+  .form-table td.label { font-size: .78rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; width: 76px; }
   .form-table input[type="text"],
   .form-table input[type="url"],
   .form-table input[type="number"],
-  .form-table select {
-    width: 100%; height: 32px; padding: 0 8px;
-    border: 1px solid var(--border); border-radius: 5px;
-    font-size: 0.8rem; font-family: inherit; color: var(--text);
-    background: var(--surface); outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-  .form-table input:focus, .form-table select:focus {
-    border-color: var(--red);
-    box-shadow: 0 0 0 2px rgba(233,76,61,0.1);
-  }
-
-  /* ＋ ライバル追加 & アクション */
-  .bottom-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 1rem;
-  }
-  .btn-add-rival { background: none; border: 1px solid #2563eb; color: #2563eb; border-radius: 6px; padding: 0.4rem 1rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s; }
-  .btn-add-rival:hover { background: #eff6ff; }
-  .form-actions { display: flex; gap: 0.6rem; }
-  .btn-primary { background: var(--red); color: #fff; border: none; border-radius: 7px; padding: 0.55rem 1.5rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 7px; padding: 0.55rem 1rem; font-size: 0.875rem; cursor: pointer; font-family: inherit; transition: background 0.15s; }
-  .btn-secondary:hover { background: var(--tab-hover-bg); }
-
-  /* セット商品パネル */
-  .dropzone { border: 2px dashed var(--border); border-radius: var(--radius); background: var(--surface); min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: border-color 0.2s, background 0.2s; padding: 2rem; }
-  .dropzone:hover { border-color: var(--red); background: var(--red-light); }
-  .dropzone .dz-label { font-size: 0.95rem; font-weight: 600; }
-  .dropzone .dz-sub { font-size: 0.8rem; color: var(--text-muted); }
-  .dropzone .btn-select { background: var(--red); color: #fff; border: none; border-radius: 7px; padding: 0.55rem 1.4rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: inherit; }
-
-  footer { text-align: center; padding: 1.5rem; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 2rem; }
-  footer .heart { color: var(--red); }
-
-  @media (max-width: 900px) {
-    .form-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 600px) {
-    .form-grid { grid-template-columns: 1fr; }
-    header { padding: 0 1rem; }
-    main { padding: 1rem; }
-  }
+  .form-table select { width:100%; height:32px; padding:0 8px; border:1px solid var(--border); border-radius:5px; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; transition:border-color .15s,box-shadow .15s; }
+  .form-table input:focus, .form-table select:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
+  .btn-remove { background:none; border:none; color:#aaa; font-size:.85rem; cursor:pointer; padding:2px 5px; border-radius:4px; transition:color .15s,background .15s; }
+  .btn-remove:hover { color:var(--red); background:var(--red-light); }
+  .add-rival-card { border:2px dashed var(--border); border-radius:var(--radius); display:flex; align-items:center; justify-content:center; min-height:120px; cursor:pointer; transition:border-color .15s,background .15s; color:var(--text-muted); font-size:.85rem; font-weight:600; gap:6px; }
+  .add-rival-card:hover { border-color:var(--rival-accent); background:#f0f4ff; color:var(--rival-accent); }
+  .form-actions { display:flex; justify-content:flex-end; gap:.75rem; margin-top:1.25rem; }
+  .btn-primary { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
+  .btn-primary:hover { opacity:.88; }
+  .btn-secondary { background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:7px; padding:.6rem 1.1rem; font-size:.875rem; font-weight:500; cursor:pointer; font-family:inherit; transition:background .15s; }
+  .btn-secondary:hover { background:var(--tab-hover-bg); }
+  .dropzone { border:2px dashed var(--border); border-radius:var(--radius); background:var(--surface); min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.75rem; cursor:pointer; transition:border-color .2s,background .2s; padding:2rem; }
+  .dropzone:hover { border-color:var(--red); background:var(--red-light); }
+  .dropzone .dz-label { font-size:.95rem; font-weight:600; }
+  .dropzone .dz-sub { font-size:.82rem; color:var(--text-muted); }
+  .dropzone .btn-select { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.55rem 1.4rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; }
+  footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
+  footer .heart { color:var(--red); }
+  @media (max-width:900px) { .data-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:600px) { .data-grid { grid-template-columns:1fr; } header { padding:0 1rem; } main { padding:1rem; } }
 </style>
 </head>
 <body>
-
 <header>
   <a href="#" class="logo">
     <svg viewBox="0 0 236 58" xmlns="http://www.w3.org/2000/svg" height="34">
       <rect x="2" y="5" width="22" height="7" rx="3" fill="#1a1a1a"/>
       <rect x="8" y="12" width="10" height="31" fill="#1a1a1a"/>
       <rect x="2" y="43" width="22" height="7" rx="3" fill="#1a1a1a"/>
-      <g transform="translate(30, 5)">
+      <g transform="translate(30,5)">
         <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
         <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
       </g>
@@ -151,8 +100,6 @@
 </div>
 
 <main>
-
-  <!-- セット商品コード作成 -->
   <div class="tool-panel" id="panel-set-code">
     <div class="dropzone">
       <div class="dz-label">ファイルをドロップ、または選択</div>
@@ -161,13 +108,12 @@
     </div>
   </div>
 
-  <!-- 商品・ランキングデータ作成 -->
   <div class="tool-panel active" id="panel-ranking-data">
-    <div class="form-grid" id="form-grid">
+    <div class="data-grid" id="data-grid">
 
-      <!-- 基本情報（左上固定） -->
-      <div class="form-card" id="card-basic">
-        <div class="form-card-header basic">● 基本情報</div>
+      <!-- 基本情報 -->
+      <div class="card" id="card-basic">
+        <div class="card-header basic">● 基本情報</div>
         <table class="form-table">
           <tr><td class="label">商品管理番号</td><td><input type="text" id="mgmt-no" placeholder="例: 10001280"></td></tr>
           <tr><td class="label">商品番号</td><td><input type="text" id="product-no" placeholder="例: tape-24-01"></td></tr>
@@ -181,11 +127,11 @@
         </table>
       </div>
 
-      <!-- ライバル1（初期） -->
-      <div class="form-card rival-card" id="rival-card-1">
-        <div class="form-card-header rival">
+      <!-- ライバル1 -->
+      <div class="card rival-card" id="rival-card-1">
+        <div class="card-header rival">
           <span>ライバル 1</span>
-          <button class="btn-remove-rival" onclick="removeRival(1)">✕</button>
+          <button class="btn-remove" onclick="removeRival(1)">✕</button>
         </div>
         <table class="form-table">
           <tr><td class="label">分類</td><td><select class="rival-category"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
@@ -196,17 +142,15 @@
         </table>
       </div>
 
-    </div>
+      <!-- ライバル追加ボタン -->
+      <div class="add-rival-card" id="add-rival-btn" onclick="addRival()">＋ ライバルを追加</div>
 
-    <div class="bottom-bar">
-      <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
-      <div class="form-actions">
-        <button class="btn-secondary" onclick="clearForm()">クリア</button>
-        <button class="btn-primary" onclick="submitForm()">データを作成</button>
-      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="clearForm()">クリア</button>
+      <button class="btn-primary" onclick="submitForm()">データを作成</button>
     </div>
   </div>
-
 </main>
 
 <footer>
@@ -215,7 +159,6 @@
 
 <script>
 let rivalCount = 1;
-
 function switchTab(el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
@@ -223,57 +166,37 @@ function switchTab(el) {
   const panel = document.getElementById('panel-' + el.dataset.panel);
   if (panel) panel.classList.add('active');
 }
-
-function rivalCardHTML(n) {
-  return `<div class="form-card rival-card" id="rival-card-${n}">
-    <div class="form-card-header rival">
-      <span>ライバル ${n}</span>
-      <button class="btn-remove-rival" onclick="removeRival(${n})">✕</button>
-    </div>
-    <table class="form-table">
-      <tr><td class="label">分類</td><td><select class="rival-category"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
-      <tr><td class="label">ショップ名</td><td><select class="rival-shop"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
-      <tr><td class="label">商品名</td><td><input type="text" class="rival-name" placeholder="ライバル商品名"></td></tr>
-      <tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
-      <tr><td class="label">weeklyランク</td><td><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td></tr>
-    </table>
-  </div>`;
-}
-
 function addRival() {
   rivalCount++;
-  const grid = document.getElementById('form-grid');
-  grid.insertAdjacentHTML('beforeend', rivalCardHTML(rivalCount));
+  const grid = document.getElementById('data-grid');
+  const addBtn = document.getElementById('add-rival-btn');
+  const card = document.createElement('div');
+  card.className = 'card rival-card';
+  card.id = 'rival-card-' + rivalCount;
+  card.innerHTML = `<div class="card-header rival"><span>ライバル ${rivalCount}</span><button class="btn-remove" onclick="removeRival(${rivalCount})">✕</button></div><table class="form-table"><tr><td class="label">分類</td><td><select class="rival-category"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr><tr><td class="label">ショップ名</td><td><select class="rival-shop"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr><tr><td class="label">商品名</td><td><input type="text" class="rival-name" placeholder="ライバル商品名"></td></tr><tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr><tr><td class="label">weeklyランク</td><td><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td></tr></table>`;
+  grid.insertBefore(card, addBtn);
+  renumberRivals();
 }
-
 function removeRival(id) {
   const card = document.getElementById('rival-card-' + id);
   if (card) card.remove();
   renumberRivals();
 }
-
 function renumberRivals() {
   document.querySelectorAll('.rival-card').forEach((card, i) => {
     const n = i + 1;
+    card.querySelector('.card-header span').textContent = 'ライバル ' + n;
     card.id = 'rival-card-' + n;
-    const title = card.querySelector('.form-card-header span');
-    if (title) title.textContent = 'ライバル ' + n;
-    const btn = card.querySelector('.btn-remove-rival');
-    if (btn) btn.setAttribute('onclick', 'removeRival(' + n + ')');
+    card.querySelector('.btn-remove').setAttribute('onclick', 'removeRival(' + n + ')');
   });
   rivalCount = document.querySelectorAll('.rival-card').length;
 }
-
 function clearForm() {
   document.querySelectorAll('#panel-ranking-data input, #panel-ranking-data select').forEach(el => {
-    if (el.tagName === 'SELECT') el.selectedIndex = 0;
-    else el.value = '';
+    if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
   });
 }
-
-function submitForm() {
-  alert('データ作成機能は実装予定です。');
-}
+function submitForm() { alert('データ作成機能は実装予定です。'); }
 </script>
 </body>
 </html>
