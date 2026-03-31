@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>I❤仕組み</title>
+<title>Iâ¤ä»çµã¿</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
   .tool-panel.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ── フォームセクション ── */
+  /* ââ ãã©ã¼ã ã»ã¯ã·ã§ã³ ââ */
   .form-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1.5rem; overflow: hidden; }
   .form-section-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: var(--bg); border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
   .form-section-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
@@ -46,7 +46,7 @@
   .form-table td.label { width: 140px; font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; }
   .form-table td.input { }
 
-  /* インプット */
+  /* ã¤ã³ããã */
   .form-table input[type="text"],
   .form-table input[type="url"],
   .form-table input[type="number"],
@@ -70,14 +70,14 @@
   }
   .form-table select { cursor: pointer; }
 
-  /* 送信エリア */
+  /* éä¿¡ã¨ãªã¢ */
   .form-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
   .btn-primary { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 0.65rem 1.75rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
   .btn-primary:hover { opacity: 0.88; }
   .btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.15s; }
   .btn-secondary:hover { background: var(--tab-hover-bg); }
 
-  /* ライバルセクション 複数 */
+  /* ã©ã¤ãã«ã»ã¯ã·ã§ã³ è¤æ° */
   .rival-block { margin-bottom: 1rem; }
   .rival-block-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1.25rem; background: #f0f4ff; border-bottom: 1px solid var(--border); }
   .rival-block-title { font-size: 0.8rem; font-weight: 700; color: #2563eb; }
@@ -110,7 +110,7 @@
         <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
         <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
       </g>
-      <text x="82" y="50" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
+      <text x="82" y="50" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">ä»çµã¿</text>
     </svg>
   </a>
   <nav class="header-nav">
@@ -120,51 +120,51 @@
 
 <div class="tab-section">
   <div class="tab-row">
-    <span class="row-label before">【出品前】</span>
-    <div class="tab" data-panel="set-code" onclick="switchTab(this)">📦 セット商品コード作成</div>
+    <span class="row-label before">ãåºååã</span>
+    <div class="tab" data-panel="set-code" onclick="switchTab(this)">ð¦ ã»ããååã³ã¼ãä½æ</div>
   </div>
   <div class="tab-row">
-    <span class="row-label after">【出品後】</span>
-    <div class="tab active" data-panel="ranking-data" onclick="switchTab(this)">📊 商品・ランキングデータ作成</div>
+    <span class="row-label after">ãåºåå¾ã</span>
+    <div class="tab active" data-panel="ranking-data" onclick="switchTab(this)">ð ååã»ã©ã³ã­ã³ã°ãã¼ã¿ä½æ</div>
   </div>
 </div>
 
 <main>
 
-  <!-- Panel: セット商品コード作成 -->
+  <!-- Panel: ã»ããååã³ã¼ãä½æ -->
   <div class="tool-panel" id="panel-set-code">
     <div class="form-section">
-      <div class="form-section-header"><span class="dot"></span>セット商品コード作成</div>
+      <div class="form-section-header"><span class="dot"></span>ã»ããååã³ã¼ãä½æ</div>
       <table class="form-table">
-        <tr><td class="label">ファイル</td><td class="input"><input type="text" placeholder="CSV / Excel をドロップまたは選択"></td></tr>
+        <tr><td class="label">ãã¡ã¤ã«</td><td class="input"><input type="text" placeholder="CSV / Excel ããã­ããã¾ãã¯é¸æ"></td></tr>
       </table>
     </div>
   </div>
 
-  <!-- Panel: 商品・ランキングデータ作成 -->
+  <!-- Panel: ååã»ã©ã³ã­ã³ã°ãã¼ã¿ä½æ -->
   <div class="tool-panel active" id="panel-ranking-data">
 
-    <!-- 基本情報 -->
+    <!-- åºæ¬æå ± -->
     <div class="form-section">
-      <div class="form-section-header"><span class="dot"></span>基本情報</div>
+      <div class="form-section-header"><span class="dot"></span>åºæ¬æå ±</div>
       <table class="form-table">
         <tr>
-          <td class="label">商品管理番号</td>
-          <td class="input"><input type="text" id="mgmt-no" placeholder="例: ABC-001"></td>
+          <td class="label">ååç®¡ççªå·</td>
+          <td class="input"><input type="text" id="mgmt-no" placeholder="ä¾: ABC-001"></td>
         </tr>
         <tr>
-          <td class="label">商品番号</td>
-          <td class="input"><input type="text" id="product-no" placeholder="例: 12345678"></td>
+          <td class="label">ååçªå·</td>
+          <td class="input"><input type="text" id="product-no" placeholder="ä¾: 12345678"></td>
         </tr>
         <tr>
-          <td class="label">商品名</td>
-          <td class="input"><input type="text" id="product-name" placeholder="商品名を入力"></td>
+          <td class="label">ååå</td>
+          <td class="input"><input type="text" id="product-name" placeholder="åååãå¥å"></td>
         </tr>
         <tr>
-          <td class="label">ショップ名</td>
+          <td class="label">ã·ã§ããå</td>
           <td class="input">
             <select id="shop-name">
-              <option value="yukaiya">ゆかい屋</option>
+              <option value="yukaiya">ãããå±</option>
               <option value="kairy">KAIRY</option>
             </select>
           </td>
@@ -172,66 +172,66 @@
       </table>
     </div>
 
-    <!-- ライバル -->
+    <!-- ã©ã¤ãã« -->
     <div class="form-section">
       <div class="form-section-header" style="justify-content: space-between;">
-        <span style="display:flex;align-items:center;gap:0.5rem;"><span class="dot" style="background:#2563eb"></span>ライバル</span>
-        <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
+        <span style="display:flex;align-items:center;gap:0.5rem;"><span class="dot" style="background:#2563eb"></span>ã©ã¤ãã«</span>
+        <button class="btn-add-rival" onclick="addRival()">ï¼ ã©ã¤ãã«ãè¿½å </button>
       </div>
       <div id="rival-list">
-        <!-- ライバル1 (初期表示) -->
+        <!-- ã©ã¤ãã«1 (åæè¡¨ç¤º) -->
         <div class="rival-block" id="rival-1">
           <div class="rival-block-header">
-            <span class="rival-block-title">ライバル 1</span>
-            <button class="btn-remove-rival" onclick="removeRival(1)" title="削除">✕</button>
+            <span class="rival-block-title">ã©ã¤ãã« 1</span>
+            <button class="btn-remove-rival" onclick="removeRival(1)" title="åé¤">â</button>
           </div>
           <table class="form-table">
             <tr>
-              <td class="label">分類</td>
+              <td class="label">åé¡</td>
               <td class="input">
                 <select class="rival-category">
-                  <option value="yukaiya">ゆかい屋</option>
+                  <option value="yukaiya">ãããå±</option>
                   <option value="kairy">KAIRY</option>
                 </select>
               </td>
             </tr>
             <tr>
-              <td class="label">ショップ名</td>
+              <td class="label">ã·ã§ããå</td>
               <td class="input">
                 <select class="rival-shop">
-                  <option value="yukaiya">ゆかい屋</option>
+                  <option value="yukaiya">ãããå±</option>
                   <option value="kairy">KAIRY</option>
                 </select>
               </td>
             </tr>
             <tr>
-              <td class="label">商品名</td>
-              <td class="input"><input type="text" class="rival-name" placeholder="ライバル商品名"></td>
+              <td class="label">ååå</td>
+              <td class="input"><input type="text" class="rival-name" placeholder="ã©ã¤ãã«ååå"></td>
             </tr>
             <tr>
-              <td class="label">商品URL</td>
+              <td class="label">ååURL</td>
               <td class="input"><input type="url" class="rival-url" placeholder="https://..."></td>
             </tr>
             <tr>
-              <td class="label">weeklyランク</td>
-              <td class="input"><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td>
+              <td class="label">weeklyã©ã³ã¯</td>
+              <td class="input"><input type="number" class="rival-rank" placeholder="ä¾: 15" min="1"></td>
             </tr>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- アクション -->
+    <!-- ã¢ã¯ã·ã§ã³ -->
     <div class="form-actions">
-      <button class="btn-secondary" onclick="clearForm()">クリア</button>
-      <button class="btn-primary" onclick="submitForm()">データを作成</button>
+      <button class="btn-secondary" onclick="clearForm()">ã¯ãªã¢</button>
+      <button class="btn-primary" onclick="submitForm()">ãã¼ã¿ãä½æ</button>
     </div>
 
   </div>
 </main>
 
 <footer>
-  <span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span>
+  <span>Â©2025 i<span class="heart">â¤</span>ä»çµã¿ â ããªãã®æ¥­åãã¼ã«</span>
 </footer>
 
 <script>
@@ -252,15 +252,15 @@ function addRival() {
   block.id = 'rival-' + rivalCount;
   block.innerHTML = `
     <div class="rival-block-header">
-      <span class="rival-block-title">ライバル ${rivalCount}</span>
-      <button class="btn-remove-rival" onclick="removeRival(${rivalCount})" title="削除">✕</button>
+      <span class="rival-block-title">ã©ã¤ãã« ${rivalCount}</span>
+      <button class="btn-remove-rival" onclick="removeRival(${rivalCount})" title="åé¤">â</button>
     </div>
     <table class="form-table">
-      <tr><td class="label">分類</td><td class="input"><select class="rival-category"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
-      <tr><td class="label">ショップ名</td><td class="input"><select class="rival-shop"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
-      <tr><td class="label">商品名</td><td class="input"><input type="text" class="rival-name" placeholder="ライバル商品名"></td></tr>
-      <tr><td class="label">商品URL</td><td class="input"><input type="url" class="rival-url" placeholder="https://..."></td></tr>
-      <tr><td class="label">weeklyランク</td><td class="input"><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td></tr>
+      <tr><td class="label">åé¡</td><td class="input"><select class="rival-category"><option value="yukaiya">ãããå±</option><option value="kairy">KAIRY</option></select></td></tr>
+      <tr><td class="label">ã·ã§ããå</td><td class="input"><select class="rival-shop"><option value="yukaiya">ãããå±</option><option value="kairy">KAIRY</option></select></td></tr>
+      <tr><td class="label">ååå</td><td class="input"><input type="text" class="rival-name" placeholder="ã©ã¤ãã«ååå"></td></tr>
+      <tr><td class="label">ååURL</td><td class="input"><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+      <tr><td class="label">weeklyã©ã³ã¯</td><td class="input"><input type="number" class="rival-rank" placeholder="ä¾: 15" min="1"></td></tr>
     </table>
   `;
   document.getElementById('rival-list').appendChild(block);
@@ -275,7 +275,7 @@ function removeRival(id) {
 function renumberRivals() {
   document.querySelectorAll('.rival-block').forEach((block, i) => {
     const title = block.querySelector('.rival-block-title');
-    if (title) title.textContent = 'ライバル ' + (i + 1);
+    if (title) title.textContent = 'ã©ã¤ãã« ' + (i + 1);
   });
 }
 
@@ -287,7 +287,7 @@ function clearForm() {
 }
 
 function submitForm() {
-  alert('データ作成機能は実装予定です。');
+  alert('ãã¼ã¿ä½ææ©è½ã¯å®è£äºå®ã§ãã');
 }
 </script>
 </body>
