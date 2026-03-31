@@ -262,14 +262,53 @@ function downloadGeneral() {
 function downloadRanking() {
   const b = getBasic();
   const rivals = getRivals();
-  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類', 'weeklyランク', 'ランキング補足数'];
-  const row = [b.shop, b.mgmtNo, b.productNo, b.productName, b.weeklyRank, b.rankingSupplement];
-  const rows = [header, row];
-  if (rivals.length > 0) {
-    rows.push([]);
-    rows.push(['ライバルNo', 'ショップ名', '商品URL']);
-    rivals.forEach(r => rows.push([r.no, r.shop, r.url]));
-  }
+  const kw = encodeURIComponent(b.productName);
+  const base = 'https://yukaiya.cybozu.com/k/182/?';
+  const kiboriUrls = [
+    base + 'view=5534938&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534939&order_0=asc&qs=1',
+    base + 'view=5534965&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534953&order_1=asc&size=20',
+    base + 'view=5534967&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534954&order_1=asc&size=20',
+    base + 'view=5534969&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534955&order_1=desc&size=20',
+    base + 'view=5534971&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534956&order_1=desc&size=20',
+    base + 'view=5534973&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534957&order_0=asc&qs=1',
+    base + 'view=5534975&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534958&order_1=desc&size=20',
+    base + 'view=5534977&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534959&order_1=asc&size=20',
+    base + 'view=5534979&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534960&order_1=asc&size=20',
+    base + 'view=5534981&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534961&order_1=desc&size=20',
+    base + 'view=5534983&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534963&order_1=desc&size=20',
+    base + 'view=5534985&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534962&order_1=asc&size=20',
+  ];
+  const base2 = 'https://yukaiya.cybozu.com/k/189/?';
+  const kisoUrls = [
+    base2 + 'view=5533525&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533561&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533559&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533557&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533555&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533553&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533575&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533573&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533571&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533569&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533567&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base2 + 'view=5533577&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+  ];
+  const header = ['No','分類','商品名','ショップ名','商品URL','Weeklyランク','01月分絞り込み','02月分絞り込み','03月分絞り込み','04月分絞り込み','05月分絞り込み','06月分絞り込み','07月分絞り込み','08月分絞り込み','09月分絞り込み','10月分絞り込み','11月分絞り込み','12月分絞り込み','01月分-基礎情報','02月分-基礎情報','03月分-基礎情報','04月分-基礎情報','05月分-基礎情報','06月分-基礎情報','07月分-基礎情報','08月分-基礎情報','09月分-基礎情報','10月分-基礎情報','11月分-基礎情報','12月分-基礎情報'];
+  const rows = [header];
+  rivals.forEach((r, i) => {
+    const isYukaiya = b.shop === 'yukaiya';
+    const hasKiso = isYukaiya;
+    rows.push([
+      '',
+      b.shop === 'yukaiya' ? 'ゆかい屋' : 'KAIRY',
+      b.productName,
+      r.shop,
+      r.url,
+      b.weeklyRank,
+      ...kiboriUrls,
+      ...(hasKiso ? kisoUrls : Array(12).fill(''))
+    ]);
+  });
   downloadCSV('【データ分析】両ショップ-ランキング', rows);
 }
 </script>
