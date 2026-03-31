@@ -130,7 +130,9 @@
         <div class="card-header rival"><span>ライバル 1</span><button class="btn-remove" onclick="removeRival(1)">✕</button></div>
         <table class="form-table">
           <tr><td class="label">ショップ名</td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
+          <tr><td class="label">商品名</td><td><input type="text" class="rival-name" placeholder="ライバル商品名"></td></tr>
           <tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+          <tr><td class="label">weeklyランク</td><td><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td></tr>
         </table>
       </div>
 
@@ -160,7 +162,7 @@ function addRival() {
   const card = document.createElement('div');
   card.className = 'card rival-card';
   card.id = 'rival-card-' + rivalCount;
-  card.innerHTML = '<div class="card-header rival"><span>ライバル ' + rivalCount + '</span><button class="btn-remove" onclick="removeRival(' + rivalCount + ')">✕</button></div><table class="form-table"><tr><td class="label">ショップ名</td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr><tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr></table>';
+  card.innerHTML = '<div class="card-header rival"><span>ライバル ' + rivalCount + '</span><button class="btn-remove" onclick="removeRival(' + rivalCount + ')">✕</button></div><table class="form-table"><tr><td class="label">ショップ名</td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr><tr><td class="label">商品名</td><td><input type="text" class="rival-name" placeholder="ライバル商品名"></td></tr><tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr><tr><td class="label">weeklyランク</td><td><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td></tr></table>';
   grid.appendChild(card);
 }
 function removeRival(id) {
