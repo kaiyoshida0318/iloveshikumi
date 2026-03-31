@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>I❤仕組み</title>
+<title>Iâ¤ä»çµã¿</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -51,8 +51,9 @@
   .form-table input:focus, .form-table select:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
   .btn-remove { background:none; border:none; color:#aaa; font-size:.85rem; cursor:pointer; padding:2px 5px; border-radius:4px; transition:color .15s,background .15s; }
   .btn-remove:hover { color:var(--red); background:var(--red-light); }
-  .add-rival-card { border:2px dashed var(--border); border-radius:var(--radius); display:flex; align-items:center; justify-content:center; min-height:120px; cursor:pointer; transition:border-color .15s,background .15s; color:var(--text-muted); font-size:.85rem; font-weight:600; gap:6px; }
-  .add-rival-card:hover { border-color:var(--rival-accent); background:#f0f4ff; color:var(--rival-accent); }
+  .rival-toolbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.5rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+  .btn-add-rival { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1.5px solid var(--rival-accent); color: var(--rival-accent); border-radius: 7px; padding: 0.4rem 1rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
+  .btn-add-rival:hover { background: #eff6ff; }
   .form-actions { display:flex; justify-content:flex-end; gap:.75rem; margin-top:1.25rem; }
   .btn-primary { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
   .btn-primary:hover { opacity:.88; }
@@ -80,7 +81,7 @@
         <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
         <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
       </g>
-      <text x="82" y="50" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
+      <text x="82" y="50" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">ä»çµã¿</text>
     </svg>
   </a>
   <nav class="header-nav">
@@ -90,71 +91,74 @@
 
 <div class="tab-section">
   <div class="tab-row">
-    <span class="row-label before">【出品前】</span>
-    <div class="tab" data-panel="set-code" onclick="switchTab(this)">📦 セット商品コード作成</div>
+    <span class="row-label before">ãåºååã</span>
+    <div class="tab" data-panel="set-code" onclick="switchTab(this)">ð¦ ã»ããååã³ã¼ãä½æ</div>
   </div>
   <div class="tab-row">
-    <span class="row-label after">【出品後】</span>
-    <div class="tab active" data-panel="ranking-data" onclick="switchTab(this)">📊 商品・ランキングデータ作成</div>
+    <span class="row-label after">ãåºåå¾ã</span>
+    <div class="tab active" data-panel="ranking-data" onclick="switchTab(this)">ð ååã»ã©ã³ã­ã³ã°ãã¼ã¿ä½æ</div>
   </div>
 </div>
 
+<div class="rival-toolbar" id="rival-toolbar" style="display:flex;">
+  <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
+</div>
 <main>
   <div class="tool-panel" id="panel-set-code">
     <div class="dropzone">
-      <div class="dz-label">ファイルをドロップ、または選択</div>
-      <div class="dz-sub">CSV, Excel 対応</div>
-      <button class="btn-select">ファイルを選択</button>
+      <div class="dz-label">ãã¡ã¤ã«ããã­ãããã¾ãã¯é¸æ</div>
+      <div class="dz-sub">CSV, Excel å¯¾å¿</div>
+      <button class="btn-select">ãã¡ã¤ã«ãé¸æ</button>
     </div>
   </div>
 
   <div class="tool-panel active" id="panel-ranking-data">
     <div class="data-grid" id="data-grid">
 
-      <!-- 基本情報 -->
+      <!-- åºæ¬æå ± -->
       <div class="card" id="card-basic">
-        <div class="card-header basic">● 基本情報</div>
+        <div class="card-header basic">â åºæ¬æå ±</div>
         <table class="form-table">
-          <tr><td class="label">商品管理番号</td><td><input type="text" id="mgmt-no" placeholder="例: 10001280"></td></tr>
-          <tr><td class="label">商品番号</td><td><input type="text" id="product-no" placeholder="例: tape-24-01"></td></tr>
-          <tr><td class="label">商品名</td><td><input type="text" id="product-name" placeholder="例: 防水テープ"></td></tr>
-          <tr><td class="label">ショップ名</td><td>
+          <tr><td class="label">ååç®¡ççªå·</td><td><input type="text" id="mgmt-no" placeholder="ä¾: 10001280"></td></tr>
+          <tr><td class="label">ååçªå·</td><td><input type="text" id="product-no" placeholder="ä¾: tape-24-01"></td></tr>
+          <tr><td class="label">ååå</td><td><input type="text" id="product-name" placeholder="ä¾: é²æ°´ãã¼ã"></td></tr>
+          <tr><td class="label">ã·ã§ããå</td><td>
             <select id="shop-name">
-              <option value="yukaiya">ゆかい屋</option>
+              <option value="yukaiya">ãããå±</option>
               <option value="kairy">KAIRY</option>
             </select>
           </td></tr>
         </table>
       </div>
 
-      <!-- ライバル1 -->
+      <!-- ã©ã¤ãã«1 -->
       <div class="card rival-card" id="rival-card-1">
         <div class="card-header rival">
-          <span>ライバル 1</span>
-          <button class="btn-remove" onclick="removeRival(1)">✕</button>
+          <span>ã©ã¤ãã« 1</span>
+          <button class="btn-remove" onclick="removeRival(1)">â</button>
         </div>
         <table class="form-table">
-          <tr><td class="label">分類</td><td><select class="rival-category"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
-          <tr><td class="label">ショップ名</td><td><select class="rival-shop"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
-          <tr><td class="label">商品名</td><td><input type="text" class="rival-name" placeholder="ライバル商品名"></td></tr>
-          <tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
-          <tr><td class="label">weeklyランク</td><td><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td></tr>
+          <tr><td class="label">åé¡</td><td><select class="rival-category"><option value="yukaiya">ãããå±</option><option value="kairy">KAIRY</option></select></td></tr>
+          <tr><td class="label">ã·ã§ããå</td><td><select class="rival-shop"><option value="yukaiya">ãããå±</option><option value="kairy">KAIRY</option></select></td></tr>
+          <tr><td class="label">ååå</td><td><input type="text" class="rival-name" placeholder="ã©ã¤ãã«ååå"></td></tr>
+          <tr><td class="label">ååURL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+          <tr><td class="label">weeklyã©ã³ã¯</td><td><input type="number" class="rival-rank" placeholder="ä¾: 15" min="1"></td></tr>
         </table>
       </div>
 
-      <!-- ライバル追加ボタン -->
-      <div class="add-rival-card" id="add-rival-btn" onclick="addRival()">＋ ライバルを追加</div>
+      <!-- ã©ã¤ãã«è¿½å ãã¿ã³ -->
+      <div class="add-rival-card" id="add-rival-btn" onclick="addRival()">ï¼ ã©ã¤ãã«ãè¿½å </div>
 
     </div>
     <div class="form-actions">
-      <button class="btn-secondary" onclick="clearForm()">クリア</button>
-      <button class="btn-primary" onclick="submitForm()">データを作成</button>
+      <button class="btn-secondary" onclick="clearForm()">ã¯ãªã¢</button>
+      <button class="btn-primary" onclick="submitForm()">ãã¼ã¿ãä½æ</button>
     </div>
   </div>
 </main>
 
 <footer>
-  <span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span>
+  <span>Â©2025 i<span class="heart">â¤</span>ä»çµã¿ â ããªãã®æ¥­åãã¼ã«</span>
 </footer>
 
 <script>
@@ -165,6 +169,8 @@ function switchTab(el) {
   el.classList.add('active');
   const panel = document.getElementById('panel-' + el.dataset.panel);
   if (panel) panel.classList.add('active');
+  const toolbar = document.getElementById('rival-toolbar');
+  if (toolbar) toolbar.style.display = el.dataset.panel === 'ranking-data' ? 'flex' : 'none';
 }
 function addRival() {
   rivalCount++;
@@ -173,8 +179,8 @@ function addRival() {
   const card = document.createElement('div');
   card.className = 'card rival-card';
   card.id = 'rival-card-' + rivalCount;
-  card.innerHTML = `<div class="card-header rival"><span>ライバル ${rivalCount}</span><button class="btn-remove" onclick="removeRival(${rivalCount})">✕</button></div><table class="form-table"><tr><td class="label">分類</td><td><select class="rival-category"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr><tr><td class="label">ショップ名</td><td><select class="rival-shop"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr><tr><td class="label">商品名</td><td><input type="text" class="rival-name" placeholder="ライバル商品名"></td></tr><tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr><tr><td class="label">weeklyランク</td><td><input type="number" class="rival-rank" placeholder="例: 15" min="1"></td></tr></table>`;
-  grid.insertBefore(card, addBtn);
+  card.innerHTML = `<div class="card-header rival"><span>ã©ã¤ãã« ${rivalCount}</span><button class="btn-remove" onclick="removeRival(${rivalCount})">â</button></div><table class="form-table"><tr><td class="label">åé¡</td><td><select class="rival-category"><option value="yukaiya">ãããå±</option><option value="kairy">KAIRY</option></select></td></tr><tr><td class="label">ã·ã§ããå</td><td><select class="rival-shop"><option value="yukaiya">ãããå±</option><option value="kairy">KAIRY</option></select></td></tr><tr><td class="label">ååå</td><td><input type="text" class="rival-name" placeholder="ã©ã¤ãã«ååå"></td></tr><tr><td class="label">ååURL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr><tr><td class="label">weeklyã©ã³ã¯</td><td><input type="number" class="rival-rank" placeholder="ä¾: 15" min="1"></td></tr></table>`;
+  grid.appendChild(card);
   renumberRivals();
 }
 function removeRival(id) {
@@ -185,7 +191,7 @@ function removeRival(id) {
 function renumberRivals() {
   document.querySelectorAll('.rival-card').forEach((card, i) => {
     const n = i + 1;
-    card.querySelector('.card-header span').textContent = 'ライバル ' + n;
+    card.querySelector('.card-header span').textContent = 'ã©ã¤ãã« ' + n;
     card.id = 'rival-card-' + n;
     card.querySelector('.btn-remove').setAttribute('onclick', 'removeRival(' + n + ')');
   });
@@ -196,7 +202,7 @@ function clearForm() {
     if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
   });
 }
-function submitForm() { alert('データ作成機能は実装予定です。'); }
+function submitForm() { alert('ãã¼ã¿ä½ææ©è½ã¯å®è£äºå®ã§ãã'); }
 </script>
 </body>
 </html>
