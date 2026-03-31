@@ -275,14 +275,20 @@
 <script>
 let rivalCount = 4;
 function switchTab(el) {
+  // 全タブのactive解除（position:absoluteのものも含む）
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  // 全パネル非表示
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  // クリックされたタブをactive
   el.classList.add('active');
+  // 対応パネルを表示
   const panel = document.getElementById('panel-' + el.dataset.panel);
   if (panel) panel.classList.add('active');
+  // rival-toolbarの表示切替
   const tb = document.getElementById('rival-toolbar');
   if (tb) tb.style.display = el.dataset.panel === 'ranking-data' ? 'flex' : 'none';
 }
+
 function addRival() {
   rivalCount++;
   const grid = document.getElementById('data-grid');
