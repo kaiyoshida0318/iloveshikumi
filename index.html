@@ -76,7 +76,7 @@
   .dropzone .dz-sub { font-size:.82rem; color:var(--text-muted); }
   .dropzone .btn-select { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.55rem 1.4rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; }
 
-  .rival-toolbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.45rem 1.5rem; display: none; align-items: center; }
+  .rival-toolbar { padding: 0 0 0.75rem 0; display: none; align-items: center; }
   .btn-add-rival { display: inline-flex; align-items: center; gap: 5px; background: none; border: 1.5px solid var(--rival-accent); color: var(--rival-accent); border-radius: 7px; padding: 0.35rem 1rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
   .btn-add-rival:hover { background: #eff6ff; }
   footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
@@ -122,9 +122,6 @@
   <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
 </div>
 
-<div class="rival-toolbar" id="rival-toolbar" style="display:flex;">
-  <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
-</div>
 
 <main>
   <div class="tool-panel" id="panel-set-code">
@@ -135,6 +132,9 @@
     </div>
   </div>
 
+  <div class="rival-toolbar" id="rival-toolbar" style="display:flex;">
+    <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
+  </div>
   <div class="tool-panel active" id="panel-ranking-data">
     <div class="data-grid" id="data-grid">
       <div class="card" id="card-basic">
