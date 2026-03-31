@@ -119,6 +119,7 @@
     </div>
   </div>
   <div class="tool-panel" id="panel-set-code">
+    <p style="font-size:.78rem; color:var(--text-muted); margin-bottom:.6rem;">📋 エクセルからコピーしてセルをクリック後 <kbd style="background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:.75rem;">Ctrl+V</kbd> で一括貼り付けできます</p>
     <div class="set-grid">
       <div class="set-block">
         <div class="set-header"><span>対応部分</span><span>商品コード</span></div>
@@ -368,6 +369,61 @@ function downloadSet() {
 // 初期化：各グループに10行追加
 document.addEventListener('DOMContentLoaded', function() {
   [1,2,3].forEach(g => { for(let i=0;i<10;i++) addSetRow(g); });
+});
+
+// エクセルからのCtrl+Vペースト対応
+document.addEventListener('paste', function(e) {
+  // set-codeパネルがアクティブなときのみ
+  const panel = document.getElementById('panel-set-code');
+  if (!panel || !panel.classList.contains('active')) return;
+
+  const text = (e.clipboardData || window.clipboardData).getData('text');
+  if (!text) return;
+
+  // どのグループのセルにフォーカスがあるか検出
+  const focused = document.activeElement;
+  let targetGroup = 1;
+  if (focused && focused.closest('.set-block')) {
+    const block = focused.closest('.set-block');
+    const blocks = Array.from(document.querySelectorAll('.set-block'));
+    targetGroup = blocks.indexOf(block) + 1;
+    if (targetGroup < 1) targetGroup = 1;
+  }
+
+  // フォーカスセルの行インデックス
+  let startRow = 0;
+  let startCol = 0;
+  if (focused && focused.closest('.set-row')) {
+    const row = focused.closest('.set-row');
+    const container = document.getElementById('set-rows-' + targetGroup);
+    const rows = Array.from(container.querySelectorAll('.set-row'));
+    startRow = rows.indexOf(row);
+    startCol = Array.from(row.querySelectorAll('input')).indexOf(focused);
+    if (startRow < 0) startRow = 0;
+    if (startCol < 0) startCol = 0;
+  }
+
+  // タブ・改行でパース
+  const rows = text.split(/\r?\n/).filter(r => r !== '');
+  const container = document.getElementById('set-rows-' + targetGroup);
+  let existingRows = Array.from(container.querySelectorAll('.set-row'));
+
+  rows.forEach((rowText, ri) => {
+    const cols = rowText.split('\t');
+    const rowIdx = startRow + ri;
+    // 行が足りなければ追加
+    while (existingRows.length <= rowIdx) {
+      addSetRow(targetGroup);
+      existingRows = Array.from(container.querySelectorAll('.set-row'));
+    }
+    const inputs = existingRows[rowIdx].querySelectorAll('input');
+    cols.forEach((val, ci) => {
+      const colIdx = startCol + ci;
+      if (inputs[colIdx]) inputs[colIdx].value = val;
+    });
+  });
+
+  e.preventDefault();
 });
 </script>
 </body>
