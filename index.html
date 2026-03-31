@@ -1,264 +1,63 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>I❤仕組み</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --red: #E94C3D; --red-light: #ffeeed; --bg: #f7f5f2; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6b6b6b; --border: #e0ddd8; --tab-hover-bg: #eeebe6; --radius: 10px; --rival-header: #f0f4ff; --rival-accent: #2563eb; }
-  body { font-family: 'DM Sans','Noto Sans JP',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-  header { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; height: 56px; }
-  .logo { display: flex; align-items: center; text-decoration: none; }
-  nav.header-nav a { font-size: .875rem; color: var(--text-muted); text-decoration: none; }
-  nav.header-nav a:hover { color: var(--text); }
-  .tab-section { background: var(--surface); border-bottom: 1px solid var(--border); }
-  .tab-row { display: flex; align-items: stretch; padding: 0 1.5rem; overflow-x: auto; scrollbar-width: none; }
-  .tab-row::-webkit-scrollbar { display: none; }
-  .tab-row + .tab-row { border-top: 1px solid var(--border); }
-  .row-label { display: flex; align-items: center; padding: 0 .75rem 0 0; font-size: .7rem; font-weight: 700; white-space: nowrap; border-right: 1px solid var(--border); margin-right: .5rem; min-width: 66px; }
-  .row-label.before { color: #2563eb; }
-  .row-label.after { color: #16a34a; }
-  .tab { display: flex; align-items: center; gap: 5px; padding: 0 1rem; height: 42px; font-size: .85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2.5px solid transparent; transition: color .15s,border-color .15s,background .15s; white-space: nowrap; user-select: none; }
-  .tab:hover { color: var(--text); background: var(--tab-hover-bg); }
-  .tab.active { color: var(--red); border-bottom-color: var(--red); }
-  main { padding: 1.25rem 1.5rem; }
-  .tool-panel { display: none; animation: fadeIn .2s ease; }
-  .tool-panel.active { display: block; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
-  .rival-toolbar { padding: 0 0 0.75rem 0; display: none; align-items: center; }
-  .btn-add-rival { display: inline-flex; align-items: center; gap: 5px; background: none; border: 1.5px solid var(--rival-accent); color: var(--rival-accent); border-radius: 7px; padding: 0.35rem 1rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
-  .btn-add-rival:hover { background: #eff6ff; }
-  .data-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; align-items: start; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-  .card-header { display: flex; align-items: center; justify-content: space-between; padding: .55rem .9rem; font-size: .75rem; font-weight: 700; border-bottom: 1px solid var(--border); }
-  .card-header.basic { background: #fff8f7; color: var(--red); }
-  .card-header.rival { background: var(--rival-header); color: var(--rival-accent); }
-  .form-table { width: 100%; border-collapse: collapse; }
-  .form-table tr { border-bottom: 1px solid var(--border); }
-  .form-table tr:last-child { border-bottom: none; }
-  .form-table td { padding: .5rem .9rem; vertical-align: middle; }
-  .form-table td.label { font-size: .78rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; vertical-align: middle; padding: .5rem .4rem .5rem .9rem; }
-  .form-table td.badge-tai-col { width: 22px; min-width: 22px; vertical-align: middle; padding: .5rem 2px .5rem 0; text-align:center; }
-  .form-table td.badge-ra-col { width: 22px; min-width: 22px; vertical-align: middle; padding: .5rem 6px .5rem 0; text-align:center; }
-  .form-table input[type="text"], .form-table input[type="url"], .form-table input[type="number"] { width:100%; height:32px; padding:0 8px; border:1px solid var(--border); border-radius:5px; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; transition:border-color .15s,box-shadow .15s; }
-  .form-table select { width:100%; height:32px; padding:0 8px; border:1px solid var(--border); border-radius:5px; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; cursor:pointer; transition:border-color .15s; }
-  .form-table select:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
-  .form-table input:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
-  .btn-remove { background:none; border:none; color:#aaa; font-size:.85rem; cursor:pointer; padding:2px 5px; border-radius:4px; transition:color .15s,background .15s; }
-  .btn-remove:hover { color:var(--red); background:var(--red-light); }
-  .form-actions { display:flex; justify-content:flex-end; gap:.75rem; margin-top:1.25rem; }
-  .btn-primary-blue { background:#2563eb; color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
-  .btn-primary-blue:hover { opacity:.88; }
-  .btn-primary { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
-  .btn-primary:hover { opacity:.88; }
-  .btn-secondary { background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:7px; padding:.6rem 1.1rem; font-size:.875rem; font-weight:500; cursor:pointer; font-family:inherit; transition:background .15s; }
-  .btn-secondary:hover { background:var(--tab-hover-bg); }
-  .dropzone { border:2px dashed var(--border); border-radius:var(--radius); background:var(--surface); min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.75rem; cursor:pointer; transition:border-color .2s,background .2s; padding:2rem; }
-  .dropzone:hover { border-color:var(--red); background:var(--red-light); }
-  .dropzone .dz-label { font-size:.95rem; font-weight:600; }
-  .dropzone .dz-sub { font-size:.82rem; color:var(--text-muted); }
-  .dropzone .btn-select { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.55rem 1.4rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; }
-
-
-  .badge-tai { display:inline-block; background:#2563eb; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
-  .badge-ra { display:inline-block; background:#E94C3D; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
-  footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
-  footer .heart { color:var(--red); }
-  @media (max-width:900px) { .data-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media (max-width:600px) { .data-grid { grid-template-columns:1fr; } header { padding:0 1rem; } main { padding:1rem; } }
-</style>
-</head>
-<body>
-<header>
-  <a href="#" class="logo">
-    <svg viewBox="0 0 236 58" xmlns="http://www.w3.org/2000/svg" height="34">
-      <rect x="2" y="5" width="22" height="7" rx="3" fill="#1a1a1a"/>
-      <rect x="8" y="12" width="10" height="31" fill="#1a1a1a"/>
-      <rect x="2" y="43" width="22" height="7" rx="3" fill="#1a1a1a"/>
-      <g transform="translate(30,5)">
-        <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
-        <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
-      </g>
-      <text x="82" y="50" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
-    </svg>
-  </a>
-  <nav class="header-nav">
-    <a href="https://github.com/kaiyoshida0318/iloveshikumi" target="_blank">GitHub</a>
-  </nav>
-</header>
-<div class="tab-section">
-  <div class="tab-row">
-    <span class="row-label before">【出品前】</span>
-    <div class="tab" data-panel="set-code" onclick="switchTab(this)">📦 セット商品コード作成</div>
-  </div>
-  <div class="tab-row">
-    <span class="row-label after">【出品後】</span>
-    <div class="tab active" data-panel="ranking-data" onclick="switchTab(this)">📊 商品・ランキングデータ作成</div>
-    <div class="tab" data-panel="master-kw" onclick="switchTab(this)">🔑 マスターKW入力用</div>
-  </div>
-</div>
-<main>
-  <div class="tool-panel" id="panel-master-kw">
-    <div style="max-width:600px; margin:2rem auto; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">
-      🔑 マスターKW入力用<br><br>中身は今後追加予定です。
-    </div>
-  </div>
-  <div class="tool-panel" id="panel-set-code">
-    <div class="dropzone">
-      <div class="dz-label">ファイルをドロップ、または選択</div>
-      <div class="dz-sub">CSV, Excel 対応</div>
-      <button class="btn-select">ファイルを選択</button>
-    </div>
-  </div>
-  <div class="tool-panel active" id="panel-ranking-data">
-    <div class="rival-toolbar" id="rival-toolbar" style="display:flex;">
-      <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
-    </div>
-    <div class="data-grid" id="data-grid">
-
-      <!-- 基本情報 -->
-      <div class="card" id="card-basic" style="grid-row: span 2;">
-        <div class="card-header basic">● 基本情報</div>
-        <table class="form-table">
-          <tr><td class="label">ショップ名/分類</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><select id="shop-name"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
-          <tr><td class="label">商品管理番号</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"></td><td><input type="text" id="mgmt-no" placeholder="例: 10001096"></td></tr>
-          <tr><td class="label">商品番号</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"></td><td><input type="text" id="product-no" placeholder="例: tape-24-01"></td></tr>
-          <tr><td class="label">商品名</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" id="product-name" placeholder="例: 防水テープ"></td></tr>
-          <tr><td class="label">ランキング補足数</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"></td><td><select id="ranking-supplement"><option value="複数補足">複数補足</option><option value="不実施">不実施</option><option value="自社のみ">自社のみ</option></select></td></tr>
-          <tr><td class="label">weeklyランク</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" id="weekly-rank" placeholder="例: https://ranking.rakuten.co.jp/weekly/201609/"></td></tr>
-        </table>
-      </div>
-
-      <!-- ライバル1 -->
-      <div class="card rival-card" id="rival-card-1">
-        <div class="card-header rival"><span>ライバル 1</span><button class="btn-remove" onclick="removeRival(1)">✕</button></div>
-        <table class="form-table">
-          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
-          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
-        </table>
-      </div>
-
-      <div class="card rival-card" id="rival-card-2">
-        <div class="card-header rival"><span>ライバル 2</span><button class="btn-remove" onclick="removeRival(2)">✕</button></div>
-        <table class="form-table">
-          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
-          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
-        </table>
-      </div>
-      <div class="card rival-card" id="rival-card-3">
-        <div class="card-header rival"><span>ライバル 3</span><button class="btn-remove" onclick="removeRival(3)">✕</button></div>
-        <table class="form-table">
-          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
-          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
-        </table>
-      </div>
-      <div class="card rival-card" id="rival-card-4">
-        <div class="card-header rival"><span>ライバル 4</span><button class="btn-remove" onclick="removeRival(4)">✕</button></div>
-        <table class="form-table">
-          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
-          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
-        </table>
-      </div>
-
-    </div>
-    <div class="form-actions">
-      <button class="btn-secondary" onclick="clearForm()">クリア</button>
-      <button class="btn-primary-blue" onclick="downloadGeneral()">📥 【データ分析】両ショップ対応全般</button>
-      <button class="btn-primary" onclick="downloadRanking()">📥 【データ分析】両ショップ-ランキング</button>
-    </div>
-  </div>
-</main>
-<footer><span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span></footer>
-<script>
-let rivalCount = 4;
-function switchTab(el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  const panel = document.getElementById('panel-' + el.dataset.panel);
-  if (panel) panel.classList.add('active');
-  const tb = document.getElementById('rival-toolbar');
-  if (tb) tb.style.display = el.dataset.panel === 'ranking-data' ? 'flex' : 'none';
-}
-function addRival() {
-  rivalCount++;
-  const grid = document.getElementById('data-grid');
-  const card = document.createElement('div');
-  card.className = 'card rival-card';
-  card.id = 'rival-card-' + rivalCount;
-  card.innerHTML = '<div class="card-header rival"><span>ライバル ' + rivalCount + '</span><button class="btn-remove" onclick="removeRival(' + rivalCount + ')">✕</button></div><table class="form-table"><tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr><tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr></table>';
-  grid.appendChild(card);
-}
-function removeRival(id) {
-  const card = document.getElementById('rival-card-' + id);
-  if (card) card.remove();
-  document.querySelectorAll('.rival-card').forEach((c, i) => {
-    const n = i + 1;
-    c.querySelector('.card-header span').textContent = 'ライバル ' + n;
-    c.id = 'rival-card-' + n;
-    c.querySelector('.btn-remove').setAttribute('onclick', 'removeRival(' + n + ')');
-  });
-  rivalCount = document.querySelectorAll('.rival-card').length;
-}
-function clearForm() {
-  document.querySelectorAll('#panel-ranking-data input').forEach(el => { el.value = ''; });
-}
-function downloadCSV(filename, rows) {
-  const bom = '\uFEFF';
-  const csv = bom + rows.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename + '.csv';
-  a.click();
-}
-
-function getBasic() {
-  return {
-    shop: document.getElementById('shop-name').value,
-    mgmtNo: document.getElementById('mgmt-no').value,
-    productNo: document.getElementById('product-no').value,
-    productName: document.getElementById('product-name').value,
-    weeklyRank: document.getElementById('weekly-rank').value,
-    rankingSupplement: document.getElementById('ranking-supplement').value,
-  };
-}
-
-function getRivals() {
-  return Array.from(document.querySelectorAll('.rival-card')).map((card, i) => ({
-    no: i + 1,
-    shop: card.querySelector('.rival-shop')?.value ?? '',
-    url: card.querySelector('.rival-url')?.value ?? '',
-  }));
-}
-
-function downloadGeneral() {
+function downloadRanking() {
   const b = getBasic();
+  const rivals = getRivals();
   const kw = encodeURIComponent(b.productName);
-  const base = 'https://yukaiya.cybozu.com/k/182/?';
-  const urls = [
-    base + 'view=5534938&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534939&order_0=asc&qs=1',
-    base + 'view=5534965&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534953&order_1=asc&size=20',
-    base + 'view=5534967&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534954&order_1=asc&size=20',
-    base + 'view=5534969&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534955&order_1=desc&size=20',
-    base + 'view=5534971&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534956&order_1=desc&size=20',
-    base + 'view=5534973&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534957&order_0=asc&qs=1',
-    base + 'view=5534975&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534958&order_1=desc&size=20',
-    base + 'view=5534977&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534959&order_1=asc&size=20',
-    base + 'view=5534979&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534960&order_1=asc&size=20',
-    base + 'view=5534981&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534961&order_1=desc&size=20',
-    base + 'view=5534983&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534963&order_1=desc&size=20',
-    base + 'view=5534985&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534962&order_1=asc&size=20',
-  ];
-  const header = ['商品管理番号','商品番号','◎商品名◎','ランキング補足数','K01-URL','K02-URL','K03-URL','K04-URL','K05-URL','K06-URL','K07-URL','K08-URL','K09-URL','K10-URL','K11-URL','K12-URL'];
-  const row = [b.mgmtNo, b.productNo, b.productName, b.rankingSupplement, ...urls];
-  downloadCSV('【データ分析】両ショップ対応全般', [header, row]);
-}
+  const shopLabel = document.getElementById('shop-name').options[document.getElementById('shop-name').selectedIndex].text;
 
+  const base182 = 'https://yukaiya.cybozu.com/k/182/?';
+  const kiboriUrls = [
+    base182 + 'view=5534938&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534939&order_0=asc&qs=1',
+    base182 + 'view=5534965&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534953&order_1=asc&size=20',
+    base182 + 'view=5534967&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534954&order_1=asc&size=20',
+    base182 + 'view=5534969&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534955&order_1=desc&size=20',
+    base182 + 'view=5534971&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534956&order_1=desc&size=20',
+    base182 + 'view=5534973&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534957&order_0=asc&qs=1',
+    base182 + 'view=5534975&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534958&order_1=desc&size=20',
+    base182 + 'view=5534977&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534959&order_1=asc&size=20',
+    base182 + 'view=5534979&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534960&order_1=asc&size=20',
+    base182 + 'view=5534981&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534961&order_1=desc&size=20',
+    base182 + 'view=5534983&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534963&order_1=desc&size=20',
+    base182 + 'view=5534985&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534962&order_1=asc&size=20',
+  ];
+  const base189 = 'https://yukaiya.cybozu.com/k/189/?';
+  const kisoUrls = [
+    base189 + 'view=5533525&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533561&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533559&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533557&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533555&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533553&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533575&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533573&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533571&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533569&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533567&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+    base189 + 'view=5533577&q=f5532880%20like%20%22' + kw + '%22#sort_0=f5532877&order_0=asc&size=20',
+  ];
+  const emptyKiso = Array(12).fill('');
+
+  const header = ['No','分類','商品名','ショップ名','商品URL','Weeklyランク','01月分絞り込み','02月分絞り込み','03月分絞り込み','04月分絞り込み','05月分絞り込み','06月分絞り込み','07月分絞り込み','08月分絞り込み','09月分絞り込み','10月分絞り込み','11月分絞り込み','12月分絞り込み','01月分-基礎情報','02月分-基礎情報','03月分-基礎情報','04月分-基礎情報','05月分-基礎情報','06月分-基礎情報','07月分-基礎情報','08月分-基礎情報','09月分-基礎情報','10月分-基礎情報','11月分-基礎情報','12月分-基礎情報'];
+  const rows = [header];
+
+  rivals.forEach(r => {
+    // 自社ショップ（ゆかい屋）かどうかで基礎情報URLの有無を判定
+    const rivalShop = r.shop.trim();
+    const myShop = shopLabel.trim();
+    const isMyShop = rivalShop === myShop;
+    rows.push([
+      '',
+      shopLabel,
+      b.productName,
+      r.shop,
+      r.url,
+      b.weeklyRank,
+      ...kiboriUrls,
+      ...(isMyShop ? kisoUrls : emptyKiso)
+    ]);
+  });
+
+  downloadCSV('【データ分析】両ショップ-ランキング', rows);
+}
 function downloadRanking() {
   const b = getBasic();
   const rivals = getRivals();
