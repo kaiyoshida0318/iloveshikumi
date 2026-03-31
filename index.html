@@ -151,41 +151,70 @@
   <div class="tool-panel" id="panel-shohin-kanri">
     <div class="kanri-grid">
       <div class="kanri-card">
-        <div class="kanri-title">【月次】売上</div>
-        <a class="kanri-url" href="https://datatool.rms.rakuten.co.jp/datatool/sales" target="_blank">datatool.rms.rakuten.co.jp/datatool/sales</a>
-        <div class="kanri-drop" data-group="uriage" ondragover="event.preventDefault()" ondrop="handleDrop(event,'uriage')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-uriage"></div>
+        <div class="kanri-card-header">
+          <div class="kanri-card-title">【月次】売上</div>
+          <a href="https://datatool.rms.rakuten.co.jp/datatool/sales" target="_blank" class="kanri-url-btn">🔗 開く</a>
+        </div>
+        <div class="kanri-dropzone" id="dz-sales">
+          <div class="kanri-dz-inner">
+            <div class="kanri-dz-icon">📁</div>
+            <div class="kanri-dz-label">ファイルをドロップ</div>
+            <div class="kanri-dz-sub">yyyymm_Item_SalesList.csv</div>
+            <input type="file" class="kanri-file-input" accept=".csv">
+          </div>
+          <div class="kanri-file-name"></div>
         </div>
       </div>
       <div class="kanri-card">
-        <div class="kanri-title">【月次】商品別レポート</div>
-        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
-        <div class="kanri-drop" data-group="shohin" ondragover="event.preventDefault()" ondrop="handleDrop(event,'shohin')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-shohin"></div>
+        <div class="kanri-card-header">
+          <div class="kanri-card-title">【月次】商品別レポート</div>
+          <a href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank" class="kanri-url-btn">🔗 開く</a>
+        </div>
+        <div class="kanri-dropzone" id="dz-item">
+          <div class="kanri-dz-inner">
+            <div class="kanri-dz-icon">📁</div>
+            <div class="kanri-dz-label">ファイルをドロップ</div>
+            <div class="kanri-dz-sub">rpp_item_reports～.csv</div>
+            <input type="file" class="kanri-file-input" accept=".csv">
+          </div>
+          <div class="kanri-file-name"></div>
         </div>
       </div>
       <div class="kanri-card">
-        <div class="kanri-title">【月次】KW別レポート</div>
-        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
-        <div class="kanri-drop" data-group="kw" ondragover="event.preventDefault()" ondrop="handleDrop(event,'kw')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-kw"></div>
+        <div class="kanri-card-header">
+          <div class="kanri-card-title">【月次】KW別レポート</div>
+          <a href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank" class="kanri-url-btn">🔗 開く</a>
+        </div>
+        <div class="kanri-dropzone" id="dz-keyword">
+          <div class="kanri-dz-inner">
+            <div class="kanri-dz-icon">📁</div>
+            <div class="kanri-dz-label">ファイルをドロップ</div>
+            <div class="kanri-dz-sub">rpp_keyword_reports～.csv</div>
+            <input type="file" class="kanri-file-input" accept=".csv">
+          </div>
+          <div class="kanri-file-name"></div>
         </div>
       </div>
       <div class="kanri-card">
-        <div class="kanri-title">【月次】クーポンアドバンス広告レポート</div>
-        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank">ad.rms.rakuten.co.jp/cpnadv/performance_reports</a>
-        <div class="kanri-drop" data-group="coupon" ondragover="event.preventDefault()" ondrop="handleDrop(event,'coupon')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-coupon"></div>
+        <div class="kanri-card-header">
+          <div class="kanri-card-title">【月次】クーポンアドバンス広告レポート</div>
+          <a href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank" class="kanri-url-btn">🔗 開く</a>
+        </div>
+        <div class="kanri-dropzone" id="dz-coupon">
+          <div class="kanri-dz-inner">
+            <div class="kanri-dz-icon">📁</div>
+            <div class="kanri-dz-label">ファイルをドロップ</div>
+            <div class="kanri-dz-sub">CouponAdvance_PerformanceReport～.csv</div>
+            <input type="file" class="kanri-file-input" accept=".csv">
+          </div>
+          <div class="kanri-file-name"></div>
         </div>
       </div>
+    </div>
+    <div id="kanri-log" style="display:none; margin-top:1rem; background:#1e1e1e; color:#d4d4d4; font-family:monospace; font-size:.8rem; padding:1rem; border-radius:var(--radius); max-height:200px; overflow-y:auto; white-space:pre-wrap;"></div>
+    <div class="form-actions" style="margin-top:1.25rem;">
+      <button class="btn-secondary" onclick="kanriClear()">クリア</button>
+      <button class="btn-primary" onclick="kanriRun()">▶ 実行</button>
     </div>
   </div>
   <div class="tool-panel" id="panel-set-code">
@@ -526,21 +555,387 @@ document.addEventListener('dragleave', e => {
   if (drop) drop.classList.remove('dragover');
 });
 
-// 商品管理ドロップゾーン
-document.querySelectorAll('.kanri-dropzone').forEach(zone => {
+// =============================================
+// 商品管理 ドロップゾーン & 実行ロジック
+// =============================================
+const _kanriFiles = { sales: null, item: null, keyword: null, coupon: null };
+
+function _kanriSetupZone(id, key) {
+  const zone = document.getElementById(id);
+  if (!zone) return;
+  const label = zone.querySelector('.kanri-file-name');
+  const input = zone.querySelector('.kanri-file-input');
+
+  function setFile(file) {
+    if (!file) return;
+    _kanriFiles[key] = file;
+    label.textContent = '✅ ' + file.name;
+    label.style.color = '#16a34a';
+  }
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
   zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file) zone.querySelector('.kanri-file-name').textContent = '✅ ' + file.name;
+    e.preventDefault(); zone.classList.remove('dragover');
+    setFile(e.dataTransfer.files[0]);
   });
-  zone.querySelector('.kanri-file-input').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) zone.querySelector('.kanri-file-name').textContent = '✅ ' + file.name;
-  });
+  input.addEventListener('change', e => setFile(e.target.files[0]));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  _kanriSetupZone('dz-sales', 'sales');
+  _kanriSetupZone('dz-item', 'item');
+  _kanriSetupZone('dz-keyword', 'keyword');
+  _kanriSetupZone('dz-coupon', 'coupon');
 });
+
+function kanriClear() {
+  ['sales','item','keyword','coupon'].forEach(k => { _kanriFiles[k] = null; });
+  document.querySelectorAll('.kanri-file-name').forEach(el => { el.textContent = ''; });
+  document.querySelectorAll('.kanri-file-input').forEach(el => { el.value = ''; });
+  const log = document.getElementById('kanri-log');
+  if (log) { log.style.display = 'none'; log.textContent = ''; }
+}
+
+function _kanriLog(msg, color) {
+  const log = document.getElementById('kanri-log');
+  if (!log) return;
+  log.style.display = 'block';
+  const span = document.createElement('span');
+  span.style.color = color || '#d4d4d4';
+  span.textContent = msg + '\n';
+  log.appendChild(span);
+  log.scrollTop = log.scrollHeight;
+}
+
+function _readFileAsText(file, enc) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsText(file, enc || 'Shift_JIS');
+  });
+}
+
+function _parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (line.trim() === '') continue;
+    const row = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (c === ',' && !inQ) {
+        row.push(cur.trim()); cur = '';
+      } else cur += c;
+    }
+    row.push(cur.trim());
+    rows.push(row);
+  }
+  return rows;
+}
+
+function _csvToObjects(rows, headerRow) {
+  const h = rows[headerRow];
+  return rows.slice(headerRow + 1).filter(r => r.some(c => c !== '')).map(r => {
+    const o = {};
+    h.forEach((k, i) => { o[k] = r[i] || ''; });
+    return o;
+  });
+}
+
+function _parseNum(v) {
+  if (v === '' || v === null || v === undefined) return 0;
+  return parseFloat(String(v).replace(/,/g,'')) || 0;
+}
+
+function _calcAvgCpc(cost, click) {
+  if (!click) return '';
+  return Math.round(_parseNum(cost) / _parseNum(click));
+}
+function _calcCvr(units, click) {
+  if (!click) return '';
+  const v = _parseNum(units) / _parseNum(click) * 100;
+  return Math.round(v * 100) / 100;
+}
+function _calcRoas(sales, cost) {
+  if (!cost) return '';
+  const v = _parseNum(sales) / _parseNum(cost) * 100;
+  return Math.round(v * 100) / 100;
+}
+
+async function kanriRun() {
+  const log = document.getElementById('kanri-log');
+  if (log) { log.style.display = 'block'; log.innerHTML = ''; }
+
+  const missing = [];
+  if (!_kanriFiles.sales) missing.push('【月次】売上');
+  if (!_kanriFiles.item) missing.push('【月次】商品別レポート');
+  if (!_kanriFiles.keyword) missing.push('【月次】KW別レポート');
+  if (!_kanriFiles.coupon) missing.push('【月次】クーポンアドバンス広告レポート');
+  if (missing.length) {
+    _kanriLog('【エラー】以下のファイルがセットされていません：', '#f87171');
+    missing.forEach(m => _kanriLog('  - ' + m, '#f87171'));
+    return;
+  }
+
+  _kanriLog('処理を開始します...', '#60a5fa');
+
+  try {
+    // ---- ファイル読み込み ----
+    const salesText = await _readFileAsText(_kanriFiles.sales, 'Shift_JIS');
+    const itemText  = await _readFileAsText(_kanriFiles.item, 'Shift_JIS');
+    const kwText    = await _readFileAsText(_kanriFiles.keyword, 'Shift_JIS');
+    const cpnText   = await _readFileAsText(_kanriFiles.coupon, 'Shift_JIS');
+
+    const salesRows   = _parseCSV(salesText);
+    const itemRows    = _parseCSV(itemText);
+    const kwRows      = _parseCSV(kwText);
+    const cpnRows     = _parseCSV(cpnText);
+
+    // ---- 年月取得（RPPヘッダから） ----
+    // rpp_keyword_reports: 行3付近に「集計期間」列がある
+    let yyyy = '', mm = '';
+    for (let i = 0; i < Math.min(10, kwRows.length); i++) {
+      const joined = kwRows[i].join('');
+      const m = joined.match(/(20\d{2})[-/年](\d{1,2})/);
+      if (m) { yyyy = m[1]; mm = m[2].padStart(2,'0'); break; }
+    }
+    if (!yyyy) {
+      for (let i = 0; i < Math.min(10, itemRows.length); i++) {
+        const joined = itemRows[i].join('');
+        const m = joined.match(/(20\d{2})[-/年](\d{1,2})/);
+        if (m) { yyyy = m[1]; mm = m[2].padStart(2,'0'); break; }
+      }
+    }
+    if (!yyyy) {
+      // ファイル名から取得
+      const fn = _kanriFiles.sales.name;
+      const m = fn.match(/(20\d{2})(\d{2})/);
+      if (m) { yyyy = m[1]; mm = m[2]; }
+    }
+    if (!yyyy) { yyyy = new Date().getFullYear().toString(); mm = String(new Date().getMonth()+1).padStart(2,'0'); }
+    _kanriLog('対象年月: ' + yyyy + '-' + mm, '#a3e635');
+
+    // ---- 各CSVをオブジェクト配列化（skiprows=6相当: 7行目がヘッダ） ----
+    // RPPファイルは6行スキップ（0-indexed: 6がヘッダ行）
+    const kwData  = _csvToObjects(kwRows, 6);
+    const itemData = _csvToObjects(itemRows, 6);
+
+    // salesは1行目がヘッダ
+    const salesData = _csvToObjects(salesRows, 0);
+
+    // couponはヘッダ行を探す
+    let cpnHeaderRow = 0;
+    for (let i = 0; i < Math.min(10, cpnRows.length); i++) {
+      if (cpnRows[i].some(c => c.includes('商品管理番号') || c.includes('費用') || c.includes('売上'))) {
+        cpnHeaderRow = i; break;
+      }
+    }
+    const cpnData = _csvToObjects(cpnRows, cpnHeaderRow);
+
+    // ---- 商品管理番号一覧 ----
+    const mgmtNos = [...new Set([
+      ...kwData.map(r => r['商品管理番号'] || r['itemManagementNo'] || '').filter(Boolean),
+      ...itemData.map(r => r['商品管理番号'] || r['itemManagementNo'] || '').filter(Boolean),
+    ])];
+
+    _kanriLog('商品管理番号数: ' + mgmtNos.length, '#a3e635');
+
+    // ---- salesMapを構築（商品管理番号→楽天売上合計） ----
+    const salesMap = {};
+    salesData.forEach(r => {
+      // 楽天売上CSVの列名候補
+      const no = r['商品管理番号'] || r['itemManagementNo'] || r['Item Management No'] || '';
+      const amt = _parseNum(r['売上金額'] || r['楽天売上'] || r['revenue'] || r['商品別売上'] || 0);
+      if (no) salesMap[no] = (salesMap[no] || 0) + amt;
+    });
+
+    // ---- couponMapを構築 ----
+    const couponMap = {};
+    cpnData.forEach(r => {
+      const no = r['商品管理番号'] || r['itemManagementNo'] || '';
+      const cost = _parseNum(r['費用'] || r['cost'] || 0);
+      const sales = _parseNum(r['売上'] || r['sales'] || r['広告経由売上'] || 0);
+      if (no) {
+        couponMap[no] = couponMap[no] || { cost:0, sales:0 };
+        couponMap[no].cost += cost;
+        couponMap[no].sales += sales;
+      }
+    });
+
+    // ---- 出力ヘッダ ----
+    const header = [
+      '*', '商品管理番号', '商品番号', '商品名', mm+'-楽天売上',
+      mm+'-月', mm+'-ブロック', mm+'-KW', mm+'-KW出稿量', mm+'-KWシェア', mm+'-CTR',
+      mm+'-クリック数', mm+'-費用', mm+'-売上', mm+'-購入数', mm+'-平均CPC',
+      mm+'-目安CPC', mm+'-CVR', mm+'-ROAS'
+    ];
+
+    const outRows = [header];
+
+    for (const no of mgmtNos) {
+      const kwItems = kwData.filter(r => (r['商品管理番号']||r['itemManagementNo']||'') === no);
+      const itemItems = itemData.filter(r => (r['商品管理番号']||r['itemManagementNo']||'') === no);
+      const rakutenSales = salesMap[no] || '';
+      const coupon = couponMap[no] || null;
+      const productName = (kwItems[0]||itemItems[0]||{})['商品名'] || '';
+      const productNo = (kwItems[0]||itemItems[0]||{})['商品番号'] || '';
+
+      const newRow = (star, kw, extra={}) => {
+        const r = new Array(header.length).fill('');
+        r[header.indexOf('*')] = star;
+        r[header.indexOf('商品管理番号')] = no;
+        r[header.indexOf('商品番号')] = productNo;
+        r[header.indexOf('商品名')] = productName;
+        r[header.indexOf(mm+'-楽天売上')] = rakutenSales;
+        r[header.indexOf(mm+'-月')] = mm;
+        r[header.indexOf(mm+'-ブロック')] = extra.block || '';
+        r[header.indexOf(mm+'-KW')] = kw;
+        if (extra.kwvol !== undefined) r[header.indexOf(mm+'-KW出稿量')] = extra.kwvol;
+        if (extra.share !== undefined) r[header.indexOf(mm+'-KWシェア')] = extra.share;
+        if (extra.ctr !== undefined) r[header.indexOf(mm+'-CTR')] = extra.ctr;
+        if (extra.click !== undefined) r[header.indexOf(mm+'-クリック数')] = extra.click;
+        if (extra.cost !== undefined) r[header.indexOf(mm+'-費用')] = extra.cost;
+        if (extra.sales !== undefined) r[header.indexOf(mm+'-売上')] = extra.sales;
+        if (extra.units !== undefined) r[header.indexOf(mm+'-購入数')] = extra.units;
+        if (extra.avg_cpc !== undefined) r[header.indexOf(mm+'-平均CPC')] = extra.avg_cpc;
+        if (extra.target_cpc !== undefined) r[header.indexOf(mm+'-目安CPC')] = extra.target_cpc;
+        if (extra.cvr !== undefined) r[header.indexOf(mm+'-CVR')] = extra.cvr;
+        if (extra.roas !== undefined) r[header.indexOf(mm+'-ROAS')] = extra.roas;
+        return r;
+      };
+
+      // サマリ行（先頭1行, *）
+      const totalClick = kwItems.reduce((s,r)=>s+_parseNum(r['クリック数']||r['clicks']||0),0);
+      const totalCost  = kwItems.reduce((s,r)=>s+_parseNum(r['費用']||r['cost']||0),0);
+      const totalSales = kwItems.reduce((s,r)=>s+_parseNum(r['売上']||r['sales']||0),0);
+      const totalUnits = kwItems.reduce((s,r)=>s+_parseNum(r['購入数']||r['units']||0),0);
+      outRows.push(newRow('*', 'サマリ', {
+        click: totalClick||'', cost: totalCost||'', sales: totalSales||'', units: totalUnits||'',
+        avg_cpc: _calcAvgCpc(totalCost, totalClick),
+        cvr: _calcCvr(totalUnits, totalClick),
+        roas: _calcRoas(totalSales, totalCost),
+      }));
+
+      // ☆ブロック（KWシェア降順）
+      const shareSorted = [...kwItems].sort((a,b)=>_parseNum(b['KWシェア']||b['kwShare']||0)-_parseNum(a['KWシェア']||a['kwShare']||0));
+      outRows.push(newRow('', '------------------------------', {block:'☆'}));
+
+      const itemTotalClick = itemItems.reduce((s,r)=>s+_parseNum(r['クリック数']||r['clicks']||0),0);
+      const itemTotalCost  = itemItems.reduce((s,r)=>s+_parseNum(r['費用']||r['cost']||0),0);
+      const itemTotalSales = itemItems.reduce((s,r)=>s+_parseNum(r['売上']||r['sales']||0),0);
+      const itemTotalUnits = itemItems.reduce((s,r)=>s+_parseNum(r['購入数']||r['units']||0),0);
+
+      outRows.push(newRow('', '広告合計-③', {block:'☆',
+        click: itemTotalClick||'', cost: itemTotalCost||'', sales: itemTotalSales||'', units: itemTotalUnits||'',
+        avg_cpc: _calcAvgCpc(itemTotalCost, itemTotalClick),
+        cvr: _calcCvr(itemTotalUnits, itemTotalClick),
+        roas: _calcRoas(itemTotalSales, itemTotalCost),
+      }));
+
+      const kwSumClick = shareSorted.reduce((s,r)=>s+_parseNum(r['クリック数']||r['clicks']||0),0);
+      const kwSumCost  = shareSorted.reduce((s,r)=>s+_parseNum(r['費用']||r['cost']||0),0);
+      const kwSumSales = shareSorted.reduce((s,r)=>s+_parseNum(r['売上']||r['sales']||0),0);
+      const kwSumUnits = shareSorted.reduce((s,r)=>s+_parseNum(r['購入数']||r['units']||0),0);
+
+      outRows.push(newRow('', 'KW合計(下記KWの合計)-④', {block:'☆',
+        click: kwSumClick||'', cost: kwSumCost||'', sales: kwSumSales||'', units: kwSumUnits||'',
+        avg_cpc: _calcAvgCpc(kwSumCost, kwSumClick),
+        cvr: _calcCvr(kwSumUnits, kwSumClick),
+        roas: _calcRoas(kwSumSales, kwSumCost),
+      }));
+
+      shareSorted.forEach(r => {
+        const click = _parseNum(r['クリック数']||r['clicks']||0);
+        const cost  = _parseNum(r['費用']||r['cost']||0);
+        const sales = _parseNum(r['売上']||r['sales']||0);
+        const units = _parseNum(r['購入数']||r['units']||0);
+        outRows.push(newRow('', r['キーワード']||r['keyword']||'', {block:'☆',
+          kwvol: r['KW出稿量']||r['kwVolume']||'',
+          share: r['KWシェア']||r['kwShare']||'',
+          ctr: r['CTR']||'',
+          click: click||'', cost: cost||'', sales: sales||'', units: units||'',
+          avg_cpc: _calcAvgCpc(cost, click),
+          target_cpc: r['目安CPC']||'',
+          cvr: _calcCvr(units, click),
+          roas: _calcRoas(sales, cost),
+        }));
+      });
+
+      outRows.push(newRow('', '------------------------------', {block:'☆'}));
+      if (coupon) {
+        outRows.push(newRow('', 'クーポンアドバンス-⑤', {block:'☆',
+          cost: coupon.cost||'', sales: coupon.sales||'',
+          roas: _calcRoas(coupon.sales, coupon.cost),
+        }));
+      }
+
+      // ★ブロック（費用降順）
+      const costSorted = [...kwItems].sort((a,b)=>_parseNum(b['費用']||b['cost']||0)-_parseNum(a['費用']||a['cost']||0));
+      outRows.push(newRow('', '------------------------------', {block:'★'}));
+      outRows.push(newRow('', '広告合計-③', {block:'★',
+        click: itemTotalClick||'', cost: itemTotalCost||'', sales: itemTotalSales||'', units: itemTotalUnits||'',
+        avg_cpc: _calcAvgCpc(itemTotalCost, itemTotalClick),
+        cvr: _calcCvr(itemTotalUnits, itemTotalClick),
+        roas: _calcRoas(itemTotalSales, itemTotalCost),
+      }));
+      outRows.push(newRow('', 'KW合計(下記KWの合計)-④', {block:'★',
+        click: kwSumClick||'', cost: kwSumCost||'', sales: kwSumSales||'', units: kwSumUnits||'',
+        avg_cpc: _calcAvgCpc(kwSumCost, kwSumClick),
+        cvr: _calcCvr(kwSumUnits, kwSumClick),
+        roas: _calcRoas(kwSumSales, kwSumCost),
+      }));
+
+      costSorted.forEach(r => {
+        const click = _parseNum(r['クリック数']||r['clicks']||0);
+        const cost  = _parseNum(r['費用']||r['cost']||0);
+        const sales = _parseNum(r['売上']||r['sales']||0);
+        const units = _parseNum(r['購入数']||r['units']||0);
+        outRows.push(newRow('', r['キーワード']||r['keyword']||'', {block:'★',
+          kwvol: r['KW出稿量']||r['kwVolume']||'',
+          share: r['KWシェア']||r['kwShare']||'',
+          ctr: r['CTR']||'',
+          click: click||'', cost: cost||'', sales: sales||'', units: units||'',
+          avg_cpc: _calcAvgCpc(cost, click),
+          target_cpc: r['目安CPC']||'',
+          cvr: _calcCvr(units, click),
+          roas: _calcRoas(sales, cost),
+        }));
+      });
+
+      outRows.push(newRow('', '------------------------------', {block:'★'}));
+      if (coupon) {
+        outRows.push(newRow('', 'クーポンアドバンス-⑤', {block:'★',
+          cost: coupon.cost||'', sales: coupon.sales||'',
+          roas: _calcRoas(coupon.sales, coupon.cost),
+        }));
+      }
+    }
+
+    // ---- CSV出力（cp932は難しいのでUTF-8 BOM付き） ----
+    const csvContent = '\uFEFF' + outRows.map(r => r.map(v => {
+      const s = String(v??'');
+      return (s.includes(',') || s.includes('"') || s.includes('\n')) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }).join(',')).join('\r\n');
+
+    const blob = new Blob([csvContent], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'ゆかい屋個別-' + yyyy + '-' + mm + '.csv';
+    a.click(); URL.revokeObjectURL(url);
+
+    _kanriLog('✅ 処理完了: ゆかい屋個別-' + yyyy + '-' + mm + '.csv をダウンロードしました。', '#4ade80');
+    _kanriLog('  商品管理番号数: ' + mgmtNos.length, '#a3e635');
+
+  } catch(e) {
+    _kanriLog('【エラー】' + e.message, '#f87171');
+    console.error(e);
+  }
+}
 </script>
 </body>
 </html>
