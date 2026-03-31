@@ -113,7 +113,7 @@
     <div class="data-grid" id="data-grid">
 
       <!-- 基本情報 -->
-      <div class="card" id="card-basic">
+      <div class="card" id="card-basic" style="grid-row: span 2;">
         <div class="card-header basic">● 基本情報</div>
         <table class="form-table">
           <tr><td class="label">ショップ名</td><td><select id="shop-name"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
@@ -141,6 +141,20 @@
           <tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
         </table>
       </div>
+      <div class="card rival-card" id="rival-card-3">
+        <div class="card-header rival"><span>ライバル 3</span><button class="btn-remove" onclick="removeRival(3)">✕</button></div>
+        <table class="form-table">
+          <tr><td class="label">ショップ名</td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
+          <tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+        </table>
+      </div>
+      <div class="card rival-card" id="rival-card-4">
+        <div class="card-header rival"><span>ライバル 4</span><button class="btn-remove" onclick="removeRival(4)">✕</button></div>
+        <table class="form-table">
+          <tr><td class="label">ショップ名</td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
+          <tr><td class="label">商品URL</td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+        </table>
+      </div>
 
     </div>
     <div class="form-actions">
@@ -152,7 +166,7 @@
 </main>
 <footer><span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span></footer>
 <script>
-let rivalCount = 2;
+let rivalCount = 4;
 function switchTab(el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
