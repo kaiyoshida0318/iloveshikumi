@@ -49,6 +49,8 @@
   .btn-remove { background:none; border:none; color:#aaa; font-size:.85rem; cursor:pointer; padding:2px 5px; border-radius:4px; transition:color .15s,background .15s; }
   .btn-remove:hover { color:var(--red); background:var(--red-light); }
   .form-actions { display:flex; justify-content:flex-end; gap:.75rem; margin-top:1.25rem; }
+  .btn-primary-blue { background:#2563eb; color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
+  .btn-primary-blue:hover { opacity:.88; }
   .btn-primary { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
   .btn-primary:hover { opacity:.88; }
   .btn-secondary { background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:7px; padding:.6rem 1.1rem; font-size:.875rem; font-weight:500; cursor:pointer; font-family:inherit; transition:background .15s; }
@@ -162,7 +164,7 @@
     </div>
     <div class="form-actions">
       <button class="btn-secondary" onclick="clearForm()">クリア</button>
-      <button class="btn-primary" onclick="downloadGeneral()">📥 【データ分析】両ショップ対応全般</button>
+      <button class="btn-primary-blue" onclick="downloadGeneral()">📥 【データ分析】両ショップ対応全般</button>
       <button class="btn-primary" onclick="downloadRanking()">📥 【データ分析】両ショップ-ランキング</button>
     </div>
   </div>
