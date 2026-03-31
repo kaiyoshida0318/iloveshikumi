@@ -235,16 +235,25 @@ function getRivals() {
 
 function downloadGeneral() {
   const b = getBasic();
-  const rivals = getRivals();
-  const header = ['ショップ名', '商品管理番号', '商品番号', '商品名・分類', 'weeklyランク', 'ランキング補足数'];
-  const row = [b.shop, b.mgmtNo, b.productNo, b.productName, b.weeklyRank, b.rankingSupplement];
-  const rows = [header, row];
-  if (rivals.length > 0) {
-    rows.push([]);
-    rows.push(['ライバルNo', 'ショップ名', '商品URL']);
-    rivals.forEach(r => rows.push([r.no, r.shop, r.url]));
-  }
-  downloadCSV('【データ分析】両ショップ対応全般', rows);
+  const kw = encodeURIComponent(b.productName);
+  const base = 'https://yukaiya.cybozu.com/k/182/?';
+  const urls = [
+    base + 'view=5534938&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534939&order_0=asc&qs=1',
+    base + 'view=5534965&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534953&order_1=asc&size=20',
+    base + 'view=5534967&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534954&order_1=asc&size=20',
+    base + 'view=5534969&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534955&order_1=desc&size=20',
+    base + 'view=5534971&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534956&order_1=desc&size=20',
+    base + 'view=5534973&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5534957&order_0=asc&qs=1',
+    base + 'view=5534975&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534958&order_1=desc&size=20',
+    base + 'view=5534977&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534959&order_1=asc&size=20',
+    base + 'view=5534979&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534960&order_1=asc&size=20',
+    base + 'view=5534981&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534961&order_1=desc&size=20',
+    base + 'view=5534983&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534963&order_1=desc&size=20',
+    base + 'view=5534985&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534962&order_1=asc&size=20',
+  ];
+  const header = ['商品管理番号','商品番号','◎商品名◎','ランキング補足数','K01-URL','K02-URL','K03-URL','K04-URL','K05-URL','K06-URL','K07-URL','K08-URL','K09-URL','K10-URL','K11-URL','K12-URL'];
+  const row = [b.mgmtNo, b.productNo, b.productName, b.rankingSupplement, ...urls];
+  downloadCSV('【データ分析】両ショップ対応全般', [header, row]);
 }
 
 function downloadRanking() {
