@@ -79,6 +79,21 @@
   .kanri-drop-files { width:100%; display:flex; flex-direction:column; gap:.3rem; margin-top:.5rem; }
   .kanri-file-item { font-size:.75rem; background:#f0f4ff; border-radius:4px; padding:.25rem .5rem; color:#2563eb; text-align:left; display:flex; justify-content:space-between; align-items:center; }
   .kanri-file-remove { cursor:pointer; color:var(--text-muted); font-size:.8rem; margin-left:.5rem; }
+
+  .kanri-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; }
+  .kanri-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .kanri-card-header { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; border-bottom:1px solid var(--border); background:#fafafa; }
+  .kanri-card-title { font-size:.85rem; font-weight:700; color:var(--text); }
+  .kanri-url-btn { font-size:.75rem; color:#2563eb; text-decoration:none; padding:.25rem .6rem; border:1px solid #2563eb; border-radius:4px; transition:background .15s; white-space:nowrap; }
+  .kanri-url-btn:hover { background:#eff6ff; }
+  .kanri-dropzone { position:relative; min-height:140px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
+  .kanri-dropzone.dragover { background:#eff6ff; border:2px dashed #2563eb; }
+  .kanri-dz-inner { display:flex; flex-direction:column; align-items:center; gap:.4rem; padding:1.5rem; pointer-events:none; }
+  .kanri-dz-icon { font-size:2rem; opacity:.4; }
+  .kanri-dz-label { font-size:.85rem; font-weight:600; color:var(--text-muted); }
+  .kanri-dz-sub { font-size:.75rem; color:var(--text-muted); opacity:.7; }
+  .kanri-file-input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+  .kanri-file-name { font-size:.78rem; color:#16a34a; padding:.25rem 1rem .5rem; text-align:center; }
   .set-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; align-items:start; }
   .set-block { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
   .set-header { display:grid; grid-template-columns:1fr 1fr; background:#f0f4ff; border-bottom:1px solid var(--border); font-size:.75rem; font-weight:700; color:#2563eb; }
@@ -503,6 +518,22 @@ document.addEventListener('dragover', e => {
 document.addEventListener('dragleave', e => {
   const drop = e.target.closest('.kanri-drop');
   if (drop) drop.classList.remove('dragover');
+});
+
+// 商品管理ドロップゾーン
+document.querySelectorAll('.kanri-dropzone').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) zone.querySelector('.kanri-file-name').textContent = '✅ ' + file.name;
+  });
+  zone.querySelector('.kanri-file-input').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) zone.querySelector('.kanri-file-name').textContent = '✅ ' + file.name;
+  });
 });
 </script>
 </body>
