@@ -66,6 +66,17 @@
 
   .badge-tai { display:inline-block; background:#2563eb; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
   .badge-ra { display:inline-block; background:#E94C3D; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
+  .set-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; align-items:start; }
+  .set-block { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .set-header { display:grid; grid-template-columns:1fr 1fr; background:#f0f4ff; border-bottom:1px solid var(--border); font-size:.75rem; font-weight:700; color:#2563eb; }
+  .set-header span { padding:.5rem .75rem; }
+  .set-header span:first-child { border-right:1px solid var(--border); }
+  .set-row { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--border); }
+  .set-row input { border:none; border-radius:0; height:32px; padding:0 .75rem; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; width:100%; box-sizing:border-box; }
+  .set-row input:first-child { border-right:1px solid var(--border); }
+  .set-row input:focus { background:#fafcff; }
+  .btn-add-row { width:100%; background:none; border:none; border-top:1px dashed var(--border); padding:.4rem; font-size:.78rem; color:var(--text-muted); cursor:pointer; font-family:inherit; transition:background .15s; }
+  .btn-add-row:hover { background:var(--tab-hover-bg); color:var(--text); }
   footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
   footer .heart { color:var(--red); }
   @media (max-width:900px) { .data-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
@@ -108,10 +119,26 @@
     </div>
   </div>
   <div class="tool-panel" id="panel-set-code">
-    <div class="dropzone">
-      <div class="dz-label">ファイルをドロップ、または選択</div>
-      <div class="dz-sub">CSV, Excel 対応</div>
-      <button class="btn-select">ファイルを選択</button>
+    <div class="set-grid">
+      <div class="set-block">
+        <div class="set-header"><span>対応部分</span><span>商品コード</span></div>
+        <div id="set-rows-1"></div>
+        <button class="btn-add-row" onclick="addSetRow(1)">＋ 行を追加</button>
+      </div>
+      <div class="set-block">
+        <div class="set-header"><span>対応部分</span><span>商品コード</span></div>
+        <div id="set-rows-2"></div>
+        <button class="btn-add-row" onclick="addSetRow(2)">＋ 行を追加</button>
+      </div>
+      <div class="set-block">
+        <div class="set-header"><span>対応部分</span><span>商品コード</span></div>
+        <div id="set-rows-3"></div>
+        <button class="btn-add-row" onclick="addSetRow(3)">＋ 行を追加</button>
+      </div>
+    </div>
+    <div class="form-actions" style="margin-top:1.25rem;">
+      <button class="btn-secondary" onclick="clearSet()">クリア</button>
+      <button class="btn-primary" onclick="downloadSet()">📥 セット商品コード出力</button>
     </div>
   </div>
   <div class="tool-panel active" id="panel-ranking-data">
@@ -307,6 +334,41 @@ function downloadRanking() {
   });
   downloadCSV('【データ分析】両ショップ-ランキング', rows);
 }
+
+function addSetRow(group) {
+  const container = document.getElementById('set-rows-' + group);
+  const row = document.createElement('div');
+  row.className = 'set-row';
+  row.innerHTML = '<input type="text" placeholder="例: 上部"><input type="text" placeholder="例: ABC-001">';
+  container.appendChild(row);
+}
+function clearSet() {
+  [1,2,3].forEach(g => {
+    document.getElementById('set-rows-' + g).innerHTML = '';
+    for(let i=0;i<10;i++) addSetRow(g);
+  });
+}
+function downloadSet() {
+  const groups = [1,2,3].map(g =>
+    Array.from(document.getElementById('set-rows-'+g).querySelectorAll('.set-row')).map(r => {
+      const inputs = r.querySelectorAll('input');
+      return [inputs[0].value, inputs[1].value];
+    })
+  );
+  const maxLen = Math.max(...groups.map(g => g.length));
+  const header = ['対応部分1','商品コード1','対応部分2','商品コード2','対応部分3','商品コード3'];
+  const rows = [header];
+  for(let i=0;i<maxLen;i++) {
+    const row = [];
+    groups.forEach(g => { row.push(g[i]?g[i][0]:'', g[i]?g[i][1]:''); });
+    if(row.some(v=>v)) rows.push(row);
+  }
+  downloadCSV('セット商品コード', rows);
+}
+// 初期化：各グループに10行追加
+document.addEventListener('DOMContentLoaded', function() {
+  [1,2,3].forEach(g => { for(let i=0;i<10;i++) addSetRow(g); });
+});
 </script>
 </body>
 </html>
