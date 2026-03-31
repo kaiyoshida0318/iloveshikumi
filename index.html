@@ -266,6 +266,7 @@ function downloadRanking() {
   const rivals = getRivals();
   const kw = encodeURIComponent(b.productName);
   const shopLabel = document.getElementById('shop-name').options[document.getElementById('shop-name').selectedIndex].text;
+  const myProductUrl = b.productUrl || '';
   const base182 = 'https://yukaiya.cybozu.com/k/182/?';
   const kiboriUrls = [
     base182+'view=5534938&q=f5532012%20like%20%22'+kw+'%22#sort_0=f5534939&order_0=asc&qs=1',
@@ -298,9 +299,11 @@ function downloadRanking() {
   ];
   const header = ['No','分類','商品名','ショップ名','商品URL','Weeklyランク','01月分絞り込み','02月分絞り込み','03月分絞り込み','04月分絞り込み','05月分絞り込み','06月分絞り込み','07月分絞り込み','08月分絞り込み','09月分絞り込み','10月分絞り込み','11月分絞り込み','12月分絞り込み','01月分-基礎情報','02月分-基礎情報','03月分-基礎情報','04月分-基礎情報','05月分-基礎情報','06月分-基礎情報','07月分-基礎情報','08月分-基礎情報','09月分-基礎情報','10月分-基礎情報','11月分-基礎情報','12月分-基礎情報'];
   const rows = [header];
+  if (myProductUrl) {
+    rows.push(['', shopLabel, b.productName, shopLabel, myProductUrl, b.weeklyRank, ...kiboriUrls, ...kisoUrls]);
+  }
   rivals.forEach(r => {
-    const isMyShop = r.shop.trim() === shopLabel.trim();
-    rows.push(['', shopLabel, b.productName, r.shop, r.url, b.weeklyRank, ...kiboriUrls, ...(isMyShop ? kisoUrls : Array(12).fill(''))]);
+    rows.push(['', shopLabel, b.productName, r.shop, r.url, b.weeklyRank, ...kiboriUrls, ...Array(12).fill('')]);
   });
   downloadCSV('【データ分析】両ショップ-ランキング', rows);
 }
