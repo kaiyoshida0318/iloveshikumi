@@ -43,6 +43,8 @@
   .form-table td { padding: .5rem .9rem; vertical-align: middle; }
   .form-table td.label { font-size: .78rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; width: 76px; }
   .form-table input[type="text"], .form-table input[type="url"], .form-table input[type="number"] { width:100%; height:32px; padding:0 8px; border:1px solid var(--border); border-radius:5px; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; transition:border-color .15s,box-shadow .15s; }
+  .form-table select { width:100%; height:32px; padding:0 8px; border:1px solid var(--border); border-radius:5px; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; cursor:pointer; transition:border-color .15s; }
+  .form-table select:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
   .form-table input:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
   .btn-remove { background:none; border:none; color:#aaa; font-size:.85rem; cursor:pointer; padding:2px 5px; border-radius:4px; transition:color .15s,background .15s; }
   .btn-remove:hover { color:var(--red); background:var(--red-light); }
@@ -108,10 +110,10 @@
       <div class="card" id="card-basic">
         <div class="card-header basic">● 基本情報</div>
         <table class="form-table">
-          <tr><td class="label">ショップ名・分類</td><td><input type="text" id="shop-category" placeholder="例: ゆかい屋 / テープ"></td></tr>
+          <tr><td class="label">ショップ名</td><td><select id="shop-name"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
           <tr><td class="label">商品管理番号</td><td><input type="text" id="mgmt-no" placeholder="例: 10001280"></td></tr>
           <tr><td class="label">商品番号</td><td><input type="text" id="product-no" placeholder="例: tape-24-01"></td></tr>
-          <tr><td class="label">商品名</td><td><input type="text" id="product-name" placeholder="例: 防水テープ"></td></tr>
+          <tr><td class="label">商品名・分類</td><td><input type="text" id="product-name" placeholder="例: 防水テープ / テープ"></td></tr>
         </table>
       </div>
 
