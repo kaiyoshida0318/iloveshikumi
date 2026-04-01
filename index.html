@@ -672,10 +672,10 @@ async function kanriRun() {
   if (log) { log.style.display = 'block'; log.innerHTML = ''; }
 
   const missing = [];
-  if (!_kanriFiles.sales) missing.push('【月次】売上');
-  if (!_kanriFiles.item) missing.push('【月次】商品別レポート');
+  if (!_kanriFiles.sales)   missing.push('【月次】売上（Item_SalesList）');
+  if (!_kanriFiles.item)    missing.push('【月次】商品別レポート');
   if (!_kanriFiles.keyword) missing.push('【月次】KW別レポート');
-  if (!_kanriFiles.coupon) missing.push('【月次】クーポンアドバンス広告レポート');
+  if (!_kanriFiles.coupon)  missing.push('【月次】クーポンアドバンス広告レポート');
   if (missing.length) {
     _kanriLog('【エラー】以下のファイルがセットされていません：', '#f87171');
     missing.forEach(m => _kanriLog('  - ' + m, '#f87171'));
@@ -686,239 +686,241 @@ async function kanriRun() {
 
   try {
     // ---- ファイル読み込み ----
-    const salesText = await _readFileAsText(_kanriFiles.sales, 'Shift_JIS');
-    const itemText  = await _readFileAsText(_kanriFiles.item, 'Shift_JIS');
     const kwText    = await _readFileAsText(_kanriFiles.keyword, 'Shift_JIS');
-    const cpnText   = await _readFileAsText(_kanriFiles.coupon, 'Shift_JIS');
+    const itemText  = await _readFileAsText(_kanriFiles.item,    'Shift_JIS');
+    const salesText = await _readFileAsText(_kanriFiles.sales,   'UTF-8');
+    const cpnText   = await _readFileAsText(_kanriFiles.coupon,  'UTF-8');
 
-    const salesRows   = _parseCSV(salesText);
-    const itemRows    = _parseCSV(itemText);
-    const kwRows      = _parseCSV(kwText);
-    const cpnRows     = _parseCSV(cpnText);
-
-    // ---- 年月取得（RPPヘッダから） ----
-    // rpp_keyword_reports: 行3付近に「集計期間」列がある
+    // ---- 年月取得（RPPヘッダ行4: "集計期間: 月ごとに集計 2026-02 - 2026-02"） ----
     let yyyy = '', mm = '';
-    for (let i = 0; i < Math.min(10, kwRows.length); i++) {
-      const joined = kwRows[i].join('');
-      const m = joined.match(/(20\d{2})[-/年](\d{1,2})/);
-      if (m) { yyyy = m[1]; mm = m[2].padStart(2,'0'); break; }
+    const kwLines = kwText.split(/\r?\n/);
+    for (const line of kwLines.slice(0, 10)) {
+      const m = line.match(/(20\d{2})[-](\d{2})/);
+      if (m) { yyyy = m[1]; mm = m[2]; break; }
     }
     if (!yyyy) {
-      for (let i = 0; i < Math.min(10, itemRows.length); i++) {
-        const joined = itemRows[i].join('');
-        const m = joined.match(/(20\d{2})[-/年](\d{1,2})/);
-        if (m) { yyyy = m[1]; mm = m[2].padStart(2,'0'); break; }
-      }
-    }
-    if (!yyyy) {
-      // ファイル名から取得
       const fn = _kanriFiles.sales.name;
       const m = fn.match(/(20\d{2})(\d{2})/);
       if (m) { yyyy = m[1]; mm = m[2]; }
     }
-    if (!yyyy) { yyyy = new Date().getFullYear().toString(); mm = String(new Date().getMonth()+1).padStart(2,'0'); }
     _kanriLog('対象年月: ' + yyyy + '-' + mm, '#a3e635');
 
-    // ---- 各CSVをオブジェクト配列化（skiprows=6相当: 7行目がヘッダ） ----
-    // RPPファイルは6行スキップ（0-indexed: 6がヘッダ行）
-    const kwData  = _csvToObjects(kwRows, 6);
+    // ---- CSV → rows（スキップ行あり） ----
+    // RPPは先頭6行スキップ（0-5）、7行目(index=6)がヘッダ
+    const kwRows   = _parseCSV(kwText);
+    const itemRows = _parseCSV(itemText);
+    const kwData   = _csvToObjects(kwRows, 6);
     const itemData = _csvToObjects(itemRows, 6);
 
-    // salesは1行目がヘッダ
-    const salesData = _csvToObjects(salesRows, 0);
-
-    // couponはヘッダ行を探す
-    let cpnHeaderRow = 0;
-    for (let i = 0; i < Math.min(10, cpnRows.length); i++) {
-      if (cpnRows[i].some(c => c.includes('商品管理番号') || c.includes('費用') || c.includes('売上'))) {
-        cpnHeaderRow = i; break;
-      }
+    // sales: "商品名,商品管理番号,..." が7行目(index=6)
+    const salesRows = _parseCSV(salesText);
+    let salesHeaderRow = 6;
+    for (let i = 0; i < Math.min(15, salesRows.length); i++) {
+      if (salesRows[i].some(c => c === '商品管理番号')) { salesHeaderRow = i; break; }
     }
-    const cpnData = _csvToObjects(cpnRows, cpnHeaderRow);
+    const salesData = _csvToObjects(salesRows, salesHeaderRow);
 
-    // ---- 商品管理番号一覧 ----
-    const mgmtNos = [...new Set([
-      ...kwData.map(r => r['商品管理番号'] || r['itemManagementNo'] || '').filter(Boolean),
-      ...itemData.map(r => r['商品管理番号'] || r['itemManagementNo'] || '').filter(Boolean),
-    ])];
+    // coupon: 1行目(index=0)がヘッダ
+    const cpnRows = _parseCSV(cpnText);
+    const cpnData = _csvToObjects(cpnRows, 0);
 
-    _kanriLog('商品管理番号数: ' + mgmtNos.length, '#a3e635');
-
-    // ---- salesMapを構築（商品管理番号→楽天売上合計） ----
+    // ---- salesMap: 商品管理番号 → 楽天売上 ----
     const salesMap = {};
     salesData.forEach(r => {
-      // 楽天売上CSVの列名候補
-      const no = r['商品管理番号'] || r['itemManagementNo'] || r['Item Management No'] || '';
-      const amt = _parseNum(r['売上金額'] || r['楽天売上'] || r['revenue'] || r['商品別売上'] || 0);
-      if (no) salesMap[no] = (salesMap[no] || 0) + amt;
+      const no = String(r['商品管理番号'] || '').trim();
+      const s  = _parseNum(r['売上'] || 0);
+      if (no) salesMap[no] = (salesMap[no] || 0) + s;
     });
 
-    // ---- couponMapを構築 ----
+    // ---- couponMap: 商品管理番号 → {cost, sales} ----
     const couponMap = {};
     cpnData.forEach(r => {
-      const no = r['商品管理番号'] || r['itemManagementNo'] || '';
-      const cost = _parseNum(r['費用'] || r['cost'] || 0);
-      const sales = _parseNum(r['売上'] || r['sales'] || r['広告経由売上'] || 0);
+      const no   = String(r['商品管理番号'] || '').trim();
+      const cost = _parseNum(r['実績額'] || 0);
+      const sale = _parseNum(r['売上金額'] || 0);
       if (no) {
         couponMap[no] = couponMap[no] || { cost:0, sales:0 };
-        couponMap[no].cost += cost;
-        couponMap[no].sales += sales;
+        couponMap[no].cost  += cost;
+        couponMap[no].sales += sale;
       }
     });
 
-    // ---- 出力ヘッダ ----
+    // ---- 商品管理番号一覧（kwData優先、次にitemData） ----
+    const seenNos = new Set();
+    const mgmtNos = [];
+    [...kwData, ...itemData].forEach(r => {
+      const no = String(r['商品管理番号'] || '').trim();
+      if (no && !seenNos.has(no)) { seenNos.add(no); mgmtNos.push(no); }
+    });
+    _kanriLog('商品管理番号数: ' + mgmtNos.length, '#a3e635');
+
+    // ---- ヘッダ（Pythonと完全一致） ----
     const header = [
-      '*', '商品管理番号', '商品番号', '商品名', mm+'-楽天売上',
-      mm+'-月', mm+'-ブロック', mm+'-KW', mm+'-KW出稿量', mm+'-KWシェア', mm+'-CTR',
-      mm+'-クリック数', mm+'-費用', mm+'-売上', mm+'-購入数', mm+'-平均CPC',
-      mm+'-目安CPC', mm+'-CVR', mm+'-ROAS'
+      'レコードの開始行','商品管理番号',
+      mm+'-楽天売上', mm+'-広告売上', mm+'-実績額', mm+'-CVR', mm+'-ROAS', mm+'-獲得単価', mm+'-CPC実績',
+      '取得日'+mm+'月☆','楽天売上'+mm+'月☆','キーワード'+mm+'月☆','KWvol'+mm+'月☆','KWシェア'+mm+'月☆','CTR'+mm+'月☆','CL数'+mm+'月☆','実績額'+mm+'月☆','売上金額'+mm+'月☆','売上件数'+mm+'月☆','平均CL単価'+mm+'月☆','目安'+mm+'月☆','CVR'+mm+'月☆','ROAS'+mm+'月☆',
+      '取得日'+mm+'月★','楽天売上'+mm+'月★','キーワード'+mm+'月★','KWvol'+mm+'月★','KWシェア'+mm+'月★','CTR'+mm+'月★','CL数'+mm+'月★','実績額'+mm+'月★','売上金額'+mm+'月★','売上件数'+mm+'月★','平均CL単価'+mm+'月★','目安'+mm+'月★','CVR'+mm+'月★','ROAS'+mm+'月★',
     ];
+    const HI = {}; header.forEach((h,i) => HI[h] = i);
 
     const outRows = [header];
 
-    for (const no of mgmtNos) {
-      const kwItems = kwData.filter(r => (r['商品管理番号']||r['itemManagementNo']||'') === no);
-      const itemItems = itemData.filter(r => (r['商品管理番号']||r['itemManagementNo']||'') === no);
-      const rakutenSales = salesMap[no] || '';
-      const coupon = couponMap[no] || null;
-      const productName = (kwItems[0]||itemItems[0]||{})['商品名'] || '';
-      const productNo = (kwItems[0]||itemItems[0]||{})['商品番号'] || '';
+    function newRow() { return new Array(header.length).fill(''); }
 
-      const newRow = (star, kw, extra={}) => {
-        const r = new Array(header.length).fill('');
-        r[header.indexOf('*')] = star;
-        r[header.indexOf('商品管理番号')] = no;
-        r[header.indexOf('商品番号')] = productNo;
-        r[header.indexOf('商品名')] = productName;
-        r[header.indexOf(mm+'-楽天売上')] = rakutenSales;
-        r[header.indexOf(mm+'-月')] = mm;
-        r[header.indexOf(mm+'-ブロック')] = extra.block || '';
-        r[header.indexOf(mm+'-KW')] = kw;
-        if (extra.kwvol !== undefined) r[header.indexOf(mm+'-KW出稿量')] = extra.kwvol;
-        if (extra.share !== undefined) r[header.indexOf(mm+'-KWシェア')] = extra.share;
-        if (extra.ctr !== undefined) r[header.indexOf(mm+'-CTR')] = extra.ctr;
-        if (extra.click !== undefined) r[header.indexOf(mm+'-クリック数')] = extra.click;
-        if (extra.cost !== undefined) r[header.indexOf(mm+'-費用')] = extra.cost;
-        if (extra.sales !== undefined) r[header.indexOf(mm+'-売上')] = extra.sales;
-        if (extra.units !== undefined) r[header.indexOf(mm+'-購入数')] = extra.units;
-        if (extra.avg_cpc !== undefined) r[header.indexOf(mm+'-平均CPC')] = extra.avg_cpc;
-        if (extra.target_cpc !== undefined) r[header.indexOf(mm+'-目安CPC')] = extra.target_cpc;
-        if (extra.cvr !== undefined) r[header.indexOf(mm+'-CVR')] = extra.cvr;
-        if (extra.roas !== undefined) r[header.indexOf(mm+'-ROAS')] = extra.roas;
-        return r;
+    function setStarFields(r, block, kw, extra={}) {
+      const prefix = block === '☆' ? '月☆' : '月★';
+      const dateCol = '取得日'+mm+prefix;
+      const raCol   = '楽天売上'+mm+prefix;
+      const kwCol   = 'キーワード'+mm+prefix;
+      if (HI[dateCol] !== undefined && extra.date !== undefined) r[HI[dateCol]] = extra.date;
+      if (HI[raCol]   !== undefined && extra.rakuten !== undefined) r[HI[raCol]] = extra.rakuten;
+      if (HI[kwCol]   !== undefined) r[HI[kwCol]] = kw;
+      const map = {
+        'KWvol'+mm+prefix: extra.kwvol, 'KWシェア'+mm+prefix: extra.share,
+        'CTR'+mm+prefix: extra.ctr, 'CL数'+mm+prefix: extra.click,
+        '実績額'+mm+prefix: extra.cost, '売上金額'+mm+prefix: extra.sales,
+        '売上件数'+mm+prefix: extra.units, '平均CL単価'+mm+prefix: extra.avg_cpc,
+        '目安'+mm+prefix: extra.target_cpc, 'CVR'+mm+prefix: extra.cvr,
+        'ROAS'+mm+prefix: extra.roas,
       };
-
-      // サマリ行（先頭1行, *）
-      const totalClick = kwItems.reduce((s,r)=>s+_parseNum(r['クリック数']||r['clicks']||0),0);
-      const totalCost  = kwItems.reduce((s,r)=>s+_parseNum(r['費用']||r['cost']||0),0);
-      const totalSales = kwItems.reduce((s,r)=>s+_parseNum(r['売上']||r['sales']||0),0);
-      const totalUnits = kwItems.reduce((s,r)=>s+_parseNum(r['購入数']||r['units']||0),0);
-      outRows.push(newRow('*', 'サマリ', {
-        click: totalClick||'', cost: totalCost||'', sales: totalSales||'', units: totalUnits||'',
-        avg_cpc: _calcAvgCpc(totalCost, totalClick),
-        cvr: _calcCvr(totalUnits, totalClick),
-        roas: _calcRoas(totalSales, totalCost),
-      }));
-
-      // ☆ブロック（KWシェア降順）
-      const shareSorted = [...kwItems].sort((a,b)=>_parseNum(b['KWシェア']||b['kwShare']||0)-_parseNum(a['KWシェア']||a['kwShare']||0));
-      outRows.push(newRow('', '------------------------------', {block:'☆'}));
-
-      const itemTotalClick = itemItems.reduce((s,r)=>s+_parseNum(r['クリック数']||r['clicks']||0),0);
-      const itemTotalCost  = itemItems.reduce((s,r)=>s+_parseNum(r['費用']||r['cost']||0),0);
-      const itemTotalSales = itemItems.reduce((s,r)=>s+_parseNum(r['売上']||r['sales']||0),0);
-      const itemTotalUnits = itemItems.reduce((s,r)=>s+_parseNum(r['購入数']||r['units']||0),0);
-
-      outRows.push(newRow('', '広告合計-③', {block:'☆',
-        click: itemTotalClick||'', cost: itemTotalCost||'', sales: itemTotalSales||'', units: itemTotalUnits||'',
-        avg_cpc: _calcAvgCpc(itemTotalCost, itemTotalClick),
-        cvr: _calcCvr(itemTotalUnits, itemTotalClick),
-        roas: _calcRoas(itemTotalSales, itemTotalCost),
-      }));
-
-      const kwSumClick = shareSorted.reduce((s,r)=>s+_parseNum(r['クリック数']||r['clicks']||0),0);
-      const kwSumCost  = shareSorted.reduce((s,r)=>s+_parseNum(r['費用']||r['cost']||0),0);
-      const kwSumSales = shareSorted.reduce((s,r)=>s+_parseNum(r['売上']||r['sales']||0),0);
-      const kwSumUnits = shareSorted.reduce((s,r)=>s+_parseNum(r['購入数']||r['units']||0),0);
-
-      outRows.push(newRow('', 'KW合計(下記KWの合計)-④', {block:'☆',
-        click: kwSumClick||'', cost: kwSumCost||'', sales: kwSumSales||'', units: kwSumUnits||'',
-        avg_cpc: _calcAvgCpc(kwSumCost, kwSumClick),
-        cvr: _calcCvr(kwSumUnits, kwSumClick),
-        roas: _calcRoas(kwSumSales, kwSumCost),
-      }));
-
-      shareSorted.forEach(r => {
-        const click = _parseNum(r['クリック数']||r['clicks']||0);
-        const cost  = _parseNum(r['費用']||r['cost']||0);
-        const sales = _parseNum(r['売上']||r['sales']||0);
-        const units = _parseNum(r['購入数']||r['units']||0);
-        outRows.push(newRow('', r['キーワード']||r['keyword']||'', {block:'☆',
-          kwvol: r['KW出稿量']||r['kwVolume']||'',
-          share: r['KWシェア']||r['kwShare']||'',
-          ctr: r['CTR']||'',
-          click: click||'', cost: cost||'', sales: sales||'', units: units||'',
-          avg_cpc: _calcAvgCpc(cost, click),
-          target_cpc: r['目安CPC']||'',
-          cvr: _calcCvr(units, click),
-          roas: _calcRoas(sales, cost),
-        }));
-      });
-
-      outRows.push(newRow('', '------------------------------', {block:'☆'}));
-      if (coupon) {
-        outRows.push(newRow('', 'クーポンアドバンス-⑤', {block:'☆',
-          cost: coupon.cost||'', sales: coupon.sales||'',
-          roas: _calcRoas(coupon.sales, coupon.cost),
-        }));
-      }
-
-      // ★ブロック（費用降順）
-      const costSorted = [...kwItems].sort((a,b)=>_parseNum(b['費用']||b['cost']||0)-_parseNum(a['費用']||a['cost']||0));
-      outRows.push(newRow('', '------------------------------', {block:'★'}));
-      outRows.push(newRow('', '広告合計-③', {block:'★',
-        click: itemTotalClick||'', cost: itemTotalCost||'', sales: itemTotalSales||'', units: itemTotalUnits||'',
-        avg_cpc: _calcAvgCpc(itemTotalCost, itemTotalClick),
-        cvr: _calcCvr(itemTotalUnits, itemTotalClick),
-        roas: _calcRoas(itemTotalSales, itemTotalCost),
-      }));
-      outRows.push(newRow('', 'KW合計(下記KWの合計)-④', {block:'★',
-        click: kwSumClick||'', cost: kwSumCost||'', sales: kwSumSales||'', units: kwSumUnits||'',
-        avg_cpc: _calcAvgCpc(kwSumCost, kwSumClick),
-        cvr: _calcCvr(kwSumUnits, kwSumClick),
-        roas: _calcRoas(kwSumSales, kwSumCost),
-      }));
-
-      costSorted.forEach(r => {
-        const click = _parseNum(r['クリック数']||r['clicks']||0);
-        const cost  = _parseNum(r['費用']||r['cost']||0);
-        const sales = _parseNum(r['売上']||r['sales']||0);
-        const units = _parseNum(r['購入数']||r['units']||0);
-        outRows.push(newRow('', r['キーワード']||r['keyword']||'', {block:'★',
-          kwvol: r['KW出稿量']||r['kwVolume']||'',
-          share: r['KWシェア']||r['kwShare']||'',
-          ctr: r['CTR']||'',
-          click: click||'', cost: cost||'', sales: sales||'', units: units||'',
-          avg_cpc: _calcAvgCpc(cost, click),
-          target_cpc: r['目安CPC']||'',
-          cvr: _calcCvr(units, click),
-          roas: _calcRoas(sales, cost),
-        }));
-      });
-
-      outRows.push(newRow('', '------------------------------', {block:'★'}));
-      if (coupon) {
-        outRows.push(newRow('', 'クーポンアドバンス-⑤', {block:'★',
-          cost: coupon.cost||'', sales: coupon.sales||'',
-          roas: _calcRoas(coupon.sales, coupon.cost),
-        }));
-      }
+      Object.entries(map).forEach(([k,v]) => { if (HI[k] !== undefined && v !== undefined) r[HI[k]] = v; });
     }
 
-    // ---- CSV出力（cp932は難しいのでUTF-8 BOM付き） ----
+    for (const no of mgmtNos) {
+      const kwItems   = kwData.filter(r   => String(r['商品管理番号']||'').trim() === no);
+      const itemItems = itemData.filter(r => String(r['商品管理番号']||'').trim() === no);
+      const rakutenSales = salesMap[no] || '';
+      const coupon = couponMap[no] || null;
+
+      // ---- サマリ行 (*) ----
+      // item合計がベース
+      const itemClick = itemItems.reduce((s,r)=>s+_parseNum(r['クリック数(合計)']||0),0);
+      const itemCost  = itemItems.reduce((s,r)=>s+_parseNum(r['実績額(合計)']||0),0);
+      const itemSales = itemItems.reduce((s,r)=>s+_parseNum(r['売上金額(合計720時間)']||0),0);
+      const itemUnits = itemItems.reduce((s,r)=>s+_parseNum(r['売上件数(合計720時間)']||0),0);
+      const itemCvr   = _calcCvr(itemUnits, itemClick);
+      const itemRoas  = _calcRoas(itemSales, itemCost);
+      const itemAvgCpc = _calcAvgCpc(itemCost, itemClick);
+
+      const summRow = newRow();
+      summRow[HI['レコードの開始行']] = '*';
+      summRow[HI['商品管理番号']] = no;
+      summRow[HI[mm+'-楽天売上']] = rakutenSales;
+      summRow[HI[mm+'-広告売上']] = itemSales || '';
+      summRow[HI[mm+'-実績額']]   = itemCost  || '';
+      summRow[HI[mm+'-CVR']]      = itemCvr   || '';
+      summRow[HI[mm+'-ROAS']]     = itemRoas  || '';
+      summRow[HI[mm+'-獲得単価']] = itemAvgCpc || '';
+      summRow[HI[mm+'-CPC実績']]  = itemItems[0] ? (_parseNum(itemItems[0]['CPC実績(合計)']||0)||'') : '';
+      outRows.push(summRow);
+
+      // ---- KWシェア合計（KWvol算出用） ----
+      const kwSumClick = kwItems.reduce((s,r)=>s+_parseNum(r['クリック数(合計)']||0),0);
+      const kwSumCost  = kwItems.reduce((s,r)=>s+_parseNum(r['実績額(合計)']||0),0);
+      const kwSumSales = kwItems.reduce((s,r)=>s+_parseNum(r['売上金額(合計720時間)']||0),0);
+      const kwSumUnits = kwItems.reduce((s,r)=>s+_parseNum(r['売上件数(合計720時間)']||0),0);
+
+      // item - kw = 商品CPC(20円出稿分)
+      const diffClick = itemClick - kwSumClick;
+      const diffCost  = itemCost  - kwSumCost;
+      const diffSales = itemSales - kwSumSales;
+      const diffUnits = itemUnits - kwSumUnits;
+
+      // ---- SEO分ブロック ----
+      const seoRow = newRow();
+      const dateStr = yyyy + '/' + mm + '-①';
+      ['☆','★'].forEach(block => {
+        const prefix = block === '☆' ? '月☆' : '月★';
+        const dc = '取得日'+mm+prefix;
+        const rc = '楽天売上'+mm+prefix;
+        const kc = 'キーワード'+mm+prefix;
+        if (HI[dc] !== undefined) seoRow[HI[dc]] = dateStr;
+        if (HI[rc] !== undefined) seoRow[HI[rc]] = rakutenSales;
+        if (HI[kc] !== undefined) seoRow[HI[kc]] = 'SEO分-②';
+        const sc = '売上金額'+mm+prefix;
+        // SEO売上 = 楽天売上 - 広告売上
+        const seoSales = rakutenSales !== '' ? (_parseNum(rakutenSales) - _parseNum(itemSales||0)) : '';
+        if (HI[sc] !== undefined && seoSales !== '') seoRow[HI[sc]] = seoSales;
+      });
+      outRows.push(seoRow);
+
+      // ---- ☆ブロック（KWシェア降順） ----
+      const shareSorted = [...kwItems].sort((a,b)=>_parseNum(b['売上金額(合計720時間)']||0)-_parseNum(a['売上金額(合計720時間)']||0));
+
+      function emitBlock(block, sortedKw) {
+        // 区切り線
+        const r1 = newRow(); setStarFields(r1, block, '------------------------------'); outRows.push(r1);
+
+        // 広告合計-③
+        const r3 = newRow();
+        setStarFields(r3, block, '広告合計-③', {
+          click: itemClick||'', cost: itemCost||'', sales: itemSales||'', units: itemUnits||'',
+          avg_cpc: _calcAvgCpc(itemCost,itemClick), cvr: _calcCvr(itemUnits,itemClick), roas: _calcRoas(itemSales,itemCost)
+        });
+        outRows.push(r3);
+
+        // 商品CPC(20円出稿分)-④
+        if (itemItems.length) {
+          const r4a = newRow();
+          setStarFields(r4a, block, '商品CPC(20円出稿分)-④', {
+            click: diffClick||'', cost: diffCost||'', sales: diffSales||'', units: diffUnits||'',
+            avg_cpc: _calcAvgCpc(diffCost,diffClick), cvr: _calcCvr(diffUnits,diffClick), roas: _calcRoas(diffSales,diffCost)
+          });
+          outRows.push(r4a);
+        }
+
+        // KW合計-④
+        const r4b = newRow();
+        setStarFields(r4b, block, 'KW合計(下記KWの合計)-④', {
+          click: kwSumClick||'', cost: kwSumCost||'', sales: kwSumSales||'', units: kwSumUnits||'',
+          avg_cpc: _calcAvgCpc(kwSumCost,kwSumClick), cvr: _calcCvr(kwSumUnits,kwSumClick), roas: _calcRoas(kwSumSales,kwSumClick)
+        });
+        outRows.push(r4b);
+
+        // KWごとの行
+        sortedKw.forEach(kw => {
+          const cl  = _parseNum(kw['クリック数(合計)']||0);
+          const co  = _parseNum(kw['実績額(合計)']||0);
+          const sa  = _parseNum(kw['売上金額(合計720時間)']||0);
+          const un  = _parseNum(kw['売上件数(合計720時間)']||0);
+          const rk  = newRow();
+          // KWvol = クリック数*100/シェア（シェアがあれば）
+          const shareVal = _parseNum(kw['売上金額(合計720時間)']||0);
+          setStarFields(rk, block, kw['キーワード']||'', {
+            kwvol: '',  // KWvolはRPPに含まれないため空
+            share: '',
+            ctr:   kw['CTR(%)']||'',
+            click: cl||'', cost: co||'', sales: sa||'', units: un||'',
+            avg_cpc: _calcAvgCpc(co,cl), target_cpc: kw['目安CPC']||'',
+            cvr: _calcCvr(un,cl), roas: _calcRoas(sa,co)
+          });
+          outRows.push(rk);
+        });
+
+        // 区切り線
+        const r1b = newRow(); setStarFields(r1b, block, '------------------------------'); outRows.push(r1b);
+
+        // クーポンアドバンス-⑤
+        if (coupon) {
+          const r5 = newRow();
+          setStarFields(r5, block, 'クーポンアドバンス-⑤', {
+            cost: coupon.cost||'', sales: coupon.sales||'',
+            roas: _calcRoas(coupon.sales, coupon.cost)
+          });
+          outRows.push(r5);
+        }
+      }
+
+      // 費用降順ソート（★）
+      const costSorted = [...kwItems].sort((a,b)=>_parseNum(b['実績額(合計)']||0)-_parseNum(a['実績額(合計)']||0));
+
+      emitBlock('☆', shareSorted);
+      emitBlock('★', costSorted);
+    }
+
+    // ---- CSV出力（UTF-8 BOM付き） ----
     const csvContent = '\uFEFF' + outRows.map(r => r.map(v => {
-      const s = String(v??'');
+      const s = String(v ?? '');
       return (s.includes(',') || s.includes('"') || s.includes('\n')) ? '"' + s.replace(/"/g,'""') + '"' : s;
     }).join(',')).join('\r\n');
 
@@ -928,8 +930,8 @@ async function kanriRun() {
     a.href = url; a.download = 'ゆかい屋個別-' + yyyy + '-' + mm + '.csv';
     a.click(); URL.revokeObjectURL(url);
 
-    _kanriLog('✅ 処理完了: ゆかい屋個別-' + yyyy + '-' + mm + '.csv をダウンロードしました。', '#4ade80');
-    _kanriLog('  商品管理番号数: ' + mgmtNos.length, '#a3e635');
+    _kanriLog('✅ 完了: ゆかい屋個別-' + yyyy + '-' + mm + '.csv をダウンロードしました。', '#4ade80');
+    _kanriLog('  商品数: ' + mgmtNos.length + ' / 出力行数: ' + outRows.length, '#a3e635');
 
   } catch(e) {
     _kanriLog('【エラー】' + e.message, '#f87171');
