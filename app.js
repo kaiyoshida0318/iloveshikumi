@@ -307,7 +307,7 @@ function _parseNum(v) {
 
 function _calcAvgCpc(cost, click) {
   if (!click) return '';
-  var v = Math.round(_parseNum(cost) / _parseNum(click));
+  var v = Math.round(_parseNum(cost) / _parseNum(click) * 100) / 100;
   return v || '';
 }
 
@@ -320,9 +320,7 @@ function _calcCvr(units, click) {
 function _calcRoas(sales, cost) {
   if (!cost) return '';
   var v = Math.round(_parseNum(sales) / _parseNum(cost) * 10000) / 100;
-  if (!v) return '';
-  // 小数点以下1桁まで表示（手元ツールに合わせる）
-  return Math.round(v * 10) / 10;
+  return v || '';
 }
 
 function _kanriLog(msg, color) {
