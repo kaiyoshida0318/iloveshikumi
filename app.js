@@ -306,21 +306,22 @@ function _parseNum(v) {
 }
 
 function _calcAvgCpc(cost, click) {
-  if (!click) return '';
+  if (!_parseNum(click)) return '';
   var v = Math.round(_parseNum(cost) / _parseNum(click) * 100) / 100;
-  return v || '';
+  return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
 
 function _calcCvr(units, click) {
-  if (!click) return '';
+  if (!_parseNum(click)) return '';
   var v = Math.round(_parseNum(units) / _parseNum(click) * 10000) / 100;
-  return v || '';
+  return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
 
 function _calcRoas(sales, cost) {
-  if (!cost) return '';
+  if (!_parseNum(cost)) return '';
   var v = Math.round(_parseNum(sales) / _parseNum(cost) * 10000) / 100;
-  return v || '';
+  // 整数の場合も小数点1桁で表示（例：445→445.0）
+  return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
 
 function _kanriLog(msg, color) {
@@ -464,38 +465,52 @@ async function kanriRun() {
       var sh=kwI.slice().sort(function(a,b){return _parseNum(b['売上金額(合計720時間)']||0)-_parseNum(a['売上金額(合計720時間)']||0);});
       var co=kwI.slice().sort(function(a,b){return _parseNum(b['実績額(合計)']||0)-_parseNum(a['実績額(合計)']||0);});
       function eb(bl,so){
-        var x=newRow();setF(x,bl,'------------------------------');outRows.push(x);
-        if(so.length===0&&iCl===0&&iCo===0){
-          // kw/itemなし商品：広告出稿なし
-          var na=newRow();setF(na,bl,'広告出謔なし');outRows.push(na);
+        // ☆★ブロックの区切り線
+        var x=newRow(); setF(x,bl,'------------------------------'); outRows.push(x);
+        // kw/itemなし商品（salesのみ）
+        if(so.length===0 && iCl===0 && iCo===0){
+          var na=newRow(); setF(na,bl,'広告出謔なし'); outRows.push(na);
         } else {
-          var y=newRow();setF(y,bl,'広告合計-④',{click:iCl||'',cost:iCo||'',sales:iSa||'',units:iUn||'',avg_cpc:_calcAvgCpc(iCo,iCl),cvr:_calcCvr(iUn,iCl),roas:_calcRoas(iSa,iCo)});outRows.push(y);
-          if(itI.length){var z=newRow();setF(z,bl,'商品CPC(20円出謔分)-⑤',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)});outRows.push(z);}
-          var w=newRow();setF(w,bl,'KW合計(下記KWの合計)-⑤',{click:kCl||'',cost:kCo||'',sales:kSa||'',units:kUn||'',avg_cpc:_calcAvgCpc(kCo,kCl),cvr:_calcCvr(kUn,kCl),roas:_calcRoas(kSa,kCo)});outRows.push(w);
+          // 広告合計-③
+          var y=newRow(); setF(y,bl,'広告合計-③',{click:iCl||'',cost:iCo||'',sales:iSa||'',units:iUn||'',avg_cpc:_calcAvgCpc(iCo,iCl),cvr:_calcCvr(iUn,iCl),roas:_calcRoas(iSa,iCo)}); outRows.push(y);
+          // 商品CPC-④（itemあり時のみ）
+          if(itI.length){
+            var z=newRow(); setF(z,bl,'商品CPC(20円出謔分)-④',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)}); outRows.push(z);
+          }
+          // KW合計-④
+          var w=newRow(); setF(w,bl,'KW合計(下記KWの合計)-④',{click:kCl||'',cost:kCo||'',sales:kSa||'',units:kUn||'',avg_cpc:_calcAvgCpc(kCo,kCl),cvr:_calcCvr(kUn,kCl),roas:_calcRoas(kSa,kCo)}); outRows.push(w);
+          // KWvol合計を先に計算（KWシェア算出に必要）
           var totalVol=0;
-          so.forEach(function(kw){var cl=_parseNum(kw['クリック数(合計)']||0);var ctr=_parseNum(kw['CTR(%)']||0);totalVol+=ctr>0?Math.round(cl/ctr*100):0;});
+          so.forEach(function(kw){
+            var cl=_parseNum(kw['クリック数(合計)']||0);
+            var ctr=_parseNum(kw['CTR(%)']||0);
+            totalVol += ctr>0 ? Math.round(cl/ctr*100) : 0;
+          });
+          // KW行
           so.forEach(function(kw){
             var c1=_parseNum(kw['クリック数(合計)']||0);
             var c2=_parseNum(kw['実績額(合計)']||0);
             var s1=_parseNum(kw['売上金額(合計720時間)']||0);
             var u1=_parseNum(kw['売上件数(合計720時間)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
-            var kwvol=ctr>0?Math.round(c1/ctr*100):0;
-            var kwshare=totalVol>0?Math.round(kwvol/totalVol*10000)/100:0;
+            var kwvol = ctr>0 ? Math.round(c1/ctr*100) : 0;
+            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*1000)/10 : 0;
             var rk=newRow();
             setF(rk,bl,kw['キーワード']||'',{
-              kwvol:kwvol||'',share:kwshare||'',
-              ctr:kw['CTR(%)']||'',click:c1||'',cost:c2||'',
-              sales:s1||'',units:u1||'',
+              kwvol:kwvol||'', share:kwshare||'',
+              ctr:kw['CTR(%)']||'', click:c1||'', cost:c2||'',
+              sales:s1||'', units:u1||'',
               avg_cpc:_calcAvgCpc(c2,c1),
               target_cpc:kw['目安CPC']||'',
-              cvr:_calcCvr(u1,c1),roas:_calcRoas(s1,c2)
+              cvr:_calcCvr(u1,c1), roas:_calcRoas(s1,c2)
             });
             outRows.push(rk);
           });
         }
-        var x2=newRow();setF(x2,bl,'------------------------------');outRows.push(x2);
-        if(cpn){var r5=newRow();setF(r5,bl,'クーポンアドバンス-⑥',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)});outRows.push(r5);}
+        // 区切り線
+        var x2=newRow(); setF(x2,bl,'------------------------------'); outRows.push(x2);
+        // クーポンアドバンス-⑤
+        if(cpn){ var r5=newRow(); setF(r5,bl,'クーポンアドバンス-⑤',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)}); outRows.push(r5); }
       }
       eb('☆',sh);eb('★',co);
     });
