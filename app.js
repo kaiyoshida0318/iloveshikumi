@@ -247,6 +247,53 @@ function handleDrop(event, group) {
   var zone = event.target.closest ? event.target.closest('.kanri-drop') : null;
   if (zone) zone.classList.remove('dragover');
 }
+function handleDropAll(event) {
+  event.preventDefault();
+  event.target.closest('.kanri-drop-single').classList.remove('dragover');
+  var files = event.dataTransfer && event.dataTransfer.files;
+  if (!files || !files.length) return;
+  // ファイル名から自動判定
+  var groupMap = {
+    sales: ['Item_SalesList', '売上', 'SalesList'],
+    item: ['item_report', '商品別', 'RPP_item', 'item-report'],
+    keyword: ['keyword_report', 'KW別', 'RPP_kw', 'kw-report', 'keyword-report'],
+    coupon: ['クーポン', 'coupon', 'cpnadv']
+  };
+  var filesEl = document.getElementById('files-all');
+  if (filesEl) filesEl.innerHTML = '';
+  for (var fi = 0; fi < files.length; fi++) {
+    var file = files[fi];
+    var name = file.name;
+    var matched = null;
+    for (var key in groupMap) {
+      var keywords = groupMap[key];
+      for (var ki = 0; ki < keywords.length; ki++) {
+        if (name.toLowerCase().indexOf(keywords[ki].toLowerCase()) >= 0) {
+          matched = key; break;
+        }
+      }
+      if (matched) break;
+    }
+    // マッチしない場合は拡張子で順番に割り当て
+    if (!matched) {
+      var order = ['sales','item','keyword','coupon'];
+      for (var oi = 0; oi < order.length; oi++) {
+        if (!_kanriFiles[order[oi]]) { matched = order[oi]; break; }
+      }
+    }
+    if (matched) {
+      _kanriFiles[matched] = file;
+      if (filesEl) {
+        var span = document.createElement('span');
+        span.style.cssText = 'color:#16a34a;font-size:.78rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:.15rem .5rem;';
+        var labels = {sales:'売上',item:'商品別',keyword:'KW別',coupon:'クーポン'};
+        span.textContent = '✅ [' + labels[matched] + '] ' + name;
+        filesEl.appendChild(span);
+      }
+    }
+  }
+}
+
 
 // kanri helpers
 var _kanriFiles = { sales: null, item: null, keyword: null, coupon: null };
