@@ -262,10 +262,9 @@ function _readFileAsText(file, enc) {
 
 function _parseCSV(text) {
   var rows = [];
-  var lines = text.split(new RegExp('\r?\n'));
+  var lines = text.split(new RegExp('[\r]?[\n]'));
   for (var li = 0; li < lines.length; li++) {
     var line = lines[li];
-    if (line.trim() === '') continue;
     var row = [], cur = '', inQ = false;
     for (var i = 0; i < line.length; i++) {
       var c = line[i];
@@ -287,7 +286,7 @@ function _csvToObjects(rows, headerRow) {
   var result = [];
   for (var i = headerRow + 1; i < rows.length; i++) {
     var r = rows[i];
-    if (!r.some(function(c){return c !== '';})) continue;
+    if (!r || r.every(function(c){return c === '';})) continue;
     var o = {};
     for (var j = 0; j < h.length; j++) { o[h[j]] = r[j] || ''; }
     result.push(o);
@@ -370,7 +369,10 @@ async function kanriRun() {
     }
     _kanriLog('対象年月: '+yyyy+'-'+mm, '#a3e635');
     var kwRows=_parseCSV(kwText), itemRows=_parseCSV(itemText);
-    var kwData=_csvToObjects(kwRows,6), itemData=_csvToObjects(itemRows,6);
+    var kwHdr=0,itHdr=0;
+    for(var i=0;i<Math.min(10,kwRows.length);i++){if(kwRows[i].some(function(c){return c==='商品管理番号';})){kwHdr=i;break;}}
+    for(var i=0;i<Math.min(10,itemRows.length);i++){if(itemRows[i].some(function(c){return c==='商品管理番号';})){itHdr=i;break;}}
+    var kwData=_csvToObjects(kwRows,kwHdr), itemData=_csvToObjects(itemRows,itHdr);
     var salesRows=_parseCSV(salesText), salesHeaderRow=6;
     for (var i=0; i<Math.min(15,salesRows.length); i++) {
       if (salesRows[i].some(function(c){return c==='商品管理番号';})) { salesHeaderRow=i; break; }
