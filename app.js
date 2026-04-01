@@ -370,10 +370,18 @@ async function kanriRun() {
     _kanriLog('対象年月: '+yyyy+'-'+mm, '#a3e635');
     var kwRows=_parseCSV(kwText), itemRows=_parseCSV(itemText);
     var kwHdr=0,itHdr=0;
-    for(var i=0;i<Math.min(10,kwRows.length);i++){if(kwRows[i].some(function(c){return c==='商品管理番号';})){kwHdr=i;break;}}
-    for(var i=0;i<Math.min(10,itemRows.length);i++){if(itemRows[i].some(function(c){return c==='商品管理番号';})){itHdr=i;break;}}
+    for(var i=0;i<Math.min(10,kwRows.length);i++){
+      var r=kwRows[i];
+      if(r&&r.length>4&&r[3]&&r[3].trim()!==''&&!/[\u3000-\u9fff]/.test(r[3])&&r[3].trim().length<=10&&!isNaN(Number(r[3].replace(/,/g,'')))){kwHdr=i-1>=0?i-1:0;break;}
+      if(r&&r.some(function(c){return c==='商品管理番号'||c==='商品管理NO'||c==='itemManagementNo';})){kwHdr=i;break;}
+    }
+    for(var i=0;i<Math.min(10,itemRows.length);i++){
+      var r=itemRows[i];
+      if(r&&r.length>4&&r[3]&&r[3].trim()!==''&&!/[\u3000-\u9fff]/.test(r[3])&&r[3].trim().length<=10&&!isNaN(Number(r[3].replace(/,/g,'')))){itHdr=i-1>=0?i-1:0;break;}
+      if(r&&r.some(function(c){return c==='商品管理番号'||c==='商品管理NO'||c==='itemManagementNo';})){itHdr=i;break;}
+    }
     var kwData=_csvToObjects(kwRows,kwHdr), itemData=_csvToObjects(itemRows,itHdr);
-    _kanriLog('DEBUG kwHdr:'+kwHdr+' itHdr:'+itHdr+' kwData:'+kwData.length+' itemData:'+itemData.length, '#facc15');
+    _kanriLog('DEBUG kwHdr:'+kwHdr+' itHdr:'+itHdr+' kwData:'+kwData.length+' itemData:'+itemData.length+' kwData0_key3:'+JSON.stringify(kwData[0]&&Object.keys(kwData[0])[3]), '#facc15');
     var salesRows=_parseCSV(salesText), salesHeaderRow=6;
     for (var i=0; i<Math.min(15,salesRows.length); i++) {
       if (salesRows[i].some(function(c){return c==='商品管理番号';})) { salesHeaderRow=i; break; }
