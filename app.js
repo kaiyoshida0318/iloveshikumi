@@ -459,9 +459,18 @@ async function kanriRun() {
       var dCl=iCl-kCl,dCo=iCo-kCo,dSa=iSa-kSa,dUn=iUn-kUn;
       var ds=yyyy+'/'+mm+'-①';
       var seoSa=rak!==''?(_parseNum(rak)-iSa):'';
-      var sR=newRow();
-      ['☆','★'].forEach(function(bl){var p2=bl==='☆'?'月☆':'月★';si(sR,'取得日'+mm+p2,ds);si(sR,'楽天売上'+mm+p2,rak);if(HI['キーワード'+mm+p2]!==undefined)sR[HI['キーワード'+mm+p2]]='SEO分-②';if(seoSa!=='')si(sR,'売上金額'+mm+p2,seoSa);});
-      outRows.push(sR);
+      var sRHoshi=newRow();
+      si(sRHoshi,'取得日'+mm+'月☆',ds);
+      si(sRHoshi,'楽天売上'+mm+'月☆',rak);
+      if(HI['キーワード'+mm+'月☆']!==undefined)sRHoshi[HI['キーワード'+mm+'月☆']]='SEO分-②';
+      if(seoSa!=='')si(sRHoshi,'売上金額'+mm+'月☆',seoSa);
+      var sRStar=newRow();
+      si(sRStar,'取得日'+mm+'月★',ds);
+      si(sRStar,'楽天売上'+mm+'月★',rak);
+      if(HI['キーワード'+mm+'月★']!==undefined)sRStar[HI['キーワード'+mm+'月★']]='SEO分-②';
+      if(seoSa!=='')si(sRStar,'売上金額'+mm+'月★',seoSa);
+      outRows.push(sRHoshi);
+      outRows.push(sRStar);
       var sh=kwI.slice().sort(function(a,b){return _parseNum(b['売上金額(合計720時間)']||0)-_parseNum(a['売上金額(合計720時間)']||0);});
       var co=kwI.slice().sort(function(a,b){return _parseNum(b['実績額(合計)']||0)-_parseNum(a['実績額(合計)']||0);});
       function eb(bl,so){
@@ -469,13 +478,13 @@ async function kanriRun() {
         var x=newRow(); setF(x,bl,'------------------------------'); outRows.push(x);
         // kw/itemなし商品（salesのみ）
         if(so.length===0 && iCl===0 && iCo===0){
-          var na=newRow(); setF(na,bl,'広告出謔なし'); outRows.push(na);
+          var na=newRow(); setF(na,bl,'広告出稿なし'); outRows.push(na);
         } else {
           // 広告合計-③
           var y=newRow(); setF(y,bl,'広告合計-③',{click:iCl||'',cost:iCo||'',sales:iSa||'',units:iUn||'',avg_cpc:_calcAvgCpc(iCo,iCl),cvr:_calcCvr(iUn,iCl),roas:_calcRoas(iSa,iCo)}); outRows.push(y);
           // 商品CPC-④（itemあり時のみ）
           if(itI.length){
-            var z=newRow(); setF(z,bl,'商品CPC(20円出謔分)-④',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)}); outRows.push(z);
+            var z=newRow(); setF(z,bl,'商品CPC(20円出稿分)-④',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)}); outRows.push(z);
           }
           // KW合計-④
           var w=newRow(); setF(w,bl,'KW合計(下記KWの合計)-④',{click:kCl||'',cost:kCo||'',sales:kSa||'',units:kUn||'',avg_cpc:_calcAvgCpc(kCo,kCl),cvr:_calcCvr(kUn,kCl),roas:_calcRoas(kSa,kCo)}); outRows.push(w);
@@ -494,7 +503,7 @@ async function kanriRun() {
             var u1=_parseNum(kw['売上件数(合計720時間)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
             var kwvol = ctr>0 ? Math.round(c1/ctr*100) : 0;
-            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*1000)/10 : 0;
+            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*10000)/100 : 0;
             var rk=newRow();
             setF(rk,bl,kw['キーワード']||'',{
               kwvol:kwvol||'', share:kwshare||'',
