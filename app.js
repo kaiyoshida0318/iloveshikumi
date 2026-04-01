@@ -1,3 +1,4 @@
+      outRows.push(sRStar);
 
 let rivalCount = 4;
 function switchTab(el) {
@@ -459,16 +460,17 @@ async function kanriRun() {
       var dCl=iCl-kCl,dCo=iCo-kCo,dSa=iSa-kSa,dUn=iUn-kUn;
       var ds=yyyy+'/'+mm+'-①';
       var seoSa=rak!==''?(_parseNum(rak)-iSa):'';
-      var sR=newRow();
-      si(sR,'取得日'+mm+'月☆',ds);
-      si(sR,'楽天売上'+mm+'月☆',rak);
-      if(HI['キーワード'+mm+'月☆']!==undefined)sR[HI['キーワード'+mm+'月☆']]='SEO分-②';
-      if(seoSa!=='')si(sR,'売上金額'+mm+'月☆',seoSa);
-      si(sR,'取得日'+mm+'月★',ds);
-      si(sR,'楽天売上'+mm+'月★',rak);
-      if(HI['キーワード'+mm+'月★']!==undefined)sR[HI['キーワード'+mm+'月★']]='SEO分-②';
-      if(seoSa!=='')si(sR,'売上金額'+mm+'月★',seoSa);
-      outRows.push(sR);
+      var sRHoshi=newRow();
+      si(sRHoshi,'取得日'+mm+'月☆',ds);
+      si(sRHoshi,'楽天売上'+mm+'月☆',rak);
+      if(HI['キーワード'+mm+'月☆']!==undefined)sRHoshi[HI['キーワード'+mm+'月☆']]='SEO分-②';
+      if(seoSa!=='')si(sRHoshi,'売上金額'+mm+'月☆',seoSa);
+      var sRStar=newRow();
+      si(sRStar,'取得日'+mm+'月★',ds);
+      si(sRStar,'楽天売上'+mm+'月★',rak);
+      if(HI['キーワード'+mm+'月★']!==undefined)sRStar[HI['キーワード'+mm+'月★']]='SEO分-②';
+      if(seoSa!=='')si(sRStar,'売上金額'+mm+'月★',seoSa);
+      outRows.push(sRHoshi);
       var sh=kwI.slice().sort(function(a,b){return _parseNum(b['売上金額(合計720時間)']||0)-_parseNum(a['売上金額(合計720時間)']||0);});
       var co=kwI.slice().sort(function(a,b){return _parseNum(b['実績額(合計)']||0)-_parseNum(a['実績額(合計)']||0);});
       function eb(bl,so){
@@ -491,7 +493,7 @@ async function kanriRun() {
           so.forEach(function(kw){
             var cl=_parseNum(kw['クリック数(合計)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
-            totalVol += ctr>0 ? Math.round(cl/ctr*100) : 0;
+            totalVol += ctr>0 ? Math.floor(cl/ctr*100) : 0;
           });
           // KW行
           so.forEach(function(kw){
@@ -500,7 +502,7 @@ async function kanriRun() {
             var s1=_parseNum(kw['売上金額(合計720時間)']||0);
             var u1=_parseNum(kw['売上件数(合計720時間)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
-            var kwvol = ctr>0 ? Math.round(c1/ctr*100) : 0;
+            var kwvol = ctr>0 ? Math.floor(c1/ctr*100) : 0;
             var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*10000)/100 : 0;
             var rk=newRow();
             setF(rk,bl,kw['キーワード']||'',{
