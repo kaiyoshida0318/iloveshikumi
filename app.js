@@ -471,8 +471,8 @@ async function kanriRun() {
       if(HI['キーワード'+mm+'月★']!==undefined)sRStar[HI['キーワード'+mm+'月★']]='SEO分-②';
       if(seoSa!=='')si(sRStar,'売上金額'+mm+'月★',seoSa);
       outRows.push(sRHoshi);
-      var sh=kwI.slice().sort(function(a,b){return _parseNum(b['売上金額(合計720時間)']||0)-_parseNum(a['売上金額(合計720時間)']||0);});
-      var co=kwI.slice().sort(function(a,b){return _parseNum(b['実績額(合計)']||0)-_parseNum(a['実績額(合計)']||0);});
+      var sh=kwI.slice().sort(function(a,b){var ca=_parseNum(a['クリック数(合計)']||0),cb=_parseNum(b['クリック数(合計)']||0),ta=_parseNum(a['CTR(%)']||0),tb=_parseNum(b['CTR(%)']||0);var va=ta>0?Math.floor(ca/ta*100):0,vb=tb>0?Math.floor(cb/tb*100):0;return vb-va;});
+      var co=kwI.slice().sort(function(a,b){var ca=_parseNum(a['クリック数(合計)']||0),cb=_parseNum(b['クリック数(合計)']||0),ta=_parseNum(a['CTR(%)']||0),tb=_parseNum(b['CTR(%)']||0);var va=ta>0?Math.floor(ca/ta*100):0,vb=tb>0?Math.floor(cb/tb*100):0;return vb-va;});
       function eb(bl,so){
         // ☆★ブロックの区切り線
         var x=newRow(); setF(x,bl,'------------------------------'); outRows.push(x);
