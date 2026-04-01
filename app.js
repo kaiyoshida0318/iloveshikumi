@@ -1,16 +1,16 @@
 
 let rivalCount = 4;
 function switchTab(el) {
-  // 全タブのactive解除（position:absoluteのものも含む）
+  // å¨ã¿ãã®activeè§£é¤ï¼position:absoluteã®ãã®ãå«ãï¼
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  // 全パネル非表示
+  // å¨ããã«éè¡¨ç¤º
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-  // クリックされたタブをactive
+  // ã¯ãªãã¯ãããã¿ããactive
   el.classList.add('active');
-  // 対応パネルを表示
+  // å¯¾å¿ããã«ãè¡¨ç¤º
   const panel = document.getElementById('panel-' + el.dataset.panel);
   if (panel) panel.classList.add('active');
-  // rival-toolbarの表示切替
+  // rival-toolbarã®è¡¨ç¤ºåæ¿
   const tb = document.getElementById('rival-toolbar');
   if (tb) tb.style.display = el.dataset.panel === 'ranking-data' ? 'flex' : 'none';
 }
@@ -21,7 +21,7 @@ function addRival() {
   const card = document.createElement('div');
   card.className = 'card rival-card';
   card.id = 'rival-card-' + rivalCount;
-  card.innerHTML = '<div class="card-header rival"><span>ライバル ' + rivalCount + '<\/span><button class="btn-remove" onclick="removeRival(' + rivalCount + ')">✕<\/button><\/div><table class="form-table"><tr><td class="label">ショップ名<\/td><td class="badge-tai-col"><\/td><td class="badge-ra-col"><span class="badge-ra">ラ<\/span><\/td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"><\/td><\/tr><tr><td class="label">商品URL<\/td><td class="badge-tai-col"><\/td><td class="badge-ra-col"><span class="badge-ra">ラ<\/span><\/td><td><input type="url" class="rival-url" placeholder="https://..."><\/td><\/tr><\/table>';
+  card.innerHTML = '<div class="card-header rival"><span>ã©ã¤ãã« ' + rivalCount + '<\/span><button class="btn-remove" onclick="removeRival(' + rivalCount + ')">â<\/button><\/div><table class="form-table"><tr><td class="label">ã·ã§ããå<\/td><td class="badge-tai-col"><\/td><td class="badge-ra-col"><span class="badge-ra">ã©<\/span><\/td><td><input type="text" class="rival-shop" placeholder="ä¾: ã©ã¤ãã«ã·ã§ãã"><\/td><\/tr><tr><td class="label">ååURL<\/td><td class="badge-tai-col"><\/td><td class="badge-ra-col"><span class="badge-ra">ã©<\/span><\/td><td><input type="url" class="rival-url" placeholder="https://..."><\/td><\/tr><\/table>';
   grid.appendChild(card);
 }
 function removeRival(id) {
@@ -29,7 +29,7 @@ function removeRival(id) {
   if (card) card.remove();
   document.querySelectorAll('.rival-card').forEach((c, i) => {
     const n = i + 1;
-    c.querySelector('.card-header span').textContent = 'ライバル ' + n;
+    c.querySelector('.card-header span').textContent = 'ã©ã¤ãã« ' + n;
     c.id = 'rival-card-' + n;
     c.querySelector('.btn-remove').setAttribute('onclick', 'removeRival(' + n + ')');
   });
@@ -86,9 +86,9 @@ function downloadGeneral() {
     base + 'view=5534983&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534963&order_1=desc&size=20',
     base + 'view=5534985&q=f5532012%20like%20%22' + kw + '%22#sort_0=f5532012&order_0=asc&sort_1=f5534962&order_1=asc&size=20',
   ];
-  const header = ['商品管理番号','商品番号','◎商品名◎','ランキング補足数','K01-URL','K02-URL','K03-URL','K04-URL','K05-URL','K06-URL','K07-URL','K08-URL','K09-URL','K10-URL','K11-URL','K12-URL'];
+  const header = ['ååç®¡ççªå·','ååçªå·','âåååâ','ã©ã³ã­ã³ã°è£è¶³æ°','K01-URL','K02-URL','K03-URL','K04-URL','K05-URL','K06-URL','K07-URL','K08-URL','K09-URL','K10-URL','K11-URL','K12-URL'];
   const row = [b.mgmtNo, b.productNo, b.productName, b.rankingSupplement, ...urls];
-  downloadCSV('【データ分析】両ショップ対応全般', [header, row]);
+  downloadCSV('ããã¼ã¿åæãä¸¡ã·ã§ããå¯¾å¿å¨è¬', [header, row]);
 }
 
 function downloadRanking() {
@@ -127,7 +127,7 @@ function downloadRanking() {
     base189+'view=5533567&q=f5532880%20like%20%22'+kw+'%22#sort_0=f5532877&order_0=asc&size=20',
     base189+'view=5533577&q=f5532880%20like%20%22'+kw+'%22#sort_0=f5532877&order_0=asc&size=20',
   ];
-  const header = ['No','分類','商品名','ショップ名','商品URL','Weeklyランク','01月分絞り込み','02月分絞り込み','03月分絞り込み','04月分絞り込み','05月分絞り込み','06月分絞り込み','07月分絞り込み','08月分絞り込み','09月分絞り込み','10月分絞り込み','11月分絞り込み','12月分絞り込み','01月分-基礎情報','02月分-基礎情報','03月分-基礎情報','04月分-基礎情報','05月分-基礎情報','06月分-基礎情報','07月分-基礎情報','08月分-基礎情報','09月分-基礎情報','10月分-基礎情報','11月分-基礎情報','12月分-基礎情報'];
+  const header = ['No','åé¡','ååå','ã·ã§ããå','ååURL','Weeklyã©ã³ã¯','01æåçµãè¾¼ã¿','02æåçµãè¾¼ã¿','03æåçµãè¾¼ã¿','04æåçµãè¾¼ã¿','05æåçµãè¾¼ã¿','06æåçµãè¾¼ã¿','07æåçµãè¾¼ã¿','08æåçµãè¾¼ã¿','09æåçµãè¾¼ã¿','10æåçµãè¾¼ã¿','11æåçµãè¾¼ã¿','12æåçµãè¾¼ã¿','01æå-åºç¤æå ±','02æå-åºç¤æå ±','03æå-åºç¤æå ±','04æå-åºç¤æå ±','05æå-åºç¤æå ±','06æå-åºç¤æå ±','07æå-åºç¤æå ±','08æå-åºç¤æå ±','09æå-åºç¤æå ±','10æå-åºç¤æå ±','11æå-åºç¤æå ±','12æå-åºç¤æå ±'];
   const rows = [header];
   if (myProductUrl) {
     rows.push(['', shopLabel, b.productName, shopLabel, myProductUrl, b.weeklyRank, ...kiboriUrls, ...kisoUrls]);
@@ -135,14 +135,14 @@ function downloadRanking() {
   rivals.forEach(r => {
     rows.push(['', shopLabel, b.productName, r.shop, r.url, b.weeklyRank, ...kiboriUrls, ...Array(12).fill('')]);
   });
-  downloadCSV('【データ分析】両ショップ-ランキング', rows);
+  downloadCSV('ããã¼ã¿åæãä¸¡ã·ã§ãã-ã©ã³ã­ã³ã°', rows);
 }
 
 function addSetRow(group) {
   const container = document.getElementById('set-rows-' + group);
   const row = document.createElement('div');
   row.className = 'set-row';
-  row.innerHTML = '<input type="text" placeholder="例: 上部"><input type="text" placeholder="例: ABC-001">';
+  row.innerHTML = '<input type="text" placeholder="ä¾: ä¸é¨"><input type="text" placeholder="ä¾: ABC-001">';
   container.appendChild(row);
 }
 function clearSet() {
@@ -159,30 +159,30 @@ function downloadSet() {
     })
   );
   const maxLen = Math.max(...groups.map(g => g.length));
-  const header = ['対応部分1','商品コード1','対応部分2','商品コード2','対応部分3','商品コード3'];
+  const header = ['å¯¾å¿é¨å1','ååã³ã¼ã1','å¯¾å¿é¨å2','ååã³ã¼ã2','å¯¾å¿é¨å3','ååã³ã¼ã3'];
   const rows = [header];
   for(let i=0;i<maxLen;i++) {
     const row = [];
     groups.forEach(g => { row.push(g[i]?g[i][0]:'', g[i]?g[i][1]:''); });
     if(row.some(v=>v)) rows.push(row);
   }
-  downloadCSV('セット商品コード', rows);
+  downloadCSV('ã»ããååã³ã¼ã', rows);
 }
-// 初期化：各グループに10行追加
+// åæåï¼åã°ã«ã¼ãã«10è¡è¿½å 
 document.addEventListener('DOMContentLoaded', function() {
   [1,2,3].forEach(g => { for(let i=0;i<10;i++) addSetRow(g); });
 });
 
-// エクセルからのCtrl+Vペースト対応
+// ã¨ã¯ã»ã«ããã®Ctrl+Vãã¼ã¹ãå¯¾å¿
 document.addEventListener('paste', function(e) {
-  // set-codeパネルがアクティブなときのみ
+  // set-codeããã«ãã¢ã¯ãã£ããªã¨ãã®ã¿
   const panel = document.getElementById('panel-set-code');
   if (!panel || !panel.classList.contains('active')) return;
 
   const text = (e.clipboardData || window.clipboardData).getData('text');
   if (!text) return;
 
-  // どのグループのセルにフォーカスがあるか検出
+  // ã©ã®ã°ã«ã¼ãã®ã»ã«ã«ãã©ã¼ã«ã¹ããããæ¤åº
   const focused = document.activeElement;
   let targetGroup = 1;
   if (focused && focused.closest('.set-block')) {
@@ -192,7 +192,7 @@ document.addEventListener('paste', function(e) {
     if (targetGroup < 1) targetGroup = 1;
   }
 
-  // フォーカスセルの行インデックス
+  // ãã©ã¼ã«ã¹ã»ã«ã®è¡ã¤ã³ããã¯ã¹
   let startRow = 0;
   let startCol = 0;
   if (focused && focused.closest('.set-row')) {
@@ -205,7 +205,7 @@ document.addEventListener('paste', function(e) {
     if (startCol < 0) startCol = 0;
   }
 
-  // タブ・改行でパース
+  // ã¿ãã»æ¹è¡ã§ãã¼ã¹
   const rows = text.split(/\r?\n/).filter(r => r !== '');
   const container = document.getElementById('set-rows-' + targetGroup);
   let existingRows = Array.from(container.querySelectorAll('.set-row'));
@@ -213,7 +213,7 @@ document.addEventListener('paste', function(e) {
   rows.forEach((rowText, ri) => {
     const cols = rowText.split('\t');
     const rowIdx = startRow + ri;
-    // 行が足りなければ追加
+    // è¡ãè¶³ããªããã°è¿½å 
     while (existingRows.length <= rowIdx) {
       addSetRow(targetGroup);
       existingRows = Array.from(container.querySelectorAll('.set-row'));
@@ -241,7 +241,7 @@ function handleDrop(event, group) {
     filesEl.innerHTML = '';
     var span = document.createElement('span');
     span.style.cssText = 'color:#16a34a;font-size:.8rem;padding:.25rem 0;display:block;';
-    span.textContent = '✅ ' + file.name;
+    span.textContent = 'â ' + file.name;
     filesEl.appendChild(span);
   }
   var zone = event.target.closest ? event.target.closest('.kanri-drop') : null;
@@ -320,7 +320,7 @@ function _calcCvr(units, click) {
 function _calcRoas(sales, cost) {
   if (!_parseNum(cost)) return '';
   var v = Math.round(_parseNum(sales) / _parseNum(cost) * 10000) / 100;
-  // 整数の場合も小数点1桁で表示（例：445→445.0）
+  // æ´æ°ã®å ´åãå°æ°ç¹1æ¡ã§è¡¨ç¤ºï¼ä¾ï¼445â445.0ï¼
   return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
 
@@ -349,29 +349,29 @@ async function kanriRun() {
   var log = document.getElementById('kanri-log');
   if (log) { log.style.display = 'block'; log.innerHTML = ''; }
   var missing = [];
-  if (!_kanriFiles.sales)   missing.push('【月次】売上（Item_SalesList）');
-  if (!_kanriFiles.item)    missing.push('【月次】商品別レポート');
-  if (!_kanriFiles.keyword) missing.push('【月次】KW別レポート');
-  if (!_kanriFiles.coupon)  missing.push('【月次】クーポンアドバンス広告レポート');
+  if (!_kanriFiles.sales)   missing.push('ãææ¬¡ãå£²ä¸ï¼Item_SalesListï¼');
+  if (!_kanriFiles.item)    missing.push('ãææ¬¡ãååå¥ã¬ãã¼ã');
+  if (!_kanriFiles.keyword) missing.push('ãææ¬¡ãKWå¥ã¬ãã¼ã');
+  if (!_kanriFiles.coupon)  missing.push('ãææ¬¡ãã¯ã¼ãã³ã¢ããã³ã¹åºåã¬ãã¼ã');
   if (missing.length) {
-    _kanriLog('【エラー】以下のファイルがセットされていません：', '#f87171');
+    _kanriLog('ãã¨ã©ã¼ãä»¥ä¸ã®ãã¡ã¤ã«ãã»ããããã¦ãã¾ããï¼', '#f87171');
     missing.forEach(function(m) { _kanriLog('  - ' + m, '#f87171'); });
     return;
   }
-  _kanriLog('処理を開始します...', '#60a5fa');
+  _kanriLog('å¦çãéå§ãã¾ã...', '#60a5fa');
   try {
-    // ZIPファイルの場合は解凍してCSVを取り出す
+    // ZIPãã¡ã¤ã«ã®å ´åã¯è§£åãã¦CSVãåãåºã
     async function readCsvFromFile(file, enc) {
       var name = file.name.toLowerCase();
       if (name.endsWith('.zip')) {
-        // JSZipで解凍
-        if (typeof JSZip === 'undefined') throw new Error('JSZipが読み込まれていません');
+        // JSZipã§è§£å
+        if (typeof JSZip === 'undefined') throw new Error('JSZipãèª­ã¿è¾¼ã¾ãã¦ãã¾ãã');
         var zip = await JSZip.loadAsync(file);
         var csvFile = null;
         zip.forEach(function(path, f) {
           if (!f.dir && path.toLowerCase().endsWith('.csv') && !csvFile) csvFile = f;
         });
-        if (!csvFile) throw new Error('ZIP内にCSVファイルが見つかりません');
+        if (!csvFile) throw new Error('ZIPåã«CSVãã¡ã¤ã«ãè¦ã¤ããã¾ãã');
         var buf = await csvFile.async('arraybuffer');
         var decoder = new TextDecoder(enc || 'Shift-JIS', {fatal:false});
         return decoder.decode(new Uint8Array(buf));
@@ -393,139 +393,140 @@ async function kanriRun() {
         if (_rm) { yyyy=_rm[1]; mm=_rm[2]; break; }
       }
     }
-    _kanriLog('対象年月: '+yyyy+'-'+mm, '#a3e635');
+    _kanriLog('å¯¾è±¡å¹´æ: '+yyyy+'-'+mm, '#a3e635');
     var kwRows=_parseCSV(kwText), itemRows=_parseCSV(itemText);
     var kwHdr=6, itHdr=6;
     var kwData=_csvToObjects(kwRows,kwHdr), itemData=_csvToObjects(itemRows,itHdr);
     var salesRows=_parseCSV(salesText), salesHeaderRow=6;
     for (var i=0; i<Math.min(15,salesRows.length); i++) {
-      if (salesRows[i].some(function(c){return c==='商品管理番号';})) { salesHeaderRow=i; break; }
+      if (salesRows[i].some(function(c){return c==='ååç®¡ççªå·';})) { salesHeaderRow=i; break; }
     }
     var salesData=_csvToObjects(salesRows,salesHeaderRow);
     var cpnRows=_parseCSV(cpnText), cpnData=_csvToObjects(cpnRows,0);
     var salesMap={};
-    salesData.forEach(function(r){var no=String(r['商品管理番号']||'').trim(),s=_parseNum(r['売上']||0);if(no)salesMap[no]=(salesMap[no]||0)+s;});
+    salesData.forEach(function(r){var no=String(r['ååç®¡ççªå·']||'').trim(),s=_parseNum(r['å£²ä¸']||0);if(no)salesMap[no]=(salesMap[no]||0)+s;});
     var couponMap={};
-    cpnData.forEach(function(r){var no=String(r['商品管理番号']||'').trim(),cost=_parseNum(r['実績額']||0),sale=_parseNum(r['売上金額']||0);if(no){if(!couponMap[no])couponMap[no]={cost:0,sales:0};couponMap[no].cost+=cost;couponMap[no].sales+=sale;}});
+    cpnData.forEach(function(r){var no=String(r['ååç®¡ççªå·']||'').trim(),cost=_parseNum(r['å®ç¸¾é¡']||0),sale=_parseNum(r['å£²ä¸éé¡']||0);if(no){if(!couponMap[no])couponMap[no]={cost:0,sales:0};couponMap[no].cost+=cost;couponMap[no].sales+=sale;}});
     var seenNos=new Set(),mgmtNos=[];
     kwData.concat(itemData).forEach(function(r){
-      var no=String(r['商品管理番号']||'').trim();
+      var no=String(r['ååç®¡ççªå·']||'').trim();
       if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}
     });
     salesData.forEach(function(r){
-      var no=String(r['商品管理番号']||'').trim();
+      var no=String(r['ååç®¡ççªå·']||'').trim();
       if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}
     });
-    _kanriLog('商品管理番号数: '+mgmtNos.length, '#a3e635');
-    var hN=['レコードの開始行','商品管理番号',mm+'-楽天売上',mm+'-広告売上',mm+'-実績額',mm+'-CVR',mm+'-ROAS',mm+'-獲得単価',mm+'-CPC実績',
-      '取得日'+mm+'月☆','楽天売上'+mm+'月☆','キーワード'+mm+'月☆','KWvol'+mm+'月☆','KWシェア'+mm+'月☆','CTR'+mm+'月☆','CL数'+mm+'月☆','実績額'+mm+'月☆','売上金額'+mm+'月☆','売上件数'+mm+'月☆','平均CL単価'+mm+'月☆','目安'+mm+'月☆','CVR'+mm+'月☆','ROAS'+mm+'月☆',
-      '取得日'+mm+'月★','楽天売上'+mm+'月★','キーワード'+mm+'月★','KWvol'+mm+'月★','KWシェア'+mm+'月★','CTR'+mm+'月★','CL数'+mm+'月★','実績額'+mm+'月★','売上金額'+mm+'月★','売上件数'+mm+'月★','平均CL単価'+mm+'月★','目安'+mm+'月★','CVR'+mm+'月★','ROAS'+mm+'月★'];
+    mgmtNos.sort(function(a,b){var na=Number(a),nb=Number(b);if(!isNaN(na)&&!isNaN(nb))return na-nb;return a<b?-1:a>b?1:0;});
+    _kanriLog('ååç®¡ççªå·æ°: '+mgmtNos.length, '#a3e635');
+    var hN=['ã¬ã³ã¼ãã®éå§è¡','ååç®¡ççªå·',mm+'-æ¥½å¤©å£²ä¸',mm+'-åºåå£²ä¸',mm+'-å®ç¸¾é¡',mm+'-CVR',mm+'-ROAS',mm+'-ç²å¾åä¾¡',mm+'-CPCå®ç¸¾',
+      'åå¾æ¥'+mm+'æâ','æ¥½å¤©å£²ä¸'+mm+'æâ','ã­ã¼ã¯ã¼ã'+mm+'æâ','KWvol'+mm+'æâ','KWã·ã§ã¢'+mm+'æâ','CTR'+mm+'æâ','CLæ°'+mm+'æâ','å®ç¸¾é¡'+mm+'æâ','å£²ä¸éé¡'+mm+'æâ','å£²ä¸ä»¶æ°'+mm+'æâ','å¹³åCLåä¾¡'+mm+'æâ','ç®å®'+mm+'æâ','CVR'+mm+'æâ','ROAS'+mm+'æâ',
+      'åå¾æ¥'+mm+'æâ','æ¥½å¤©å£²ä¸'+mm+'æâ','ã­ã¼ã¯ã¼ã'+mm+'æâ','KWvol'+mm+'æâ','KWã·ã§ã¢'+mm+'æâ','CTR'+mm+'æâ','CLæ°'+mm+'æâ','å®ç¸¾é¡'+mm+'æâ','å£²ä¸éé¡'+mm+'æâ','å£²ä¸ä»¶æ°'+mm+'æâ','å¹³åCLåä¾¡'+mm+'æâ','ç®å®'+mm+'æâ','CVR'+mm+'æâ','ROAS'+mm+'æâ'];
     var HI={};hN.forEach(function(h,i){HI[h]=i;});
     var outRows=[hN];
     function newRow(){return new Array(hN.length).fill('');}
     function si(r,k,v){if(HI[k]!==undefined&&v!==undefined&&v!==null&&v!=='')r[HI[k]]=v;}
     function setF(r,bl,kw,ex){
-      ex=ex||{};var p=bl==='☆'?'月☆':'月★';
-      si(r,'取得日'+mm+p,ex.date);si(r,'楽天売上'+mm+p,ex.rakuten);
-      if(HI['キーワード'+mm+p]!==undefined)r[HI['キーワード'+mm+p]]=kw;
-      si(r,'KWvol'+mm+p,ex.kwvol);si(r,'KWシェア'+mm+p,ex.share);si(r,'CTR'+mm+p,ex.ctr);
-      si(r,'CL数'+mm+p,ex.click);si(r,'実績額'+mm+p,ex.cost);si(r,'売上金額'+mm+p,ex.sales);
-      si(r,'売上件数'+mm+p,ex.units);si(r,'平均CL単価'+mm+p,ex.avg_cpc);si(r,'目安'+mm+p,ex.target_cpc);
+      ex=ex||{};var p=bl==='â'?'æâ':'æâ';
+      si(r,'åå¾æ¥'+mm+p,ex.date);si(r,'æ¥½å¤©å£²ä¸'+mm+p,ex.rakuten);
+      if(HI['ã­ã¼ã¯ã¼ã'+mm+p]!==undefined)r[HI['ã­ã¼ã¯ã¼ã'+mm+p]]=kw;
+      si(r,'KWvol'+mm+p,ex.kwvol);si(r,'KWã·ã§ã¢'+mm+p,ex.share);si(r,'CTR'+mm+p,ex.ctr);
+      si(r,'CLæ°'+mm+p,ex.click);si(r,'å®ç¸¾é¡'+mm+p,ex.cost);si(r,'å£²ä¸éé¡'+mm+p,ex.sales);
+      si(r,'å£²ä¸ä»¶æ°'+mm+p,ex.units);si(r,'å¹³åCLåä¾¡'+mm+p,ex.avg_cpc);si(r,'ç®å®'+mm+p,ex.target_cpc);
       si(r,'CVR'+mm+p,ex.cvr);si(r,'ROAS'+mm+p,ex.roas);
     }
     mgmtNos.forEach(function(no){
-      var kwI=kwData.filter(function(r){return String(r['商品管理番号']||'').trim()===no;});
-      var itI=itemData.filter(function(r){return String(r['商品管理番号']||'').trim()===no;});
+      var kwI=kwData.filter(function(r){return String(r['ååç®¡ççªå·']||'').trim()===no;});
+      var itI=itemData.filter(function(r){return String(r['ååç®¡ççªå·']||'').trim()===no;});
       var rak=salesMap[no]||'', cpn=couponMap[no]||null;
-      var iCl=itI.reduce(function(s,r){return s+_parseNum(r['クリック数(合計)']||0);},0);
-      var iCo=itI.reduce(function(s,r){return s+_parseNum(r['実績額(合計)']||0);},0);
-      var iSa=itI.reduce(function(s,r){return s+_parseNum(r['売上金額(合計720時間)']||0);},0);
-      var iUn=itI.reduce(function(s,r){return s+_parseNum(r['売上件数(合計720時間)']||0);},0);
+      var iCl=itI.reduce(function(s,r){return s+_parseNum(r['ã¯ãªãã¯æ°(åè¨)']||0);},0);
+      var iCo=itI.reduce(function(s,r){return s+_parseNum(r['å®ç¸¾é¡(åè¨)']||0);},0);
+      var iSa=itI.reduce(function(s,r){return s+_parseNum(r['å£²ä¸éé¡(åè¨720æé)']||0);},0);
+      var iUn=itI.reduce(function(s,r){return s+_parseNum(r['å£²ä¸ä»¶æ°(åè¨720æé)']||0);},0);
       var sr=newRow();sr[0]='*';sr[1]=no;
-      if(rak!=='')sr[HI[mm+'-楽天売上']]=rak;
-      if(iSa)sr[HI[mm+'-広告売上']]=iSa;if(iCo)sr[HI[mm+'-実績額']]=iCo;
+      if(rak!=='')sr[HI[mm+'-æ¥½å¤©å£²ä¸']]=rak;
+      if(iSa)sr[HI[mm+'-åºåå£²ä¸']]=iSa;if(iCo)sr[HI[mm+'-å®ç¸¾é¡']]=iCo;
       var cv=_calcCvr(iUn,iCl);if(cv)sr[HI[mm+'-CVR']]=cv;
       var ro=_calcRoas(iSa,iCo);if(ro)sr[HI[mm+'-ROAS']]=ro;
-      // 獲得単価 = 注文獲得単価(合計720時間) をitem CSVから取得
+      // ç²å¾åä¾¡ = æ³¨æç²å¾åä¾¡(åè¨720æé) ãitem CSVããåå¾
       if(itI[0]){
-        var cpc=_parseNum(itI[0]['CPC実績(合計)']||0);if(cpc)sr[HI[mm+'-CPC実績']]=cpc;
-        var ac=_parseNum(itI[0]['注文獲得単価(合計720時間)']||0);if(ac)sr[HI[mm+'-獲得単価']]=ac;
+        var cpc=_parseNum(itI[0]['CPCå®ç¸¾(åè¨)']||0);if(cpc)sr[HI[mm+'-CPCå®ç¸¾']]=cpc;
+        var ac=_parseNum(itI[0]['æ³¨æç²å¾åä¾¡(åè¨720æé)']||0);if(ac)sr[HI[mm+'-ç²å¾åä¾¡']]=ac;
       }
       outRows.push(sr);
-      var kCl=kwI.reduce(function(s,r){return s+_parseNum(r['クリック数(合計)']||0);},0);
-      var kCo=kwI.reduce(function(s,r){return s+_parseNum(r['実績額(合計)']||0);},0);
-      var kSa=kwI.reduce(function(s,r){return s+_parseNum(r['売上金額(合計720時間)']||0);},0);
-      var kUn=kwI.reduce(function(s,r){return s+_parseNum(r['売上件数(合計720時間)']||0);},0);
+      var kCl=kwI.reduce(function(s,r){return s+_parseNum(r['ã¯ãªãã¯æ°(åè¨)']||0);},0);
+      var kCo=kwI.reduce(function(s,r){return s+_parseNum(r['å®ç¸¾é¡(åè¨)']||0);},0);
+      var kSa=kwI.reduce(function(s,r){return s+_parseNum(r['å£²ä¸éé¡(åè¨720æé)']||0);},0);
+      var kUn=kwI.reduce(function(s,r){return s+_parseNum(r['å£²ä¸ä»¶æ°(åè¨720æé)']||0);},0);
       var dCl=iCl-kCl,dCo=iCo-kCo,dSa=iSa-kSa,dUn=iUn-kUn;
-      var ds=yyyy+'/'+mm+'-①';
+      var ds=yyyy+'/'+mm+'-â ';
       var seoSa=rak!==''?(_parseNum(rak)-iSa-(cpn?_parseNum(cpn.sales):0)):'';
       var sRHoshi=newRow();
-      si(sRHoshi,'取得日'+mm+'月☆',ds);
-      si(sRHoshi,'楽天売上'+mm+'月☆',rak);
-      if(HI['キーワード'+mm+'月☆']!==undefined)sRHoshi[HI['キーワード'+mm+'月☆']]='SEO分-②';
-      if(seoSa!=='')si(sRHoshi,'売上金額'+mm+'月☆',seoSa);
+      si(sRHoshi,'åå¾æ¥'+mm+'æâ',ds);
+      si(sRHoshi,'æ¥½å¤©å£²ä¸'+mm+'æâ',rak);
+      if(HI['ã­ã¼ã¯ã¼ã'+mm+'æâ']!==undefined)sRHoshi[HI['ã­ã¼ã¯ã¼ã'+mm+'æâ']]='SEOå-â¡';
+      if(seoSa!=='')si(sRHoshi,'å£²ä¸éé¡'+mm+'æâ',seoSa);
       var sRStar=newRow();
-      si(sRStar,'取得日'+mm+'月★',ds);
-      si(sRStar,'楽天売上'+mm+'月★',rak);
-      if(HI['キーワード'+mm+'月★']!==undefined)sRStar[HI['キーワード'+mm+'月★']]='SEO分-②';
-      if(seoSa!=='')si(sRStar,'売上金額'+mm+'月★',seoSa);
+      si(sRStar,'åå¾æ¥'+mm+'æâ',ds);
+      si(sRStar,'æ¥½å¤©å£²ä¸'+mm+'æâ',rak);
+      if(HI['ã­ã¼ã¯ã¼ã'+mm+'æâ']!==undefined)sRStar[HI['ã­ã¼ã¯ã¼ã'+mm+'æâ']]='SEOå-â¡';
+      if(seoSa!=='')si(sRStar,'å£²ä¸éé¡'+mm+'æâ',seoSa);
       outRows.push(sRHoshi);
-      var sh=kwI.slice().sort(function(a,b){return _parseNum(b['売上金額(合計720時間)']||0)-_parseNum(a['売上金額(合計720時間)']||0);});
-      var co=kwI.slice().sort(function(a,b){return _parseNum(b['実績額(合計)']||0)-_parseNum(a['実績額(合計)']||0);});
+      var sh=kwI.slice().sort(function(a,b){return _parseNum(b['å£²ä¸éé¡(åè¨720æé)']||0)-_parseNum(a['å£²ä¸éé¡(åè¨720æé)']||0);});
+      var co=kwI.slice().sort(function(a,b){return _parseNum(b['å®ç¸¾é¡(åè¨)']||0)-_parseNum(a['å®ç¸¾é¡(åè¨)']||0);});
       function eb(bl,so){
-        // ☆★ブロックの区切り線
+        // ââãã­ãã¯ã®åºåãç·
         var x=newRow(); setF(x,bl,'------------------------------'); outRows.push(x);
-        // kw/itemなし商品（salesのみ）
+        // kw/itemãªãååï¼salesã®ã¿ï¼
         if(so.length===0 && iCl===0 && iCo===0){
-          var na=newRow(); setF(na,bl,'広告出稿なし'); outRows.push(na);
+          var na=newRow(); setF(na,bl,'åºååºç¨¿ãªã'); outRows.push(na);
         } else {
-          // 広告合計-③
-          var y=newRow(); setF(y,bl,'広告合計-③',{click:iCl||'',cost:iCo||'',sales:iSa||'',units:iUn||'',avg_cpc:_calcAvgCpc(iCo,iCl),cvr:_calcCvr(iUn,iCl),roas:_calcRoas(iSa,iCo)}); outRows.push(y);
-          // 商品CPC-④（itemあり時のみ）
+          // åºååè¨-â¢
+          var y=newRow(); setF(y,bl,'åºååè¨-â¢',{click:iCl||'',cost:iCo||'',sales:iSa||'',units:iUn||'',avg_cpc:_calcAvgCpc(iCo,iCl),cvr:_calcCvr(iUn,iCl),roas:_calcRoas(iSa,iCo)}); outRows.push(y);
+          // ååCPC-â£ï¼itemããæã®ã¿ï¼
           if(itI.length){
-            var z=newRow(); setF(z,bl,'商品CPC(20円出稿分)-④',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)}); outRows.push(z);
+            var z=newRow(); setF(z,bl,'ååCPC(20ååºç¨¿å)-â£',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)}); outRows.push(z);
           }
-          // KW合計-④
-          var w=newRow(); setF(w,bl,'KW合計(下記KWの合計)-④',{click:kCl||'',cost:kCo||'',sales:kSa||'',units:kUn||'',avg_cpc:_calcAvgCpc(kCo,kCl),cvr:_calcCvr(kUn,kCl),roas:_calcRoas(kSa,kCo)}); outRows.push(w);
-          // KWvol合計を先に計算（KWシェア算出に必要）
+          // KWåè¨-â£
+          var w=newRow(); setF(w,bl,'KWåè¨(ä¸è¨KWã®åè¨)-â£',{click:kCl||'',cost:kCo||'',sales:kSa||'',units:kUn||'',avg_cpc:_calcAvgCpc(kCo,kCl),cvr:_calcCvr(kUn,kCl),roas:_calcRoas(kSa,kCo)}); outRows.push(w);
+          // KWvolåè¨ãåã«è¨ç®ï¼KWã·ã§ã¢ç®åºã«å¿è¦ï¼
           var totalVol=0;
           so.forEach(function(kw){
-            var cl=_parseNum(kw['クリック数(合計)']||0);
+            var cl=_parseNum(kw['ã¯ãªãã¯æ°(åè¨)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
             totalVol += ctr>0 ? Math.floor(cl/ctr*100) : 0;
           });
-          // KW行
+          // KWè¡
           so.forEach(function(kw){
-            var c1=_parseNum(kw['クリック数(合計)']||0);
-            var c2=_parseNum(kw['実績額(合計)']||0);
-            var s1=_parseNum(kw['売上金額(合計720時間)']||0);
-            var u1=_parseNum(kw['売上件数(合計720時間)']||0);
+            var c1=_parseNum(kw['ã¯ãªãã¯æ°(åè¨)']||0);
+            var c2=_parseNum(kw['å®ç¸¾é¡(åè¨)']||0);
+            var s1=_parseNum(kw['å£²ä¸éé¡(åè¨720æé)']||0);
+            var u1=_parseNum(kw['å£²ä¸ä»¶æ°(åè¨720æé)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
             var kwvol = ctr>0 ? Math.floor(c1/ctr*100) : 0;
             var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*10000)/100 : 0;
             var rk=newRow();
-            setF(rk,bl,kw['キーワード']||'',{
+            setF(rk,bl,kw['ã­ã¼ã¯ã¼ã']||'',{
               kwvol:kwvol||'', share:kwshare||'',
-              ctr:kw['CTR(%)']||'', click:c1||'', cost:c2||'',
+              ctr:parseFloat(kw['CTR(%)'||''])||'', click:c1||'', cost:c2||'',
               sales:s1||'', units:u1||'',
               avg_cpc:_calcAvgCpc(c2,c1),
-              target_cpc:kw['目安CPC']||'',
+              target_cpc:kw['ç®å®CPC']||'',
               cvr:_calcCvr(u1,c1), roas:_calcRoas(s1,c2)
             });
             outRows.push(rk);
           });
         }
-        // 区切り線
+        // åºåãç·
         var x2=newRow(); setF(x2,bl,'------------------------------'); outRows.push(x2);
-        // クーポンアドバンス-⑤
-        if(cpn){ var r5=newRow(); setF(r5,bl,'クーポンアドバンス-⑤',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)}); outRows.push(r5); }
+        // ã¯ã¼ãã³ã¢ããã³ã¹-â¤
+        if(cpn){ var r5=newRow(); setF(r5,bl,'ã¯ã¼ãã³ã¢ããã³ã¹-â¤',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)}); outRows.push(r5); }
       }
-      eb('☆',sh);      outRows.push(sRStar);
-eb('★',co);
+      eb('â',sh);      outRows.push(sRStar);
+eb('â',co);
     });
     var csv='\uFEFF'+outRows.map(function(r){return r.map(function(v){var s=String(v==null?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.split('"').join('""')+'"':s;}).join(',');}).join('\r\n');
-    var b=new Blob([csv],{type:'text/csv;charset=utf-8;'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='ゆかい屋個別-'+yyyy+'-'+mm+'.csv';a.click();URL.revokeObjectURL(u);
-    _kanriLog('完了: ゆかい屋個別-'+yyyy+'-'+mm+'.csv','#4ade80');
-    _kanriLog('  商品数:'+mgmtNos.length+' 行数:'+outRows.length,'#a3e635');
-  } catch(e) { _kanriLog('【エラー】'+e.message,'#f87171'); console.error(e); }
+    var b=new Blob([csv],{type:'text/csv;charset=utf-8;'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='ãããå±åå¥-'+yyyy+'-'+mm+'.csv';a.click();URL.revokeObjectURL(u);
+    _kanriLog('å®äº: ãããå±åå¥-'+yyyy+'-'+mm+'.csv','#4ade80');
+    _kanriLog('  ååæ°:'+mgmtNos.length+' è¡æ°:'+outRows.length,'#a3e635');
+  } catch(e) { _kanriLog('ãã¨ã©ã¼ã'+e.message,'#f87171'); console.error(e); }
 }
