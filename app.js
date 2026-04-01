@@ -437,8 +437,11 @@ async function kanriRun() {
       if(iSa)sr[HI[mm+'-広告売上']]=iSa;if(iCo)sr[HI[mm+'-実績額']]=iCo;
       var cv=_calcCvr(iUn,iCl);if(cv)sr[HI[mm+'-CVR']]=cv;
       var ro=_calcRoas(iSa,iCo);if(ro)sr[HI[mm+'-ROAS']]=ro;
-      var ac=_calcAvgCpc(iCo,iCl);if(ac)sr[HI[mm+'-獲得単価']]=ac;
-      if(itI[0]){var cpc=_parseNum(itI[0]['CPC実績(合計)']||0);if(cpc)sr[HI[mm+'-CPC実績']]=cpc;}
+      // 獲得単価 = 注文獲得単価(合計720時間) をitem CSVから取得
+      if(itI[0]){
+        var cpc=_parseNum(itI[0]['CPC実績(合計)']||0);if(cpc)sr[HI[mm+'-CPC実績']]=cpc;
+        var ac=_parseNum(itI[0]['注文獲得単価(合計720時間)']||0);if(ac)sr[HI[mm+'-獲得単価']]=ac;
+      }
       outRows.push(sr);
       var kCl=kwI.reduce(function(s,r){return s+_parseNum(r['クリック数(合計)']||0);},0);
       var kCo=kwI.reduce(function(s,r){return s+_parseNum(r['実績額(合計)']||0);},0);
