@@ -384,14 +384,15 @@ async function kanriRun() {
     var salesText = await readCsvFromFile(_kanriFiles.sales,   'UTF-8');
     var cpnText   = await readCsvFromFile(_kanriFiles.coupon,  'UTF-8');
     var yyyy='', mm='';
-    var kwLines = kwText.split(new RegExp('\r?\n'));
-    for (var i=0; i<Math.min(10,kwLines.length); i++) {
-      var m1 = kwLines[i].match(new RegExp('(20[0-9][0-9])[-]([0-9][0-9])'));
-      if (m1) { yyyy=m1[1]; mm=m1[2]; break; }
-    }
+    var _sn = _kanriFiles.sales ? _kanriFiles.sales.name : '';
+    var _sm = _sn.match(new RegExp('(20[0-9][0-9])([01][0-9])'));
+    if (_sm) { yyyy=_sm[1]; mm=_sm[2]; }
     if (!yyyy) {
-      var m2 = _kanriFiles.sales.name.match(new RegExp('(20[0-9][0-9])([0-9][0-9])'));
-      if (m2) { yyyy=m2[1]; mm=m2[2]; }
+      var _kwl = kwText.split(new RegExp('[\r]?[\n]'));
+      for (var _i=7; _i<Math.min(20,_kwl.length); _i++) {
+        var _rm = _kwl[_i].match(new RegExp('(20[0-9][0-9])\\u5e74([01][0-9])\\u6708'));
+        if (_rm) { yyyy=_rm[1]; mm=_rm[2]; break; }
+      }
     }
     _kanriLog('対象年月: '+yyyy+'-'+mm, '#a3e635');
     var kwRows=_parseCSV(kwText), itemRows=_parseCSV(itemText);
