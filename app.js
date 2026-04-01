@@ -406,8 +406,15 @@ async function kanriRun() {
     salesData.forEach(function(r){var no=String(r['商品管理番号']||'').trim(),s=_parseNum(r['売上']||0);if(no)salesMap[no]=(salesMap[no]||0)+s;});
     var couponMap={};
     cpnData.forEach(function(r){var no=String(r['商品管理番号']||'').trim(),cost=_parseNum(r['実績額']||0),sale=_parseNum(r['売上金額']||0);if(no){if(!couponMap[no])couponMap[no]={cost:0,sales:0};couponMap[no].cost+=cost;couponMap[no].sales+=sale;}});
-    var seenNos=new Set(), mgmtNos=[];
-    kwData.concat(itemData).forEach(function(r){var no=String(r['商品管理番号']||'').trim();if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}});
+    var seenNos=new Set(),mgmtNos=[];
+    kwData.concat(itemData).forEach(function(r){
+      var no=String(r['商品管理番号']||'').trim();
+      if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}
+    });
+    salesData.forEach(function(r){
+      var no=String(r['商品管理番号']||'').trim();
+      if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}
+    });
     _kanriLog('商品管理番号数: '+mgmtNos.length, '#a3e635');
     var hN=['レコードの開始行','商品管理番号',mm+'-楽天売上',mm+'-広告売上',mm+'-実績額',mm+'-CVR',mm+'-ROAS',mm+'-獲得単価',mm+'-CPC実績',
       '取得日'+mm+'月☆','楽天売上'+mm+'月☆','キーワード'+mm+'月☆','KWvol'+mm+'月☆','KWシェア'+mm+'月☆','CTR'+mm+'月☆','CL数'+mm+'月☆','実績額'+mm+'月☆','売上金額'+mm+'月☆','売上件数'+mm+'月☆','平均CL単価'+mm+'月☆','目安'+mm+'月☆','CVR'+mm+'月☆','ROAS'+mm+'月☆',
