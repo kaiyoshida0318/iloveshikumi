@@ -256,7 +256,7 @@ function _readFileAsText(file, enc) {
     var r = new FileReader();
     r.onload = function(e) { res(e.target.result); };
     r.onerror = rej;
-    r.readAsText(file, enc || 'Shift_JIS');
+    r.readAsText(file, enc || 'Shift-JIS');
   });
 }
 
@@ -353,8 +353,8 @@ async function kanriRun() {
   }
   _kanriLog('処理を開始します...', '#60a5fa');
   try {
-    var kwText    = await _readFileAsText(_kanriFiles.keyword, 'Shift_JIS');
-    var itemText  = await _readFileAsText(_kanriFiles.item,    'Shift_JIS');
+    var kwText    = await _readFileAsText(_kanriFiles.keyword, 'Shift-JIS');
+    var itemText  = await _readFileAsText(_kanriFiles.item,    'Shift-JIS');
     var salesText = await _readFileAsText(_kanriFiles.sales,   'UTF-8');
     var cpnText   = await _readFileAsText(_kanriFiles.coupon,  'UTF-8');
     var yyyy='', mm='';
