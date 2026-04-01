@@ -359,10 +359,28 @@ async function kanriRun() {
   }
   _kanriLog('処理を開始します...', '#60a5fa');
   try {
-    var kwText    = await _readFileAsText(_kanriFiles.keyword, 'Shift-JIS');
-    var itemText  = await _readFileAsText(_kanriFiles.item,    'Shift-JIS');
-    var salesText = await _readFileAsText(_kanriFiles.sales,   'UTF-8');
-    var cpnText   = await _readFileAsText(_kanriFiles.coupon,  'UTF-8');
+    // ZIPファイルの場合は解凍してCSVを取り出す
+    async function readCsvFromFile(file, enc) {
+      var name = file.name.toLowerCase();
+      if (name.endsWith('.zip')) {
+        // JSZipで解凍
+        if (typeof JSZip === 'undefined') throw new Error('JSZipが読み込まれていません');
+        var zip = await JSZip.loadAsync(file);
+        var csvFile = null;
+        zip.forEach(function(path, f) {
+          if (!f.dir && path.toLowerCase().endsWith('.csv') && !csvFile) csvFile = f;
+        });
+        if (!csvFile) throw new Error('ZIP内にCSVファイルが見つかりません');
+        var buf = await csvFile.async('arraybuffer');
+        var decoder = new TextDecoder(enc || 'Shift-JIS', {fatal:false});
+        return decoder.decode(new Uint8Array(buf));
+      }
+      return _readFileAsText(file, enc);
+    }
+    var kwText    = await readCsvFromFile(_kanriFiles.keyword, 'Shift-JIS');
+    var itemText  = await readCsvFromFile(_kanriFiles.item,    'Shift-JIS');
+    var salesText = await readCsvFromFile(_kanriFiles.sales,   'UTF-8');
+    var cpnText   = await readCsvFromFile(_kanriFiles.coupon,  'UTF-8');
     var yyyy='', mm='';
     var kwLines = kwText.split(new RegExp('\r?\n'));
     for (var i=0; i<Math.min(10,kwLines.length); i++) {
