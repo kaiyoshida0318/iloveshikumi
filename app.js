@@ -253,13 +253,19 @@ var _kanriFiles = { sales: null, item: null, keyword: null, coupon: null };
 
 function _readFileAsText(file, enc) {
   return new Promise(function(res, rej) {
-    var r = new FileReader();
-    r.onload = function(e) { res(e.target.result); };
-    r.onerror = rej;
-    r.readAsText(file, enc || 'Shift-JIS');
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var bytes = new Uint8Array(e.target.result);
+        var encoding = enc || 'Shift-JIS';
+        var decoder = new TextDecoder(encoding, {fatal: false});
+        res(decoder.decode(bytes));
+      } catch(err) { rej(err); }
+    };
+    reader.onerror = rej;
+    reader.readAsArrayBuffer(file);
   });
 }
-
 function _parseCSV(text) {
   var rows = [];
   var lines = text.split(new RegExp('[\r]?[\n]'));
