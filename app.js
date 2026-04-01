@@ -373,6 +373,7 @@ async function kanriRun() {
     for(var i=0;i<Math.min(10,kwRows.length);i++){if(kwRows[i].some(function(c){return c==='商品管理番号';})){kwHdr=i;break;}}
     for(var i=0;i<Math.min(10,itemRows.length);i++){if(itemRows[i].some(function(c){return c==='商品管理番号';})){itHdr=i;break;}}
     var kwData=_csvToObjects(kwRows,kwHdr), itemData=_csvToObjects(itemRows,itHdr);
+    _kanriLog('DEBUG kwHdr:'+kwHdr+' itHdr:'+itHdr+' kwData:'+kwData.length+' itemData:'+itemData.length, '#facc15');
     var salesRows=_parseCSV(salesText), salesHeaderRow=6;
     for (var i=0; i<Math.min(15,salesRows.length); i++) {
       if (salesRows[i].some(function(c){return c==='商品管理番号';})) { salesHeaderRow=i; break; }
