@@ -503,7 +503,7 @@ async function kanriRun() {
             var u1=_parseNum(kw['売上件数(合計720時間)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
             var kwvol = ctr>0 ? Math.floor(c1/ctr*100) : 0;
-            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*10000)/100 : 0;
+            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*10000)/100 : 0; kwshare = Number.isInteger(kwshare) ? kwshare.toFixed(1) : kwshare;
             var rk=newRow();
             setF(rk,bl,kw['キーワード']||'',{
               kwvol:kwvol||'', share:kwshare||'',
