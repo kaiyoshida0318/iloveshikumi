@@ -320,7 +320,9 @@ function _calcCvr(units, click) {
 function _calcRoas(sales, cost) {
   if (!cost) return '';
   var v = Math.round(_parseNum(sales) / _parseNum(cost) * 10000) / 100;
-  return v || '';
+  if (!v) return '';
+  // 小数点以下1桁まで表示（手元ツールに合わせる）
+  return Math.round(v * 10) / 10;
 }
 
 function _kanriLog(msg, color) {
