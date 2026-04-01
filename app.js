@@ -419,8 +419,7 @@ async function kanriRun() {
     mgmtNos.sort(function(a,b){var na=Number(a),nb=Number(b);if(!isNaN(na)&&!isNaN(nb))return na-nb;return a<b?-1:a>b?1:0;});
     _kanriLog('商品管理番号数: '+mgmtNos.length, '#a3e635');
     var hN=['レコードの開始行','商品管理番号',mm+'-楽天売上',mm+'-広告売上',mm+'-実績額',mm+'-CVR',mm+'-ROAS',mm+'-獲得単価',mm+'-CPC実績',
-      '取得日'+mm+'月☆','楽天売上'+mm+'月☆','キーワード'+mm+'月☆','KWvol'+mm+'月☆','KWシェア'+mm+'月☆','CTR'+mm+'月☆','CL数'+mm+'月☆','実績額'+mm+'月☆','売上金額'+mm+'月☆','売上件数'+mm+'月☆','平均CL単価'+mm+'月☆','目安'+mm+'月☆','CVR'+mm+'月☆','ROAS'+mm+'月☆',
-      '取得日'+mm+'月★','楽天売上'+mm+'月★','キーワード'+mm+'月★','KWvol'+mm+'月★','KWシェア'+mm+'月★','CTR'+mm+'月★','CL数'+mm+'月★','実績額'+mm+'月★','売上金額'+mm+'月★','売上件数'+mm+'月★','平均CL単価'+mm+'月★','目安'+mm+'月★','CVR'+mm+'月★','ROAS'+mm+'月★'];
+      '取得日'+mm+'月☆','楽天売上'+mm+'月☆','キーワード'+mm+'月☆','KWvol'+mm+'月☆','KWシェア'+mm+'月☆','CTR'+mm+'月☆','CL数'+mm+'月☆','実績額'+mm+'月☆','売上金額'+mm+'月☆','売上件数'+mm+'月☆','平均CL単価'+mm+'月☆','目安'+mm+'月☆','CVR'+mm+'月☆','ROAS'+mm+'月☆'];
     var HI={};hN.forEach(function(h,i){HI[h]=i;});
     var outRows=[hN];
     function newRow(){return new Array(hN.length).fill('');}
@@ -465,15 +464,9 @@ async function kanriRun() {
       si(sRHoshi,'楽天売上'+mm+'月☆',rak);
       if(HI['キーワード'+mm+'月☆']!==undefined)sRHoshi[HI['キーワード'+mm+'月☆']]='SEO分-②';
       if(seoSa!=='')si(sRHoshi,'売上金額'+mm+'月☆',seoSa);
-      var sRStar=newRow();
-      si(sRStar,'取得日'+mm+'月★',ds);
-      si(sRStar,'楽天売上'+mm+'月★',rak);
-      if(HI['キーワード'+mm+'月★']!==undefined)sRStar[HI['キーワード'+mm+'月★']]='SEO分-②';
-      if(seoSa!=='')si(sRStar,'売上金額'+mm+'月★',seoSa);
       outRows.push(sRHoshi);
       var sh=kwI.slice().sort(function(a,b){var ca=_parseNum(a['クリック数(合計)']||0),cb=_parseNum(b['クリック数(合計)']||0),ta=_parseNum(a['CTR(%)']||0),tb=_parseNum(b['CTR(%)']||0);var va=ta>0?Math.floor(ca/ta*100):0,vb=tb>0?Math.floor(cb/tb*100):0;return vb-va;});
-      var co=kwI.slice().sort(function(a,b){var ca=_parseNum(a['クリック数(合計)']||0),cb=_parseNum(b['クリック数(合計)']||0),ta=_parseNum(a['CTR(%)']||0),tb=_parseNum(b['CTR(%)']||0);var va=ta>0?Math.floor(ca/ta*100):0,vb=tb>0?Math.floor(cb/tb*100):0;return vb-va;});
-      function eb(bl,so){
+            function eb(bl,so){
         // ☆★ブロックの区切り線
         var x=newRow(); setF(x,bl,'------------------------------'); outRows.push(x);
         // kw/itemなし商品（salesのみ）
@@ -521,9 +514,7 @@ async function kanriRun() {
         // クーポンアドバンス-⑤
         if(cpn){ var r5=newRow(); setF(r5,bl,'クーポンアドバンス-⑤',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)}); outRows.push(r5); }
       }
-      eb('☆',sh);      outRows.push(sRStar);
-eb('★',co);
-    });
+      eb('☆',sh);      });
     var csv='\uFEFF'+outRows.map(function(r){return r.map(function(v){var s=String(v==null?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.split('"').join('""')+'"':s;}).join(',');}).join('\r\n');
     var b=new Blob([csv],{type:'text/csv;charset=utf-8;'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='ゆかい屋個別-'+yyyy+'-'+mm+'.csv';a.click();URL.revokeObjectURL(u);
     _kanriLog('完了: ゆかい屋個別-'+yyyy+'-'+mm+'.csv','#4ade80');
