@@ -313,13 +313,13 @@ function _calcAvgCpc(cost, click) {
 
 function _calcCvr(units, click) {
   if (!_parseNum(click)) return '';
-  var v = Math.round(_parseNum(units) / _parseNum(click) * 10000) / 100;
+  var v = parseFloat((_parseNum(units) / _parseNum(click) * 100).toFixed(2));
   return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
 
 function _calcRoas(sales, cost) {
   if (!_parseNum(cost)) return '';
-  var v = Math.round(_parseNum(sales) / _parseNum(cost) * 10000) / 100;
+  var v = parseFloat((_parseNum(sales) / _parseNum(cost) * 100).toFixed(2));
   // 整数の場合も小数点1桁で表示（例：445→445.0）
   return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
@@ -500,10 +500,10 @@ async function kanriRun() {
             var rk=newRow();
             setF(rk,bl,kw['キーワード']||'',{
               kwvol:kwvol||'', share:kwshare||'',
-              ctr:parseFloat(kw['CTR(%)'||''])||'', click:c1||'', cost:c2||'',
+              ctr:(function(){var v=parseFloat(kw['CTR(%)'||'']);return isNaN(v)||v===0?'':Number.isInteger(v)?v.toFixed(1):v;})(), click:c1||'', cost:c2||'',
               sales:s1||'', units:u1||'',
               avg_cpc:_calcAvgCpc(c2,c1),
-              target_cpc:kw['目安CPC']||'',
+              target_cpc:(kw['目安CPC']==='-'?'':kw['目安CPC']||''),
               cvr:_calcCvr(u1,c1), roas:_calcRoas(s1,c2)
             });
             outRows.push(rk);
