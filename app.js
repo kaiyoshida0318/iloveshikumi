@@ -1,15 +1,6 @@
-      var sRHoshi=newRow();
-      si(sRHoshi,'取得日'+mm+'月☆',ds);
-      si(sRHoshi,'楽天売上'+mm+'月☆',rak);
-      if(HI['キーワード'+mm+'月☆']!==undefined)sRHoshi[HI['キーワード'+mm+'月☆']]='SEO分-②';
-      if(seoSa!=='')si(sRHoshi,'売上金額'+mm+'月☆',seoSa);
-      var sRStar=newRow();
-      si(sRStar,'取得日'+mm+'月★',ds);
-      si(sRStar,'楽天売上'+mm+'月★',rak);
-      if(HI['キーワード'+mm+'月★']!==undefined)sRStar[HI['キーワード'+mm+'月★']]='SEO分-②';
-      if(seoSa!=='')si(sRStar,'売上金額'+mm+'月★',seoSa);
-      outRows.push(sRHoshi);
-      outRows.push(sRStar);unction switchTab(el) {
+
+let rivalCount = 4;
+function switchTab(el) {
   // 全タブのactive解除（position:absoluteのものも含む）
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   // 全パネル非表示
@@ -512,7 +503,7 @@ async function kanriRun() {
             var u1=_parseNum(kw['売上件数(合計720時間)']||0);
             var ctr=_parseNum(kw['CTR(%)']||0);
             var kwvol = ctr>0 ? Math.round(c1/ctr*100) : 0;
-            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*10000)/100 : 0;
+            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*1000)/10 : 0;
             var rk=newRow();
             setF(rk,bl,kw['キーワード']||'',{
               kwvol:kwvol||'', share:kwshare||'',
