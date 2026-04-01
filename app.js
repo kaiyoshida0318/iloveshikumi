@@ -1,4 +1,3 @@
-      outRows.push(sRStar);
 
 let rivalCount = 4;
 function switchTab(el) {
@@ -459,7 +458,7 @@ async function kanriRun() {
       var kUn=kwI.reduce(function(s,r){return s+_parseNum(r['売上件数(合計720時間)']||0);},0);
       var dCl=iCl-kCl,dCo=iCo-kCo,dSa=iSa-kSa,dUn=iUn-kUn;
       var ds=yyyy+'/'+mm+'-①';
-      var seoSa=rak!==''?(_parseNum(rak)-iSa):'';
+      var seoSa=rak!==''?(_parseNum(rak)-iSa-(cpn?_parseNum(cpn.sales):0)):'';
       var sRHoshi=newRow();
       si(sRHoshi,'取得日'+mm+'月☆',ds);
       si(sRHoshi,'楽天売上'+mm+'月☆',rak);
@@ -521,7 +520,8 @@ async function kanriRun() {
         // クーポンアドバンス-⑤
         if(cpn){ var r5=newRow(); setF(r5,bl,'クーポンアドバンス-⑤',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)}); outRows.push(r5); }
       }
-      eb('☆',sh);eb('★',co);
+      eb('☆',sh);      outRows.push(sRStar);
+eb('★',co);
     });
     var csv='\uFEFF'+outRows.map(function(r){return r.map(function(v){var s=String(v==null?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.split('"').join('""')+'"':s;}).join(',');}).join('\r\n');
     var b=new Blob([csv],{type:'text/csv;charset=utf-8;'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='ゆかい屋個別-'+yyyy+'-'+mm+'.csv';a.click();URL.revokeObjectURL(u);
