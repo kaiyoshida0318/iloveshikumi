@@ -109,6 +109,18 @@
   footer .heart { color:var(--red); }
   @media (max-width:900px) { .data-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
   @media (max-width:600px) { .data-grid { grid-template-columns:1fr; } header { padding:0 1rem; } main { padding:1rem; } }
+
+  .kanri-drop-single { border:2px dashed var(--border); border-radius:12px; padding:2rem; text-align:center; cursor:default; margin-bottom:1.25rem; transition:background .15s,border-color .15s; }
+  .kanri-drop-single.dragover { background:rgba(99,102,241,.08); border-color:#6366f1; }
+  .kanri-drop-icon { font-size:2.5rem; margin-bottom:.5rem; }
+  .kanri-drop-label { font-size:1rem; font-weight:600; color:var(--text); margin-bottom:.25rem; }
+  .kanri-drop-sub { font-size:.8rem; color:var(--muted); margin-bottom:.75rem; }
+  .kanri-drop-files-all { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; min-height:1.2rem; }
+  .kanri-desc-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+  .kanri-desc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.1rem; }
+  .kanri-desc-num { font-size:1.1rem; font-weight:700; color:#6366f1; margin-bottom:.2rem; }
+  .kanri-desc-title { font-size:.9rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
+  .kanri-desc-steps { margin:.4rem 0 0 0; padding-left:1.2rem; color:var(--muted); font-size:.78rem; line-height:1.7; }
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -150,46 +162,59 @@
     </div>
   </div>
   <div class="tool-panel" id="panel-shohin-kanri">
-    <div class="kanri-grid">
-      <div class="kanri-card">
-        <div class="kanri-title">【月次】売上</div>
-        <a class="kanri-url" href="https://datatool.rms.rakuten.co.jp/datatool/sales" target="_blank">datatool.rms.rakuten.co.jp/datatool/sales</a>
-        <div class="kanri-drop" data-group="uriage" ondragover="event.preventDefault()" ondrop="handleDrop(event,'uriage')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-uriage"></div>
+    <div class="kanri-drop-single" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDropAll(event)">
+        <div class="kanri-drop-icon">📂</div>
+        <div class="kanri-drop-label">4つのファイルをまとめてドロップ</div>
+        <div class="kanri-drop-sub">売上 / 商品別レポート / KW別レポート / クーポンアドバンス</div>
+        <div class="kanri-drop-files-all" id="files-all"></div>
+      </div>
+      <div class="kanri-desc-grid">
+        <div class="kanri-desc-card">
+          <div class="kanri-desc-num">①</div>
+          <div class="kanri-desc-title">楽天全商品売上データ</div>
+          <a class="kanri-url" href="https://datatool.rms.rakuten.co.jp/realtime/item" target="_blank">datatool.rms.rakuten.co.jp/realtime/item</a>
+          <ol class="kanri-desc-steps">
+            <li>月次で対象月を選択</li>
+            <li>CSVダウンロード</li>
+            <li>全件を選択</li>
+            <li>ダウンロード</li>
+          </ol>
+        </div>
+        <div class="kanri-desc-card">
+          <div class="kanri-desc-num">②</div>
+          <div class="kanri-desc-title">RPP商品別レポート</div>
+          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
+          <ol class="kanri-desc-steps">
+            <li>商品別を選択</li>
+            <li>月ごとに表示、対象月を選択</li>
+            <li>新規顧客/既存顧客/12時間のチェックを外す</li>
+            <li>全商品レポートダウンロード</li>
+            <li>KW別でも同じようにやる</li>
+          </ol>
+        </div>
+        <div class="kanri-desc-card">
+          <div class="kanri-desc-num">③</div>
+          <div class="kanri-desc-title">RPP KW別レポート</div>
+          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
+          <ol class="kanri-desc-steps">
+            <li>KW別を選択</li>
+            <li>月ごとに表示、対象月を選択</li>
+            <li>新規顧客/既存顧客/12時間のチェックを外す</li>
+            <li>全商品レポートダウンロード</li>
+          </ol>
+        </div>
+        <div class="kanri-desc-card">
+          <div class="kanri-desc-num">④</div>
+          <div class="kanri-desc-title">クーポンアドバンスレポート</div>
+          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank">ad.rms.rakuten.co.jp/cpnadv/performance_reports</a>
+          <ol class="kanri-desc-steps">
+            <li>商品別を選択</li>
+            <li>月ごとに表示、対象月を選択</li>
+            <li>この条件でダウンロード</li>
+          </ol>
         </div>
       </div>
-      <div class="kanri-card">
-        <div class="kanri-title">【月次】商品別レポート</div>
-        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
-        <div class="kanri-drop" data-group="shohin" ondragover="event.preventDefault()" ondrop="handleDrop(event,'shohin')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-shohin"></div>
-        </div>
-      </div>
-      <div class="kanri-card">
-        <div class="kanri-title">【月次】KW別レポート</div>
-        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
-        <div class="kanri-drop" data-group="kw" ondragover="event.preventDefault()" ondrop="handleDrop(event,'kw')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-kw"></div>
-        </div>
-      </div>
-      <div class="kanri-card">
-        <div class="kanri-title">【月次】クーポンアドバンス広告レポート</div>
-        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank">ad.rms.rakuten.co.jp/cpnadv/performance_reports</a>
-        <div class="kanri-drop" data-group="coupon" ondragover="event.preventDefault()" ondrop="handleDrop(event,'coupon')">
-          <div class="kanri-drop-label">📂 ファイルをドロップ</div>
-          <div class="kanri-drop-sub">CSVまたはExcelファイル</div>
-          <div class="kanri-drop-files" id="files-coupon"></div>
-        </div>
-      </div>
-    </div>
-    <div id="kanri-log" style="display:none; margin-top:1rem; background:#1e1e1e; color:#d4d4d4; font-family:monospace; font-size:.8rem; padding:1rem; border-radius:var(--radius); max-height:200px; overflow-y:auto; white-space:pre-wrap;"></div>
-    <div class="form-actions" style="margin-top:1.25rem;">
+      
       <button class="btn-secondary" onclick="kanriClear()">クリア</button>
       <button class="btn-primary" onclick="kanriRun()">&#9654; 実行</button>
     </div>
@@ -278,6 +303,6 @@
   </div>
 </main>
 <footer><span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span></footer>
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>
