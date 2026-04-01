@@ -295,7 +295,7 @@ function addRival() {
   const card = document.createElement('div');
   card.className = 'card rival-card';
   card.id = 'rival-card-' + rivalCount;
-  card.innerHTML = '<div class="card-header rival"><span>ライバル ' + rivalCount + '</span><button class="btn-remove" onclick="removeRival(' + rivalCount + ')">✕</button></div><table class="form-table"><tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr><tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr></table>';
+  card.innerHTML = '<div class="card-header rival"><span>ライバル ' + rivalCount + '<\/span><button class="btn-remove" onclick="removeRival(' + rivalCount + ')">✕<\/button><\/div><table class="form-table"><tr><td class="label">ショップ名<\/td><td class="badge-tai-col"><\/td><td class="badge-ra-col"><span class="badge-ra">ラ<\/span><\/td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"><\/td><\/tr><tr><td class="label">商品URL<\/td><td class="badge-tai-col"><\/td><td class="badge-ra-col"><span class="badge-ra">ラ<\/span><\/td><td><input type="url" class="rival-url" placeholder="https://..."><\/td><\/tr><\/table>';
   grid.appendChild(card);
 }
 function removeRival(id) {
@@ -512,7 +512,7 @@ function handleDrop(e, group) {
     const container = document.getElementById('files-' + group);
     const item = document.createElement('div');
     item.className = 'kanri-file-item';
-    item.innerHTML = '<span>' + f.name + '</span><span class="kanri-file-remove" onclick="removeKanriFile(this,\''+group+'\',' + kanriFiles[group].length-1 + ')">✕</span>';
+    item.innerHTML = '<span>' + f.name + '<\/span><span class="kanri-file-remove" onclick="removeKanriFile(this,\''+group+'\',' + kanriFiles[group].length-1 + ')">✕<\/span>';
     container.appendChild(item);
   });
   e.currentTarget.classList.remove('dragover');
