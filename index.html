@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I❤仕組み</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --red: #E94C3D; --red-light: #ffeeed; --bg: #f7f5f2; --surface: #ffffff; --text: #1a1a1a; --text-muted: #6b6b6b; --border: #e0ddd8; --tab-hover-bg: #eeebe6; --radius: 10px; --rival-header: #f0f4ff; --rival-accent: #2563eb; }
+  body { font-family: 'DM Sans','Noto Sans JP',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; height: 56px; }
+  .logo { display: flex; align-items: center; text-decoration: none; }
+  nav.header-nav a { font-size: .875rem; color: var(--text-muted); text-decoration: none; }
+  nav.header-nav a:hover { color: var(--text); }
+  .tab-section { background: var(--surface); border-bottom: 1px solid var(--border); }
+  .tab-row { display: flex; align-items: stretch; padding: 0 1.5rem; overflow-x: auto; scrollbar-width: none; }
+  .tab-row::-webkit-scrollbar { display: none; }
+  .tab-row + .tab-row { border-top: 1px solid var(--border); }
+  .row-label { display: flex; align-items: center; padding: 0 .75rem 0 0; font-size: .7rem; font-weight: 700; white-space: nowrap; border-right: 1px solid var(--border); margin-right: .5rem; min-width: 66px; }
+  .row-label.before { color: #2563eb; }
+  .row-label.after { color: #16a34a; }
+  .row-label.kanri { color: #E94C3D; }
+  .tab { display: flex; align-items: center; gap: 5px; padding: 0 1rem; height: 42px; font-size: .85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2.5px solid transparent; transition: color .15s,border-color .15s,background .15s; white-space: nowrap; user-select: none; }
+  .tab:hover { color: var(--text); background: var(--tab-hover-bg); }
+  .tab.active { color: var(--red); border-bottom-color: var(--red); }
+  main { padding: 1.25rem 1.5rem; }
+  .tool-panel { display: none; animation: fadeIn .2s ease; }
+  .tool-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+  .rival-toolbar { padding: 0 0 0.75rem 0; display: none; align-items: center; }
+  .btn-add-rival { display: inline-flex; align-items: center; gap: 5px; background: none; border: 1.5px solid var(--rival-accent); color: var(--rival-accent); border-radius: 7px; padding: 0.35rem 1rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
+  .btn-add-rival:hover { background: #eff6ff; }
+  .data-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; align-items: start; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: .55rem .9rem; font-size: .75rem; font-weight: 700; border-bottom: 1px solid var(--border); }
+  .card-header.basic { background: #fff8f7; color: var(--red); }
+  .card-header.rival { background: var(--rival-header); color: var(--rival-accent); }
+  .form-table { width: 100%; border-collapse: collapse; }
+  .form-table tr { border-bottom: 1px solid var(--border); }
+  .form-table tr:last-child { border-bottom: none; }
+  .form-table td { padding: .5rem .9rem; vertical-align: middle; }
+  .form-table td.label { font-size: .78rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; vertical-align: middle; padding: .5rem .4rem .5rem .9rem; }
+  .form-table td.badge-tai-col { width: 22px; min-width: 22px; vertical-align: middle; padding: .5rem 2px .5rem 0; text-align:center; }
+  .form-table td.badge-ra-col { width: 22px; min-width: 22px; vertical-align: middle; padding: .5rem 6px .5rem 0; text-align:center; }
+  .form-table input[type="text"], .form-table input[type="url"], .form-table input[type="number"] { width:100%; height:32px; padding:0 8px; border:1px solid var(--border); border-radius:5px; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; transition:border-color .15s,box-shadow .15s; }
+  .form-table select { width:100%; height:32px; padding:0 8px; border:1px solid var(--border); border-radius:5px; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; cursor:pointer; transition:border-color .15s; }
+  .form-table select:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
+  .form-table input:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(233,76,61,.1); }
+  .btn-remove { background:none; border:none; color:#aaa; font-size:.85rem; cursor:pointer; padding:2px 5px; border-radius:4px; transition:color .15s,background .15s; }
+  .btn-remove:hover { color:var(--red); background:var(--red-light); }
+  .form-actions { display:flex; justify-content:flex-end; gap:.75rem; margin-top:1.25rem; }
+  .btn-primary-blue { background:#2563eb; color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
+  .btn-primary-blue:hover { opacity:.88; }
+  .btn-primary { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.6rem 1.75rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .15s; }
+  .btn-primary:hover { opacity:.88; }
+  .btn-secondary { background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:7px; padding:.6rem 1.1rem; font-size:.875rem; font-weight:500; cursor:pointer; font-family:inherit; transition:background .15s; }
+  .btn-secondary:hover { background:var(--tab-hover-bg); }
+  .dropzone { border:2px dashed var(--border); border-radius:var(--radius); background:var(--surface); min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.75rem; cursor:pointer; transition:border-color .2s,background .2s; padding:2rem; }
+  .dropzone:hover { border-color:var(--red); background:var(--red-light); }
+  .dropzone .dz-label { font-size:.95rem; font-weight:600; }
+  .dropzone .dz-sub { font-size:.82rem; color:var(--text-muted); }
+  .dropzone .btn-select { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.55rem 1.4rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; }
+
+
+  .badge-tai { display:inline-block; background:#2563eb; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
+  .badge-ra { display:inline-block; background:#E94C3D; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
+  .kanri-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; }
+  .kanri-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; display:flex; flex-direction:column; gap:.75rem; }
+  .kanri-title { font-size:.9rem; font-weight:700; color:var(--text); }
+  .kanri-url { font-size:.72rem; color:#2563eb; text-decoration:none; word-break:break-all; }
+  .kanri-url:hover { text-decoration:underline; }
+  .kanri-drop { border:2px dashed var(--border); border-radius:8px; padding:1.5rem 1rem; text-align:center; transition:background .15s,border-color .15s; cursor:default; min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.4rem; }
+  .kanri-drop.dragover { background:#f0f4ff; border-color:#2563eb; }
+  .kanri-drop-label { font-size:.85rem; color:var(--text-muted); }
+  .kanri-drop-sub { font-size:.72rem; color:var(--text-muted); }
+  .kanri-drop-files { width:100%; display:flex; flex-direction:column; gap:.3rem; margin-top:.5rem; }
+  .kanri-file-item { font-size:.75rem; background:#f0f4ff; border-radius:4px; padding:.25rem .5rem; color:#2563eb; text-align:left; display:flex; justify-content:space-between; align-items:center; }
+  .kanri-file-remove { cursor:pointer; color:var(--text-muted); font-size:.8rem; margin-left:.5rem; }
+
+  .kanri-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; }
+  .kanri-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .kanri-card-header { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; border-bottom:1px solid var(--border); background:#fafafa; }
+  .kanri-card-title { font-size:.85rem; font-weight:700; color:var(--text); }
+  .kanri-url-btn { font-size:.75rem; color:#2563eb; text-decoration:none; padding:.25rem .6rem; border:1px solid #2563eb; border-radius:4px; transition:background .15s; white-space:nowrap; }
+  .kanri-url-btn:hover { background:#eff6ff; }
+  .kanri-dropzone { position:relative; min-height:140px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
+  .kanri-dropzone.dragover { background:#eff6ff; border:2px dashed #2563eb; }
+  .kanri-dz-inner { display:flex; flex-direction:column; align-items:center; gap:.4rem; padding:1.5rem; pointer-events:none; }
+  .kanri-dz-icon { font-size:2rem; opacity:.4; }
+  .kanri-dz-label { font-size:.85rem; font-weight:600; color:var(--text-muted); }
+  .kanri-dz-sub { font-size:.75rem; color:var(--text-muted); opacity:.7; }
+  .kanri-file-input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+  .kanri-file-name { font-size:.78rem; color:#16a34a; padding:.25rem 1rem .5rem; text-align:center; }
+  .set-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; align-items:start; }
+  .set-block { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .set-header { display:grid; grid-template-columns:1fr 1fr; background:#f0f4ff; border-bottom:1px solid var(--border); font-size:.75rem; font-weight:700; color:#2563eb; }
+  .set-header span { padding:.5rem .75rem; }
+  .set-header span:first-child { border-right:1px solid var(--border); }
+  .set-row { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--border); }
+  .set-row input { border:none; border-radius:0; height:32px; padding:0 .75rem; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; width:100%; box-sizing:border-box; }
+  .set-row input:first-child { border-right:1px solid var(--border); }
+  .set-row input:focus { background:#fafcff; }
+  .btn-add-row { width:100%; background:none; border:none; border-top:1px dashed var(--border); padding:.4rem; font-size:.78rem; color:var(--text-muted); cursor:pointer; font-family:inherit; transition:background .15s; }
+  .btn-add-row:hover { background:var(--tab-hover-bg); color:var(--text); }
+  footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
+  footer .heart { color:var(--red); }
+  @media (max-width:900px) { .data-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:600px) { .data-grid { grid-template-columns:1fr; } header { padding:0 1rem; } main { padding:1rem; } }
+
+  .kanri-drop-single { border:2px dashed var(--border); border-radius:12px; padding:2rem; text-align:center; cursor:default; margin-bottom:1.25rem; transition:background .15s,border-color .15s; }
+  .kanri-drop-single.dragover { background:rgba(99,102,241,.08); border-color:#6366f1; }
+  .kanri-drop-icon { font-size:2.5rem; margin-bottom:.5rem; }
+  .kanri-drop-label { font-size:1rem; font-weight:600; color:var(--text); margin-bottom:.25rem; }
+  .kanri-drop-sub { font-size:.8rem; color:var(--muted); margin-bottom:.75rem; }
+  .kanri-drop-files-all { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; min-height:1.2rem; }
+  .kanri-desc-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+  .kanri-desc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.1rem; }
+  .kanri-desc-num { font-size:1.1rem; font-weight:700; color:#6366f1; margin-bottom:.2rem; }
+  .kanri-desc-title { font-size:.9rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
+  .kanri-desc-steps { margin:.4rem 0 0 0; padding-left:1.2rem; color:var(--muted); font-size:.78rem; line-height:1.7; }
+
+  .kanri-month-badge { position:absolute; bottom:.6rem; right:.75rem; font-size:.75rem; font-weight:600; color:#6366f1; background:#eef2ff; border:1px solid #c7d2fe; border-radius:4px; padding:.1rem .5rem; min-width:4rem; text-align:center; pointer-events:none; }
+  .kanri-desc-card { position:relative; }
+  .kanri-check-area { display:flex; align-items:center; gap:1rem; margin-top:1rem; }
+  .btn-check { background:#3b82f6; color:#fff; border:none; border-radius:6px; padding:.5rem 1.25rem; font-size:.875rem; font-weight:600; cursor:pointer; transition:background .15s; }
+  .btn-check:hover { background:#2563eb; }
+  .kanri-check-result { font-size:.875rem; font-weight:600; }
+  .kanri-check-result.ok { color:#16a34a; }
+  .kanri-check-result.ng { color:#dc2626; }
+  .kanri-desc-card.card-ok { border-color:#86efac; background:#f0fdf4; }
+  .kanri-desc-card.card-ng { border-color:#fca5a5; background:#fef2f2; }
+
+  .kanri-desc-header { display:flex; align-items:center; gap:.4rem; margin-bottom:.3rem; }
+  .kanri-desc-name { font-size:.85rem; font-weight:600; color:#6366f1; }
+  .kanri-check-area { display:flex; align-items:center; gap:.75rem; margin-top:1rem; flex-wrap:wrap; justify-content:flex-end; }
+  .btn-check { background:#3b82f6; color:#fff; border:none; border-radius:6px; padding:.45rem 1.1rem; font-size:.875rem; font-weight:600; cursor:pointer; transition:background .15s; white-space:nowrap; }
+  .btn-check:hover { background:#2563eb; }
+  .kanri-check-result { font-size:.875rem; font-weight:600; }
+  .kanri-check-result.ok { color:#16a34a; }
+  .kanri-check-result.ng { color:#dc2626; }
+
+  .badge-found { background:#eff6ff; border-color:#93c5fd; color:#1d4ed8; }
+  .badge-unset { background:#fafafa; border-color:#d1d5db; color:#9ca3af; }
+  .badge-unknown { background:#fef9c3; border-color:#fde047; color:#92400e; }
+</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+<header>
+  <a href="#" class="logo">
+    <svg viewBox="0 0 236 58" xmlns="http://www.w3.org/2000/svg" height="34">
+      <rect x="2" y="5" width="22" height="7" rx="3" fill="#1a1a1a"/>
+      <rect x="8" y="12" width="10" height="31" fill="#1a1a1a"/>
+      <rect x="2" y="43" width="22" height="7" rx="3" fill="#1a1a1a"/>
+      <g transform="translate(30,5)">
+        <path d="M22,7.5 C22,7.5 17.5,1 10.5,1 C4.7,1 0,5.8 0,11.5 C0,21 22,44 22,44 C22,44 44,21 44,11.5 C44,5.8 39.3,1 33.5,1 C26.5,1 22,7.5 22,7.5 Z" fill="#E94C3D"/>
+        <path d="M22,10 L39,27 H22 Z" fill="white" opacity="0.97"/>
+      </g>
+      <text x="82" y="50" font-family="'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif" font-weight="900" font-size="46" fill="#1a1a1a" letter-spacing="1">仕組み</text>
+    </svg>
+  </a>
+  <nav class="header-nav">
+    <a href="https://github.com/kaiyoshida0318/iloveshikumi" target="_blank">GitHub</a>
+  </nav>
+</header>
+<div class="tab-section">
+  <div class="tab-row" style="position:relative;">
+    <span class="row-label before">【出品前】</span>
+    <div class="tab" data-panel="set-code" onclick="switchTab(this)">📦 セット商品コード作成</div>
+    <span class="row-label kanri" style="position:absolute;left:50%;transform:translateX(-50%);border-left:1px solid var(--border);border-right:none;padding-left:1rem;">【商品管理】</span>
+    <div class="tab" data-panel="shohin-kanri" onclick="switchTab(this)" style="position:absolute;left:calc(50% + 80px);">📊 売上・広告データ確認用</div>
+  </div>
+  <div class="tab-row">
+    <span class="row-label after">【出品後】</span>
+    <div class="tab active" data-panel="ranking-data" onclick="switchTab(this)">📊 商品・ランキングデータ作成</div>
+    <div class="tab" data-panel="master-kw" onclick="switchTab(this)">🔑 マスターKW入力用</div>
+  </div>
+</div>
+<main>
+  <div class="tool-panel" id="panel-master-kw">
+    <div style="max-width:600px; margin:2rem auto; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">
+      🔑 マスターKW入力用<br><br>中身は今後追加予定です。
+    </div>
+  </div>
+  <div class="tool-panel" id="panel-shohin-kanri">
+    <div class="kanri-drop-single" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDropAll(event)">
+        <div class="kanri-drop-icon">📂</div>
+        <div class="kanri-drop-label">4つのファイルをまとめてドロップ</div>
+        <div class="kanri-drop-sub">売上 / 商品別レポート / KW別レポート / クーポンアドバンス</div>
+        <div class="kanri-drop-files-all" id="files-all"></div>
+      </div>
+      <div class="kanri-desc-grid">
+        <div class="kanri-desc-card" id="desc-sales">
+          <div class="kanri-desc-header"><span class="kanri-desc-num">①</span><span class="kanri-desc-name">xxxx_Item_SalesList</span></div>
+          <div class="kanri-desc-title">楽天全商品売上データ</div>
+          <a class="kanri-url" href="https://datatool.rms.rakuten.co.jp/realtime/item" target="_blank">datatool.rms.rakuten.co.jp/realtime/item</a>
+          <ol class="kanri-desc-steps">
+            <li>月次で対象月を選択</li>
+            <li>CSVダウンロード</li>
+            <li>全件を選択</li>
+            <li>ダウンロード</li>
+          </ol>
+          <div class="kanri-month-badge" id="badge-sales">―</div>
+        </div>
+        <div class="kanri-desc-card" id="desc-item">
+          <div class="kanri-desc-header"><span class="kanri-desc-num">②</span><span class="kanri-desc-name">rpp_item_reports</span></div>
+          <div class="kanri-desc-title">RPP商品別レポート</div>
+          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
+          <ol class="kanri-desc-steps">
+            <li>商品別を選択</li>
+            <li>月ごとに表示、対象月を選択</li>
+            <li>新規顧客/既存顧客/12時間のチェックを外す</li>
+            <li>全商品レポートダウンロード</li>
+            <li>KW別でも同じようにやる</li>
+          </ol>
+          <div class="kanri-month-badge" id="badge-item">―</div>
+        </div>
+        <div class="kanri-desc-card" id="desc-keyword">
+          <div class="kanri-desc-header"><span class="kanri-desc-num">③</span><span class="kanri-desc-name">rpp_keyword_reports</span></div>
+          <div class="kanri-desc-title">RPP KW別レポート</div>
+          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
+          <ol class="kanri-desc-steps">
+            <li>KW別を選択</li>
+            <li>月ごとに表示、対象月を選択</li>
+            <li>新規顧客/既存顧客/12時間のチェックを外す</li>
+            <li>全商品レポートダウンロード</li>
+          </ol>
+          <div class="kanri-month-badge" id="badge-keyword">―</div>
+        </div>
+        <div class="kanri-desc-card" id="desc-coupon">
+          <div class="kanri-desc-header"><span class="kanri-desc-num">④</span><span class="kanri-desc-name">CouponAdvance_PerformanceReport</span></div>
+          <div class="kanri-desc-title">クーポンアドバンスレポート</div>
+          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank">ad.rms.rakuten.co.jp/cpnadv/performance_reports</a>
+          <ol class="kanri-desc-steps">
+            <li>商品別を選択</li>
+            <li>月ごとに表示、対象月を選択</li>
+            <li>この条件でダウンロード</li>
+          </ol>
+          <div class="kanri-month-badge" id="badge-coupon">―</div>
+        </div>
+      </div>
+      <div class="kanri-check-area">
+        <button class="btn-check" onclick="kanriCheck()">✓ チェック</button>
+        <div class="kanri-check-result" id="check-result"></div>
+        <button class="btn-secondary" onclick="kanriClear()">クリア</button>
+        <button class="btn-primary" onclick="kanriRun()">► 実行</button>
+      </div>
+    </div>
+  </div>
+  <div class="tool-panel" id="panel-set-code">
+    <p style="font-size:.78rem; color:var(--text-muted); margin-bottom:.6rem;">📋 エクセルからコピーしてセルをクリック後 <kbd style="background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:.75rem;">Ctrl+V</kbd> で一括貼り付けできます</p>
+    <div class="set-grid">
+      <div class="set-block">
+        <div class="set-header"><span>対応部分</span><span>商品コード</span></div>
+        <div id="set-rows-1"></div>
+        <button class="btn-add-row" onclick="addSetRow(1)">＋ 行を追加</button>
+      </div>
+      <div class="set-block">
+        <div class="set-header"><span>対応部分</span><span>商品コード</span></div>
+        <div id="set-rows-2"></div>
+        <button class="btn-add-row" onclick="addSetRow(2)">＋ 行を追加</button>
+      </div>
+      <div class="set-block">
+        <div class="set-header"><span>対応部分</span><span>商品コード</span></div>
+        <div id="set-rows-3"></div>
+        <button class="btn-add-row" onclick="addSetRow(3)">＋ 行を追加</button>
+      </div>
+    </div>
+    <div class="form-actions" style="margin-top:1.25rem;">
+      <button class="btn-secondary" onclick="clearSet()">クリア</button>
+      <button class="btn-primary" onclick="downloadSet()">📥 セット商品コード出力</button>
+    </div>
+  </div>
+  <div class="tool-panel active" id="panel-ranking-data">
+    <div class="rival-toolbar" id="rival-toolbar" style="display:flex;">
+      <button class="btn-add-rival" onclick="addRival()">＋ ライバルを追加</button>
+    </div>
+    <div class="data-grid" id="data-grid">
+
+      <!-- 基本情報 -->
+      <div class="card" id="card-basic" style="grid-row: span 2;">
+        <div class="card-header basic">● 基本情報</div>
+        <table class="form-table">
+          <tr><td class="label">ショップ名/分類</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><select id="shop-name"><option value="yukaiya">ゆかい屋</option><option value="kairy">KAIRY</option></select></td></tr>
+          <tr><td class="label">商品管理番号</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"></td><td><input type="text" id="mgmt-no" placeholder="例: 10001096"></td></tr>
+          <tr><td class="label">商品番号</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"></td><td><input type="text" id="product-no" placeholder="例: tape-24-01"></td></tr>
+          <tr><td class="label">商品名</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" id="product-name" placeholder="例: 防水テープ"></td></tr>
+          <tr><td class="label">ランキング補足数</td><td class="badge-tai-col"><span class="badge-tai">対</span></td><td class="badge-ra-col"></td><td><select id="ranking-supplement"><option value="複数補足">複数補足</option><option value="不実施">不実施</option><option value="自社のみ">自社のみ</option></select></td></tr>
+          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" id="product-url" placeholder="例: https://item.rakuten.co.jp/..."></td></tr>
+          <tr><td class="label">weeklyランク</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" id="weekly-rank" placeholder="例: https://ranking.rakuten.co.jp/weekly/201609/"></td></tr>
+        </table>
+      </div>
+
+      <!-- ライバル1 -->
+      <div class="card rival-card" id="rival-card-1">
+        <div class="card-header rival"><span>ライバル 1</span><button class="btn-remove" onclick="removeRival(1)">✕</button></div>
+        <table class="form-table">
+          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
+          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+        </table>
+      </div>
+
+      <div class="card rival-card" id="rival-card-2">
+        <div class="card-header rival"><span>ライバル 2</span><button class="btn-remove" onclick="removeRival(2)">✕</button></div>
+        <table class="form-table">
+          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
+          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+        </table>
+      </div>
+      <div class="card rival-card" id="rival-card-3">
+        <div class="card-header rival"><span>ライバル 3</span><button class="btn-remove" onclick="removeRival(3)">✕</button></div>
+        <table class="form-table">
+          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
+          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+        </table>
+      </div>
+      <div class="card rival-card" id="rival-card-4">
+        <div class="card-header rival"><span>ライバル 4</span><button class="btn-remove" onclick="removeRival(4)">✕</button></div>
+        <table class="form-table">
+          <tr><td class="label">ショップ名</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="text" class="rival-shop" placeholder="例: ライバルショップ"></td></tr>
+          <tr><td class="label">商品URL</td><td class="badge-tai-col"></td><td class="badge-ra-col"><span class="badge-ra">ラ</span></td><td><input type="url" class="rival-url" placeholder="https://..."></td></tr>
+        </table>
+      </div>
+
+    </div>
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="clearForm()">クリア</button>
+      <button class="btn-primary-blue" onclick="downloadGeneral()">📥 【データ分析】両ショップ対応全般</button>
+      <button class="btn-primary" onclick="downloadRanking()">📥 【データ分析】両ショップ-ランキング</button>
+    </div>
+  </div>
+</main>
+<footer><span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span></footer>
+<script src="app.js?v=15"></script>
+</body>
+</html>
