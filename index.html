@@ -132,6 +132,15 @@
   .kanri-check-result.ng { color:#dc2626; }
   .kanri-desc-card.card-ok { border-color:#86efac; background:#f0fdf4; }
   .kanri-desc-card.card-ng { border-color:#fca5a5; background:#fef2f2; }
+
+  .kanri-desc-header { display:flex; align-items:center; gap:.4rem; margin-bottom:.3rem; }
+  .kanri-desc-name { font-size:.85rem; font-weight:600; color:#6366f1; }
+  .kanri-check-area { display:flex; align-items:center; gap:.75rem; margin-top:1rem; flex-wrap:wrap; }
+  .btn-check { background:#3b82f6; color:#fff; border:none; border-radius:6px; padding:.45rem 1.1rem; font-size:.875rem; font-weight:600; cursor:pointer; transition:background .15s; white-space:nowrap; }
+  .btn-check:hover { background:#2563eb; }
+  .kanri-check-result { font-size:.875rem; font-weight:600; }
+  .kanri-check-result.ok { color:#16a34a; }
+  .kanri-check-result.ng { color:#dc2626; }
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -181,8 +190,7 @@
       </div>
       <div class="kanri-desc-grid">
         <div class="kanri-desc-card" id="desc-sales">
-          <div class="kanri-desc-num">①</div>
-          <div class="kanri-desc-title">xxxx_Item_SalesList</div>
+          <div class="kanri-desc-header"><span class="kanri-desc-num">①</span><span class="kanri-desc-name">xxxx_Item_SalesList</span></div>
           <a class="kanri-url" href="https://datatool.rms.rakuten.co.jp/realtime/item" target="_blank">datatool.rms.rakuten.co.jp/realtime/item</a>
           <ol class="kanri-desc-steps">
             <li>月次で対象月を選択</li>
@@ -193,8 +201,7 @@
           <div class="kanri-month-badge" id="badge-sales">―</div>
         </div>
         <div class="kanri-desc-card" id="desc-item">
-          <div class="kanri-desc-num">②</div>
-          <div class="kanri-desc-title">rpp_item_reports</div>
+          <div class="kanri-desc-header"><span class="kanri-desc-num">②</span><span class="kanri-desc-name">rpp_item_reports</span></div>
           <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
           <ol class="kanri-desc-steps">
             <li>商品別を選択</li>
@@ -206,8 +213,7 @@
           <div class="kanri-month-badge" id="badge-item">―</div>
         </div>
         <div class="kanri-desc-card" id="desc-keyword">
-          <div class="kanri-desc-num">③</div>
-          <div class="kanri-desc-title">rpp_keyword_reports</div>
+          <div class="kanri-desc-header"><span class="kanri-desc-num">③</span><span class="kanri-desc-name">rpp_keyword_reports</span></div>
           <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
           <ol class="kanri-desc-steps">
             <li>KW別を選択</li>
@@ -218,8 +224,7 @@
           <div class="kanri-month-badge" id="badge-keyword">―</div>
         </div>
         <div class="kanri-desc-card" id="desc-coupon">
-          <div class="kanri-desc-num">④</div>
-          <div class="kanri-desc-title">CouponAdvance_PerformanceReport</div>
+          <div class="kanri-desc-header"><span class="kanri-desc-num">④</span><span class="kanri-desc-name">CouponAdvance_PerformanceReport</span></div>
           <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank">ad.rms.rakuten.co.jp/cpnadv/performance_reports</a>
           <ol class="kanri-desc-steps">
             <li>商品別を選択</li>
@@ -232,9 +237,10 @@
       <div class="kanri-check-area">
         <button class="btn-check" onclick="kanriCheck()">✓ チェック</button>
         <div class="kanri-check-result" id="check-result"></div>
-      </div>      
-      <button class="btn-secondary" onclick="kanriClear()">クリア</button>
-      <button class="btn-primary" onclick="kanriRun()">&#9654; 実行</button>
+        <div style="flex:1"></div>
+        <button class="btn-secondary" onclick="kanriClear()">クリア</button>
+        <button class="btn-primary" onclick="kanriRun()">► 実行</button>
+      </div>
     </div>
   </div>
   <div class="tool-panel" id="panel-set-code">
@@ -321,6 +327,6 @@
   </div>
 </main>
 <footer><span>©2025 i<span class="heart">❤</span>仕組み — あなたの業務ツール</span></footer>
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
