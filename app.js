@@ -384,13 +384,13 @@ function _kanriLog(msg, color) {
 
 
 
+
 async function kanriCheck() {
   var keys = ['sales','item','keyword','coupon'];
   var result = document.getElementById('check-result');
   result.textContent = 'チェック中...';
   result.className = 'kanri-check-result';
 
-  // 全カードをリセット
   keys.forEach(function(k) {
     var card = document.getElementById('desc-' + k);
     var badge = document.getElementById('badge-' + k);
@@ -398,53 +398,68 @@ async function kanriCheck() {
     if (badge) { badge.textContent = '―'; badge.className = 'kanri-month-badge'; }
   });
 
-  // 各ファイルから月を取得
   var months = {};
 
-  // ① sales: ファイル名から年月抽出
+  // ZIPまたはCSVからテキストを取得する共通関数
+  async function readText(file, enc) {
+    var name = file.name.toLowerCase();
+    if (name.endsWith('.zip')) {
+      var zip = await JSZip.loadAsync(file);
+      var csvFile = null;
+      zip.forEach(function(path, f) { if (!f.dir && path.toLowerCase().endsWith('.csv') && !csvFile) csvFile = f; });
+      if (!csvFile) return '';
+      var buf = await csvFile.async('arraybuffer');
+      return new TextDecoder(enc || 'Shift-JIS', {fatal:false}).decode(new Uint8Array(buf));
+    }
+    return _readFileAsText(file, enc);
+  }
+
+  // ① sales: ファイル名から 202602 形式
   if (_kanriFiles.sales) {
-    var m = _kanriFiles.sales.name.match(/(20\d\d)([01]\d)/);
+    var m = _kanriFiles.sales.name.match(/(20dd)([01]d)/);
     months.sales = m ? m[1] + '-' + m[2] : null;
   }
 
-  // ②③ item/keyword: ZIPまたはCSVの中身から「2026年02月」形式を取得
+  // ②③ item/keyword: ZIP内CSV、Shift-JIS、「集計期間: ... 2026-02」またはデータ行の「2026年02月」
   for (var ki = 0; ki < 2; ki++) {
     var kkey = ki === 0 ? 'item' : 'keyword';
     if (!_kanriFiles[kkey]) continue;
     try {
-      var text = await readCsvFromFile(_kanriFiles[kkey], 'Shift-JIS');
-      var lines = text.split(/\r?\n/);
+      var text = await readText(_kanriFiles[kkey], 'Shift-JIS');
+      var lines = text.split(/?
+/);
       var found = null;
       for (var li = 0; li < Math.min(30, lines.length); li++) {
-        var rm = lines[li].match(/(20\d\d)年([01]\d)月/);
-        if (rm) { found = rm[1] + '-' + rm[2]; break; }
+        // 「集計期間: 月ごとに集計 2026-02 - 2026-02」形式
+        var rm1 = lines[li].match(/集計期間.*?(20dd)-([01]d)/);
+        if (rm1) { found = rm1[1] + '-' + rm1[2]; break; }
+        // データ行の「2026年02月」形式
+        var rm2 = lines[li].match(/(20dd)年([01]d)月/);
+        if (rm2) { found = rm2[1] + '-' + rm2[2]; break; }
       }
       months[kkey] = found;
     } catch(e) { months[kkey] = null; }
   }
 
-  // ④ coupon: UTF-8、ファイル名または内容から年月取得
+  // ④ coupon: ZIP内CSV、UTF-8、データ行の1列目「2026年02月」形式
   if (_kanriFiles.coupon) {
-    // まずファイル名から試行
-    var cm = _kanriFiles.coupon.name.match(/(20\d\d)([01]\d)/);
-    if (cm) {
-      months.coupon = cm[1] + '-' + cm[2];
-    } else {
-      try {
-        var ctext = await readCsvFromFile(_kanriFiles.coupon, 'UTF-8');
-        var clines = ctext.split(/\r?\n/);
-        var cfound = null;
-        for (var cl = 0; cl < Math.min(30, clines.length); cl++) {
-          var crm = clines[cl].match(/(20\d\d)\/([01]\d)/);
-          if (!crm) crm = clines[cl].match(/(20\d\d)([01]\d)/);
-          if (crm) { cfound = crm[1] + '-' + crm[2]; break; }
-        }
-        months.coupon = cfound;
-      } catch(e) { months.coupon = null; }
-    }
+    try {
+      var ctext = await readText(_kanriFiles.coupon, 'UTF-8');
+      var clines = ctext.split(/?
+/);
+      var cfound = null;
+      for (var cl = 0; cl < Math.min(30, clines.length); cl++) {
+        var crm = clines[cl].match(/(20dd)年([01]d)月/);
+        if (crm) { cfound = crm[1] + '-' + crm[2]; break; }
+        // ファイル名フォールバック: 2026-02形式
+        var crm2 = clines[cl].match(/(20dd)-([01]d)/);
+        if (crm2) { cfound = crm2[1] + '-' + crm2[2]; break; }
+      }
+      months.coupon = cfound;
+    } catch(e) { months.coupon = null; }
   }
 
-  // バッジを更新
+  // バッジ更新
   keys.forEach(function(k) {
     var badge = document.getElementById('badge-' + k);
     if (!badge) return;
@@ -460,19 +475,16 @@ async function kanriCheck() {
     }
   });
 
-  // 全ファイルがセットされているか
+  // 全ファイルセット確認
   var allSet = keys.every(function(k){ return !!_kanriFiles[k]; });
-  var allFound = keys.every(function(k){ return !!months[k]; });
   var vals = keys.map(function(k){ return months[k]; }).filter(Boolean);
-  var allSame = vals.length === keys.length && vals.every(function(v){ return v === vals[0]; });
+  var allSame = vals.length === 4 && vals.every(function(v){ return v === vals[0]; });
 
   if (!allSet) {
     result.textContent = '⚠️ 未セットのファイルがあります';
     result.className = 'kanri-check-result ng';
-    keys.forEach(function(k){
-      if (!_kanriFiles[k]) document.getElementById('desc-'+k).classList.add('card-ng');
-    });
-  } else if (!allFound) {
+    keys.forEach(function(k){ if (!_kanriFiles[k]) document.getElementById('desc-'+k).classList.add('card-ng'); });
+  } else if (vals.length < 4) {
     result.textContent = '⚠️ 一部のファイルから月が取得できませんでした';
     result.className = 'kanri-check-result ng';
   } else if (allSame) {
@@ -480,15 +492,15 @@ async function kanriCheck() {
     result.className = 'kanri-check-result ok';
     keys.forEach(function(k){ document.getElementById('desc-'+k).classList.add('card-ok'); });
   } else {
-    // 不一致：多数決の月を基準にズレを赤に
-    var modeVal = vals.sort(function(a,b){
-      return vals.filter(function(v){return v===b;}).length - vals.filter(function(v){return v===a;}).length;
-    })[0];
+    // 多数決で基準月を決定、ずれを赤に
+    var freq = {};
+    vals.forEach(function(v){ freq[v]=(freq[v]||0)+1; });
+    var modeVal = Object.keys(freq).sort(function(a,b){return freq[b]-freq[a];})[0];
     result.textContent = '❌ NG：月が一致していません';
     result.className = 'kanri-check-result ng';
     keys.forEach(function(k){
       var card = document.getElementById('desc-'+k);
-      if (months[k] !== modeVal) card.classList.add('card-ng');
+      if (!months[k] || months[k] !== modeVal) card.classList.add('card-ng');
       else card.classList.add('card-ok');
     });
   }
