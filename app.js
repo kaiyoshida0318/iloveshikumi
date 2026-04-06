@@ -382,6 +382,47 @@ function _kanriLog(msg, color) {
   log.scrollTop = log.scrollHeight;
 }
 
+
+function kanriCheck() {
+  // ===== 見た目テスト用ダミー =====
+  var keys = ['sales','item','keyword','coupon'];
+  var labels = {sales:'① xxxx_Item_SalesList', item:'② rpp_item_reports', keyword:'③ rpp_keyword_reports', coupon:'④ CouponAdvance_PerformanceReport'};
+  // ダミー：ファイルがセットされているかどうかだけ確認
+  var months = {};
+  keys.forEach(function(k) {
+    var badge = document.getElementById('badge-' + k);
+    var card = document.getElementById('desc-' + k);
+    if (_kanriFiles[k]) {
+      // ダミー：ファイル名から年月を抽出試行
+      var m = _kanriFiles[k].name.match(/(20dd)[_-]?([01]d)/);
+      months[k] = m ? m[1] + '-' + m[2] : '?';
+      if (badge) badge.textContent = months[k] + '月分';
+      if (card) { card.classList.remove('card-ok','card-ng'); }
+    } else {
+      months[k] = null;
+      if (badge) badge.textContent = '未セット';
+      if (card) { card.classList.remove('card-ok','card-ng'); }
+    }
+  });
+  // 結果表示
+  var result = document.getElementById('check-result');
+  var vals = keys.map(function(k){ return months[k]; });
+  var allSet = vals.every(function(v){ return v !== null; });
+  var allSame = allSet && vals.every(function(v){ return v === vals[0]; });
+  if (!allSet) {
+    result.textContent = '⚠️ 未セットのファイルがあります';
+    result.className = 'kanri-check-result ng';
+  } else if (allSame) {
+    result.textContent = '✅ OK （' + vals[0] + '月分）';
+    result.className = 'kanri-check-result ok';
+    keys.forEach(function(k){ document.getElementById('desc-'+k).classList.add('card-ok'); });
+  } else {
+    result.textContent = '❌ NG ：月が一致していません';
+    result.className = 'kanri-check-result ng';
+    // 一致しないカードを赤に
+    keys.forEach(function(k){ if(months[k] !== vals[0]) document.getElementById('desc-'+k).classList.add('card-ng'); });
+  }
+}
 function kanriClear() {
   _kanriFiles.sales = null;
   _kanriFiles.item = null;
