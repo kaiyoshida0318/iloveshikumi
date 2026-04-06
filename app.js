@@ -420,7 +420,7 @@ async function kanriCheck() {
     return null;
   }
   if (_kanriFiles.sales) {
-    var ms = _kanriFiles.sales.name.match(/(20\\d\\d)([01]\\d)/);
+    var ms = _kanriFiles.sales.name.match(/(20\d\d)([01]\d)/);
     months.sales = ms ? ms[1] + '-' + ms[2] : null;
   }
   if (_kanriFiles.item) { try { months.item = findMonth(await readText(_kanriFiles.item, 'Shift-JIS')); } catch(e) { months.item = null; } }
