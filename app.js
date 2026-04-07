@@ -148,19 +148,22 @@ function clearSet() {
 }
 
 function downloadSet() {
-  // 各グループのデータ取得（商品コードが空の行はスキップ）
+  // グループ1：商品コードが空の行はスキップ（対応部分も使わない）
+  function getGroup1Rows(g) {
+    return Array.from(document.getElementById('set-rows-' + g).querySelectorAll('.set-row'))
+      .map(r => { const inputs = r.querySelectorAll('input'); return { part: inputs[0].value.trim(), code: inputs[1].value.trim(), qty: inputs[2].value.trim() || '1' }; })
+      .filter(r => r.code !== '');
+  }
+  // グループ2・3：対応部分があれば全行取得（商品コードが空でもpartはset_codeに使う）
   function getGroupRows(g) {
     return Array.from(document.getElementById('set-rows-' + g).querySelectorAll('.set-row'))
-      .map(r => {
-        const inputs = r.querySelectorAll('input');
-        return { part: inputs[0].value.trim(), code: inputs[1].value.trim(), qty: inputs[2].value.trim() || '1' };
-      })
-      .filter(r => r.code !== ''); // 商品コードが空の行はスキップ
+      .map(r => { const inputs = r.querySelectorAll('input'); return { part: inputs[0].value.trim(), code: inputs[1].value.trim(), qty: inputs[2].value.trim() || '1' }; })
+      .filter(r => r.part !== '');
   }
 
-  const hontas  = getGroupRows(1); // グループ1: 本体
-  const opts2   = getGroupRows(2); // グループ2: オプション
-  const opts3   = getGroupRows(3); // グループ3: 追加オプション
+  const hontas = getGroup1Rows(1);
+  const opts2  = getGroupRows(2);
+  const opts3  = getGroupRows(3);
 
   if (hontas.length === 0) {
     alert('\u30b0\u30eb\u30fc\u30d71\uff08\u672c\u4f53\uff09\u306b\u5546\u54c1\u30b3\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');
@@ -170,27 +173,27 @@ function downloadSet() {
   const header = ['set_syohin_code','set_syohin_name','set_baika_tnk','syohin_code','suryo','daihyo_syohin_code'];
   const rows = [header];
 
-  hontas.forEach(honta => {
-    // オプションの組み合わせを生成
-    // opts2とopts3のそれぞれから「何も選ばない」＋「各オプション」を組み合わせ
-    const combos2 = opts2.length > 0 ? [null, ...opts2] : [null];
-    const combos3 = opts3.length > 0 ? [null, ...opts3] : [null];
+  const combos2 = opts2.length > 0 ? opts2 : [{ part: '', code: '', qty: '1' }];
+  const combos3 = opts3.length > 0 ? opts3 : [{ part: '', code: '', qty: '1' }];
 
+  hontas.forEach(honta => {
     combos2.forEach(opt2 => {
       combos3.forEach(opt3 => {
-        // セット商品コード = 本体対応部分 + opt2対応部分 + opt3対応部分
-        let setCode = honta.part;
-        if (opt2) setCode += opt2.part;
-        if (opt3) setCode += opt3.part;
+        // set_syohin_code = 全partを結合（codeが空でもpartは使う）
+        const setCode = honta.part + opt2.part + opt3.part;
 
-        // このセットに含まれる商品リスト
-        const items = [honta];
-        if (opt2) items.push(opt2);
-        if (opt3) items.push(opt3);
+        // 商品コードが空の行はスキップしつつ個数を合算
+        const qtyMap = {};
+        const order = [];
+        [honta, opt2, opt3].forEach(item => {
+          if (!item.code) return;
+          const qty = parseInt(item.qty, 10) || 1;
+          if (qtyMap[item.code] === undefined) { qtyMap[item.code] = 0; order.push(item.code); }
+          qtyMap[item.code] += qty;
+        });
 
-        // 各商品コードの行を出力
-        items.forEach(item => {
-          rows.push([setCode, setCode, '1000', item.code, item.qty, '']);
+        order.forEach(code => {
+          rows.push([setCode, setCode, '1000', code, String(qtyMap[code]), '']);
         });
       });
     });
