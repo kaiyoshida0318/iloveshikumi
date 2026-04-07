@@ -133,68 +133,107 @@ function downloadRanking() {
 }
 
 // ===== セット商品コード =====
+var setBlockCount = 0;
+
+function addSetBlock() {
+  setBlockCount++;
+  const grid = document.getElementById('set-grid');
+  const block = document.createElement('div');
+  block.className = 'set-block';
+  block.id = 'set-block-' + setBlockCount;
+  const blockNum = setBlockCount;
+  block.innerHTML =
+    '<div class="set-header" style="grid-template-columns:1fr 1fr 1fr auto;">' +
+      '<span>\u5bfe\u5fdc\u90e8\u5206</span><span>\u5546\u54c1\u30b3\u30fc\u30c9</span><span>\u500b\u6570</span>' +
+      '<button onclick="removeSetBlock(' + blockNum + ')" style="border:none;background:none;color:#aaa;cursor:pointer;padding:0 .5rem;font-size:.8rem;border-left:1px solid var(--border);" title="\u8868\u3092\u524a\u9664">\u2715</button>' +
+    '</div>' +
+    '<div id="set-rows-' + blockNum + '"></div>' +
+    '<button class="btn-add-row" onclick="addSetRow(' + blockNum + ')">\uff0b \u884c\u3092\u8ffd\u52a0</button>';
+  grid.appendChild(block);
+  for (let i = 0; i < 10; i++) addSetRow(blockNum);
+}
+
+function removeSetBlock(blockNum) {
+  const block = document.getElementById('set-block-' + blockNum);
+  if (block) block.remove();
+}
+
 function addSetRow(group) {
   const container = document.getElementById('set-rows-' + group);
+  if (!container) return;
   const row = document.createElement('div');
   row.className = 'set-row';
-  row.innerHTML = '<input type="text" placeholder="\u4f8b: \u4e0a\u90e8"><input type="text" placeholder="\u4f8b: ABC-001"><input type="text" placeholder="\u500b\u6570">';
+  row.innerHTML =
+    '<input type="text" placeholder="\u4f8b: \u4e0a\u90e8">' +
+    '<input type="text" placeholder="\u4f8b: ABC-001">' +
+    '<input type="text" placeholder="\u500b\u6570">' +
+    '<button class="btn-row-del" onclick="this.closest(\'.set-row\').remove()" title="\u884c\u3092\u524a\u9664">\u00d7</button>';
   container.appendChild(row);
 }
+
 function clearSet() {
-  [1,2,3].forEach(g => {
-    document.getElementById('set-rows-' + g).innerHTML = '';
-    for(let i=0;i<10;i++) addSetRow(g);
-  });
+  // 全ブロックを削除して初期3ブロックを再生成
+  setBlockCount = 0;
+  document.getElementById('set-grid').innerHTML = '';
+  for (let i = 0; i < 3; i++) addSetBlock();
 }
 
 function downloadSet() {
-  // グループ1：商品コードが空の行はスキップ（対応部分も使わない）
-  function getGroup1Rows(g) {
-    return Array.from(document.getElementById('set-rows-' + g).querySelectorAll('.set-row'))
-      .map(r => { const inputs = r.querySelectorAll('input'); return { part: inputs[0].value.trim(), code: inputs[1].value.trim(), qty: inputs[2].value.trim() || '1' }; })
-      .filter(r => r.code !== '');
-  }
-  // グループ2・3：対応部分があれば全行取得（商品コードが空でもpartはset_codeに使う）
-  function getGroupRows(g) {
-    return Array.from(document.getElementById('set-rows-' + g).querySelectorAll('.set-row'))
-      .map(r => { const inputs = r.querySelectorAll('input'); return { part: inputs[0].value.trim(), code: inputs[1].value.trim(), qty: inputs[2].value.trim() || '1' }; })
-      .filter(r => r.part !== '');
+  // 全ブロックのデータを取得
+  const allBlocks = Array.from(document.querySelectorAll('#set-grid .set-block'));
+
+  function getBlockRows(block) {
+    return Array.from(block.querySelectorAll('.set-row')).map(r => {
+      const inputs = r.querySelectorAll('input');
+      return { part: inputs[0].value.trim(), code: inputs[1].value.trim(), qty: inputs[2].value.trim() || '1' };
+    });
   }
 
-  const hontas = getGroup1Rows(1);
-  const opts2  = getGroupRows(2);
-  const opts3  = getGroupRows(3);
+  // グループ1（最初のブロック）：商品コードが空の行はスキップ
+  if (allBlocks.length === 0) { alert('\u8868\u304c\u3042\u308a\u307e\u305b\u3093'); return; }
+  const hontas = getBlockRows(allBlocks[0]).filter(r => r.code !== '');
 
   if (hontas.length === 0) {
     alert('\u30b0\u30eb\u30fc\u30d71\uff08\u672c\u4f53\uff09\u306b\u5546\u54c1\u30b3\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');
     return;
   }
 
+  // グループ2以降：partがあれば全行取得（codeが空でもpartはset_codeに使う）
+  const optGroups = allBlocks.slice(1).map(b =>
+    getBlockRows(b).filter(r => r.part !== '')
+  ).filter(g => g.length > 0);
+
   const header = ['set_syohin_code','set_syohin_name','set_baika_tnk','syohin_code','suryo','daihyo_syohin_code'];
   const rows = [header];
 
-  const combos2 = opts2.length > 0 ? opts2 : [{ part: '', code: '', qty: '1' }];
-  const combos3 = opts3.length > 0 ? opts3 : [{ part: '', code: '', qty: '1' }];
+  // 全オプショングループの組み合わせを再帰的に生成
+  function getCombos(groups) {
+    if (groups.length === 0) return [[]];
+    const rest = getCombos(groups.slice(1));
+    const result = [];
+    groups[0].forEach(opt => { rest.forEach(r => { result.push([opt, ...r]); }); });
+    return result;
+  }
+
+  const combos = optGroups.length > 0 ? getCombos(optGroups) : [[]];
 
   hontas.forEach(honta => {
-    combos2.forEach(opt2 => {
-      combos3.forEach(opt3 => {
-        // set_syohin_code = 全partを結合（codeが空でもpartは使う）
-        const setCode = honta.part + opt2.part + opt3.part;
+    combos.forEach(combo => {
+      // set_syohin_code = 全partを結合
+      const setCode = honta.part + combo.map(o => o.part).join('');
 
-        // 商品コードが空の行はスキップしつつ個数を合算
-        const qtyMap = {};
-        const order = [];
-        [honta, opt2, opt3].forEach(item => {
-          if (!item.code) return;
-          const qty = parseInt(item.qty, 10) || 1;
-          if (qtyMap[item.code] === undefined) { qtyMap[item.code] = 0; order.push(item.code); }
-          qtyMap[item.code] += qty;
-        });
+      // 商品コードが空の行はスキップしつつ個数を合算
+      const qtyMap = {};
+      const order = [];
+      [honta, ...combo].forEach(item => {
+        if (!item.code) return;
+        const qty = parseInt(item.qty, 10) || 1;
+        if (qtyMap[item.code] === undefined) { qtyMap[item.code] = 0; order.push(item.code); }
+        qtyMap[item.code] += qty;
+      });
 
-        order.forEach(code => {
-          rows.push([setCode, setCode, '1000', code, String(qtyMap[code]), '']);
-        });
+      order.forEach(code => {
+        rows.push([setCode, setCode, '1000', code, String(qtyMap[code]), '']);
       });
     });
   });
@@ -202,9 +241,9 @@ function downloadSet() {
   downloadCSV('set_syohin_ikkatsu_', rows);
 }
 
-// 初期化：各グループに10行追加
+// 初期化：3ブロック生成
 document.addEventListener('DOMContentLoaded', function() {
-  [1,2,3].forEach(g => { for(let i=0;i<10;i++) addSetRow(g); });
+  for (let i = 0; i < 3; i++) addSetBlock();
 });
 
 // エクセルからのCtrl+Vペースト対応
@@ -214,32 +253,34 @@ document.addEventListener('paste', function(e) {
   const text = (e.clipboardData || window.clipboardData).getData('text');
   if (!text) return;
   const focused = document.activeElement;
-  let targetGroup = 1;
+  // フォーカスがどのブロックにあるか検出
+  let targetBlockNum = null;
   if (focused && focused.closest('.set-block')) {
     const block = focused.closest('.set-block');
-    const blocks = Array.from(document.querySelectorAll('.set-block'));
-    targetGroup = blocks.indexOf(block) + 1;
-    if (targetGroup < 1) targetGroup = 1;
+    const m = block.id.match(/set-block-(\d+)/);
+    if (m) targetBlockNum = m[1];
   }
-  let startRow = 0;
-  let startCol = 0;
+  if (!targetBlockNum) return;
+
+  let startRow = 0, startCol = 0;
   if (focused && focused.closest('.set-row')) {
     const row = focused.closest('.set-row');
-    const container = document.getElementById('set-rows-' + targetGroup);
+    const container = document.getElementById('set-rows-' + targetBlockNum);
     const rows = Array.from(container.querySelectorAll('.set-row'));
     startRow = rows.indexOf(row);
     startCol = Array.from(row.querySelectorAll('input')).indexOf(focused);
     if (startRow < 0) startRow = 0;
     if (startCol < 0) startCol = 0;
   }
+
   const rows = text.split(/\r?\n/).filter(r => r !== '');
-  const container = document.getElementById('set-rows-' + targetGroup);
+  const container = document.getElementById('set-rows-' + targetBlockNum);
   let existingRows = Array.from(container.querySelectorAll('.set-row'));
   rows.forEach((rowText, ri) => {
     const cols = rowText.split('\t');
     const rowIdx = startRow + ri;
     while (existingRows.length <= rowIdx) {
-      addSetRow(targetGroup);
+      addSetRow(targetBlockNum);
       existingRows = Array.from(container.querySelectorAll('.set-row'));
     }
     const inputs = existingRows[rowIdx].querySelectorAll('input');
