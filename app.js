@@ -1,15 +1,10 @@
 let rivalCount = 4;
 function switchTab(el) {
-  // 全タブのactive解除（position:absoluteのものも含む）
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  // 全パネル非表示
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-  // クリックされたタブをactive
   el.classList.add('active');
-  // 対応パネルを表示
   const panel = document.getElementById('panel-' + el.dataset.panel);
   if (panel) panel.classList.add('active');
-  // rival-toolbarの表示切替
   const tb = document.getElementById('rival-toolbar');
   if (tb) tb.style.display = el.dataset.panel === 'ranking-data' ? 'flex' : 'none';
 }
@@ -137,7 +132,7 @@ function downloadRanking() {
   downloadCSV('\u300c\u30c7\u30fc\u30bf\u5206\u6790\u300d\u4e21\u30b7\u30e7\u30c3\u30d7-\u30e9\u30f3\u30ad\u30f3\u30b0', rows);
 }
 
-// ===== セット商品コード（3列: 対応部分・商品コード・個数）=====
+// ===== セット商品コード =====
 function addSetRow(group) {
   const container = document.getElementById('set-rows-' + group);
   const row = document.createElement('div');
@@ -151,23 +146,59 @@ function clearSet() {
     for(let i=0;i<10;i++) addSetRow(g);
   });
 }
+
 function downloadSet() {
-  const groups = [1,2,3].map(g =>
-    Array.from(document.getElementById('set-rows-'+g).querySelectorAll('.set-row')).map(r => {
-      const inputs = r.querySelectorAll('input');
-      return [inputs[0].value, inputs[1].value, inputs[2] ? inputs[2].value : ''];
-    })
-  );
-  const maxLen = Math.max(...groups.map(g => g.length));
-  const header = ['\u5bfe\u5fdc\u90e8\u52061','\u5546\u54c1\u30b3\u30fc\u30c91','\u500b\u6570\uff11','\u5bfe\u5fdc\u90e8\u52062','\u5546\u54c1\u30b3\u30fc\u30c92','\u500b\u6570\uff12','\u5bfe\u5fdc\u90e8\u52063','\u5546\u54c1\u30b3\u30fc\u30c93','\u500b\u6570\uff13'];
-  const rows = [header];
-  for(let i=0;i<maxLen;i++) {
-    const row = [];
-    groups.forEach(g => { row.push(g[i]?g[i][0]:'', g[i]?g[i][1]:'', g[i]?g[i][2]:''); });
-    if(row.some(v=>v)) rows.push(row);
+  // 各グループのデータ取得（商品コードが空の行はスキップ）
+  function getGroupRows(g) {
+    return Array.from(document.getElementById('set-rows-' + g).querySelectorAll('.set-row'))
+      .map(r => {
+        const inputs = r.querySelectorAll('input');
+        return { part: inputs[0].value.trim(), code: inputs[1].value.trim(), qty: inputs[2].value.trim() || '1' };
+      })
+      .filter(r => r.code !== ''); // 商品コードが空の行はスキップ
   }
-  downloadCSV('\u30bb\u30c3\u30c8\u5546\u54c1\u30b3\u30fc\u30c9', rows);
+
+  const hontas  = getGroupRows(1); // グループ1: 本体
+  const opts2   = getGroupRows(2); // グループ2: オプション
+  const opts3   = getGroupRows(3); // グループ3: 追加オプション
+
+  if (hontas.length === 0) {
+    alert('\u30b0\u30eb\u30fc\u30d71\uff08\u672c\u4f53\uff09\u306b\u5546\u54c1\u30b3\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');
+    return;
+  }
+
+  const header = ['set_syohin_code','set_syohin_name','set_baika_tnk','syohin_code','suryo','daihyo_syohin_code'];
+  const rows = [header];
+
+  hontas.forEach(honta => {
+    // オプションの組み合わせを生成
+    // opts2とopts3のそれぞれから「何も選ばない」＋「各オプション」を組み合わせ
+    const combos2 = opts2.length > 0 ? [null, ...opts2] : [null];
+    const combos3 = opts3.length > 0 ? [null, ...opts3] : [null];
+
+    combos2.forEach(opt2 => {
+      combos3.forEach(opt3 => {
+        // セット商品コード = 本体対応部分 + opt2対応部分 + opt3対応部分
+        let setCode = honta.part;
+        if (opt2) setCode += opt2.part;
+        if (opt3) setCode += opt3.part;
+
+        // このセットに含まれる商品リスト
+        const items = [honta];
+        if (opt2) items.push(opt2);
+        if (opt3) items.push(opt3);
+
+        // 各商品コードの行を出力
+        items.forEach(item => {
+          rows.push([setCode, setCode, '1000', item.code, item.qty, '']);
+        });
+      });
+    });
+  });
+
+  downloadCSV('set_syohin_ikkatsu_', rows);
 }
+
 // 初期化：各グループに10行追加
 document.addEventListener('DOMContentLoaded', function() {
   [1,2,3].forEach(g => { for(let i=0;i<10;i++) addSetRow(g); });
@@ -175,14 +206,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // エクセルからのCtrl+Vペースト対応
 document.addEventListener('paste', function(e) {
-  // set-codeパネルがアクティブなときのみ
   const panel = document.getElementById('panel-set-code');
   if (!panel || !panel.classList.contains('active')) return;
-
   const text = (e.clipboardData || window.clipboardData).getData('text');
   if (!text) return;
-
-  // どのグループのセルにフォーカスがあるか検出
   const focused = document.activeElement;
   let targetGroup = 1;
   if (focused && focused.closest('.set-block')) {
@@ -191,8 +218,6 @@ document.addEventListener('paste', function(e) {
     targetGroup = blocks.indexOf(block) + 1;
     if (targetGroup < 1) targetGroup = 1;
   }
-
-  // フォーカスセルの行インデックス
   let startRow = 0;
   let startCol = 0;
   if (focused && focused.closest('.set-row')) {
@@ -204,16 +229,12 @@ document.addEventListener('paste', function(e) {
     if (startRow < 0) startRow = 0;
     if (startCol < 0) startCol = 0;
   }
-
-  // タブ・改行でパース（3列対応）
   const rows = text.split(/\r?\n/).filter(r => r !== '');
   const container = document.getElementById('set-rows-' + targetGroup);
   let existingRows = Array.from(container.querySelectorAll('.set-row'));
-
   rows.forEach((rowText, ri) => {
     const cols = rowText.split('\t');
     const rowIdx = startRow + ri;
-    // 行が足りなければ追加
     while (existingRows.length <= rowIdx) {
       addSetRow(targetGroup);
       existingRows = Array.from(container.querySelectorAll('.set-row'));
@@ -224,7 +245,6 @@ document.addEventListener('paste', function(e) {
       if (inputs[colIdx]) inputs[colIdx].value = val;
     });
   });
-
   e.preventDefault();
 });
 
@@ -267,9 +287,7 @@ function handleDropAll(event) {
     for (var key in groupMap) {
       var keywords = groupMap[key];
       for (var ki = 0; ki < keywords.length; ki++) {
-        if (name.toLowerCase().indexOf(keywords[ki].toLowerCase()) >= 0) {
-          matched = key; break;
-        }
+        if (name.toLowerCase().indexOf(keywords[ki].toLowerCase()) >= 0) { matched = key; break; }
       }
       if (matched) break;
     }
@@ -292,7 +310,6 @@ function handleDropAll(event) {
   }
 }
 
-// kanri helpers
 var _kanriFiles = { sales: null, item: null, keyword: null, coupon: null };
 
 function _readFileAsText(file, enc) {
@@ -301,8 +318,7 @@ function _readFileAsText(file, enc) {
     reader.onload = function(e) {
       try {
         var bytes = new Uint8Array(e.target.result);
-        var encoding = enc || 'Shift-JIS';
-        var decoder = new TextDecoder(encoding, {fatal: false});
+        var decoder = new TextDecoder(enc || 'Shift-JIS', {fatal: false});
         res(decoder.decode(bytes));
       } catch(err) { rej(err); }
     };
@@ -321,16 +337,14 @@ function _parseCSV(text) {
       if (c === '"') {
         if (inQ && line[i+1] === '"') { cur += '"'; i++; }
         else inQ = !inQ;
-      } else if (c === ',' && !inQ) {
-        row.push(cur.trim()); cur = '';
-      } else cur += c;
+      } else if (c === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
+      else cur += c;
     }
     row.push(cur.trim());
     rows.push(row);
   }
   return rows;
 }
-
 function _csvToObjects(rows, headerRow) {
   var h = rows[headerRow] || [];
   var result = [];
@@ -343,30 +357,25 @@ function _csvToObjects(rows, headerRow) {
   }
   return result;
 }
-
 function _parseNum(v) {
   if (v === '' || v === null || v === undefined) return 0;
   return parseFloat(String(v).replace(/,/g,'')) || 0;
 }
-
 function _calcAvgCpc(cost, click) {
   if (!_parseNum(click)) return '';
   var v = Math.round(_parseNum(cost) / _parseNum(click) * 100) / 100;
   return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
-
 function _calcCvr(units, click) {
   if (!_parseNum(click)) return '';
   var v = parseFloat((_parseNum(units) / _parseNum(click) * 100).toFixed(2));
   return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
-
 function _calcRoas(sales, cost) {
   if (!_parseNum(cost)) return '';
   var v = parseFloat((_parseNum(sales) / _parseNum(cost) * 100).toFixed(2));
   return v === 0 ? '0.0' : (Number.isInteger(v) ? v.toFixed(1) : v);
 }
-
 function _kanriLog(msg, color) {
   var log = document.getElementById('kanri-log');
   if (!log) return;
@@ -448,10 +457,7 @@ async function kanriCheck() {
 }
 
 function kanriClear() {
-  _kanriFiles.sales = null;
-  _kanriFiles.item = null;
-  _kanriFiles.keyword = null;
-  _kanriFiles.coupon = null;
+  _kanriFiles.sales = null; _kanriFiles.item = null; _kanriFiles.keyword = null; _kanriFiles.coupon = null;
   document.querySelectorAll('.kanri-drop-files').forEach(function(el) { el.innerHTML = ''; });
   var filesAll = document.getElementById('files-all');
   if (filesAll) filesAll.innerHTML = '';
@@ -488,13 +494,10 @@ async function kanriRun() {
         if (typeof JSZip === 'undefined') throw new Error('JSZip\u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093');
         var zip = await JSZip.loadAsync(file);
         var csvFile = null;
-        zip.forEach(function(path, f) {
-          if (!f.dir && path.toLowerCase().endsWith('.csv') && !csvFile) csvFile = f;
-        });
+        zip.forEach(function(path, f) { if (!f.dir && path.toLowerCase().endsWith('.csv') && !csvFile) csvFile = f; });
         if (!csvFile) throw new Error('ZIP\u5185\u306bCSV\u30d5\u30a1\u30a4\u30eb\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093');
         var buf = await csvFile.async('arraybuffer');
-        var decoder = new TextDecoder(enc || 'Shift-JIS', {fatal:false});
-        return decoder.decode(new Uint8Array(buf));
+        return new TextDecoder(enc || 'Shift-JIS', {fatal:false}).decode(new Uint8Array(buf));
       }
       return _readFileAsText(file, enc);
     }
@@ -515,8 +518,7 @@ async function kanriRun() {
     }
     _kanriLog('\u5bfe\u8c61\u5e74\u6708: '+yyyy+'-'+mm, '#a3e635');
     var kwRows=_parseCSV(kwText), itemRows=_parseCSV(itemText);
-    var kwHdr=6, itHdr=6;
-    var kwData=_csvToObjects(kwRows,kwHdr), itemData=_csvToObjects(itemRows,itHdr);
+    var kwData=_csvToObjects(kwRows,6), itemData=_csvToObjects(itemRows,6);
     var salesRows=_parseCSV(salesText), salesHeaderRow=6;
     for (var i=0; i<Math.min(15,salesRows.length); i++) {
       if (salesRows[i].some(function(c){return c==='\u5546\u54c1\u7ba1\u7406\u756a\u53f7';})) { salesHeaderRow=i; break; }
@@ -528,24 +530,17 @@ async function kanriRun() {
     var couponMap={};
     cpnData.forEach(function(r){var no=String(r['\u5546\u54c1\u7ba1\u7406\u756a\u53f7']||'').trim(),cost=_parseNum(r['\u5b9f\u7e3e\u984d']||0),sale=_parseNum(r['\u58f2\u4e0a\u91d1\u984d']||0);if(no){if(!couponMap[no])couponMap[no]={cost:0,sales:0};couponMap[no].cost+=cost;couponMap[no].sales+=sale;}});
     var seenNos=new Set(),mgmtNos=[];
-    kwData.concat(itemData).forEach(function(r){
-      var no=String(r['\u5546\u54c1\u7ba1\u7406\u756a\u53f7']||'').trim();
-      if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}
-    });
-    salesData.forEach(function(r){
-      var no=String(r['\u5546\u54c1\u7ba1\u7406\u756a\u53f7']||'').trim();
-      if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}
-    });
+    kwData.concat(itemData).forEach(function(r){var no=String(r['\u5546\u54c1\u7ba1\u7406\u756a\u53f7']||'').trim();if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}});
+    salesData.forEach(function(r){var no=String(r['\u5546\u54c1\u7ba1\u7406\u756a\u53f7']||'').trim();if(no&&!seenNos.has(no)){seenNos.add(no);mgmtNos.push(no);}});
     mgmtNos.sort(function(a,b){var na=Number(a),nb=Number(b);if(!isNaN(na)&&!isNaN(nb))return na-nb;return a<b?-1:a>b?1:0;});
     _kanriLog('\u5546\u54c1\u7ba1\u7406\u756a\u53f7\u6570: '+mgmtNos.length, '#a3e635');
-    var hN=['\u30ec\u30b3\u30fc\u30c9\u306e\u958b\u59cb\u884c','\u5546\u54c1\u7ba1\u7406\u756a\u53f7',mm+'-\u697d\u5929\u58f2\u4e0a',mm+'-\u5e83\u544a\u58f2\u4e0a',mm+'-\u5b9f\u7e3e\u984d',mm+'-CVR',mm+'-ROAS',mm+'-\u7372\u5f97\u5358\u4fa1',mm+'-CPC\u5b9f\u7e3e',
-      '\u53d6\u5f97\u65e5'+mm+'\u6708\u2606','\u697d\u5929\u58f2\u4e0a'+mm+'\u6708\u2606','\u30ad\u30fc\u30ef\u30fc\u30c9'+mm+'\u6708\u2606','KWvol'+mm+'\u6708\u2606','KW\u30b7\u30a7\u30a2'+mm+'\u6708\u2606','CTR'+mm+'\u6708\u2606','CL\u6570'+mm+'\u6708\u2606','\u5b9f\u7e3e\u984d'+mm+'\u6708\u2606','\u58f2\u4e0a\u91d1\u984d'+mm+'\u6708\u2606','\u58f2\u4e0a\u4ef6\u6570'+mm+'\u6708\u2606','\u5e73\u5747CL\u5358\u4fa1'+mm+'\u6708\u2606','\u76ee\u5b89'+mm+'\u6708\u2606','CVR'+mm+'\u6708\u2606','ROAS'+mm+'\u6708\u2606'];
+    var hN=['\u30ec\u30b3\u30fc\u30c9\u306e\u958b\u59cb\u884c','\u5546\u54c1\u7ba1\u7406\u756a\u53f7',mm+'-\u697d\u5929\u58f2\u4e0a',mm+'-\u5e83\u544a\u58f2\u4e0a',mm+'-\u5b9f\u7e3e\u984d',mm+'-CVR',mm+'-ROAS',mm+'-\u7372\u5f97\u5358\u4fa1',mm+'-CPC\u5b9f\u7e3e','\u53d6\u5f97\u65e5'+mm+'\u6708\u2606','\u697d\u5929\u58f2\u4e0a'+mm+'\u6708\u2606','\u30ad\u30fc\u30ef\u30fc\u30c9'+mm+'\u6708\u2606','KWvol'+mm+'\u6708\u2606','KW\u30b7\u30a7\u30a2'+mm+'\u6708\u2606','CTR'+mm+'\u6708\u2606','CL\u6570'+mm+'\u6708\u2606','\u5b9f\u7e3e\u984d'+mm+'\u6708\u2606','\u58f2\u4e0a\u91d1\u984d'+mm+'\u6708\u2606','\u58f2\u4e0a\u4ef6\u6570'+mm+'\u6708\u2606','\u5e73\u5747CL\u5358\u4fa1'+mm+'\u6708\u2606','\u76ee\u5b89'+mm+'\u6708\u2606','CVR'+mm+'\u6708\u2606','ROAS'+mm+'\u6708\u2606'];
     var HI={};hN.forEach(function(h,i){HI[h]=i;});
     var outRows=[hN];
     function newRow(){return new Array(hN.length).fill('');}
     function si(r,k,v){if(HI[k]!==undefined&&v!==undefined&&v!==null&&v!=='')r[HI[k]]=v;}
     function setF(r,bl,kw,ex){
-      ex=ex||{};var p=bl==='\u2606'?'\u6708\u2606':'\u6708\u2605';
+      ex=ex||{};var p='\u6708\u2606';
       si(r,'\u53d6\u5f97\u65e5'+mm+p,ex.date);si(r,'\u697d\u5929\u58f2\u4e0a'+mm+p,ex.rakuten);
       if(HI['\u30ad\u30fc\u30ef\u30fc\u30c9'+mm+p]!==undefined)r[HI['\u30ad\u30fc\u30ef\u30fc\u30c9'+mm+p]]=kw;
       si(r,'KWvol'+mm+p,ex.kwvol);si(r,'KW\u30b7\u30a7\u30a2'+mm+p,ex.share);si(r,'CTR'+mm+p,ex.ctr);
@@ -586,43 +581,26 @@ async function kanriRun() {
       outRows.push(sRHoshi);
       var sh=kwI.slice().sort(function(a,b){var ca=_parseNum(a['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0),cb=_parseNum(b['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0),ta=_parseNum(a['CTR(%)']||0),tb=_parseNum(b['CTR(%)']||0);var va=ta>0?Math.floor(ca/ta*100):0,vb=tb>0?Math.floor(cb/tb*100):0;return vb-va;});
       function eb(bl,so){
-        var x=newRow(); setF(x,bl,'------------------------------'); outRows.push(x);
-        if(so.length===0 && iCl===0 && iCo===0){
-          var na=newRow(); setF(na,bl,'\u5e83\u544a\u51fa\u8bf3\u306a\u3057'); outRows.push(na);
+        var x=newRow();setF(x,bl,'------------------------------');outRows.push(x);
+        if(so.length===0&&iCl===0&&iCo===0){
+          var na=newRow();setF(na,bl,'\u5e83\u544a\u51fa\u8bf3\u306a\u3057');outRows.push(na);
         } else {
-          var y=newRow(); setF(y,bl,'\u5e83\u544a\u5408\u8a08-\u2463',{click:iCl||'',cost:iCo||'',sales:iSa||'',units:iUn||'',avg_cpc:_calcAvgCpc(iCo,iCl),cvr:_calcCvr(iUn,iCl),roas:_calcRoas(iSa,iCo)}); outRows.push(y);
-          if(itI.length){
-            var z=newRow(); setF(z,bl,'\u5546\u54c1CPC(20\u5186\u51fa\u8bf3\u5206)-\u2464',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)}); outRows.push(z);
-          }
-          var w=newRow(); setF(w,bl,'KW\u5408\u8a08(\u4e0b\u8a18KW\u306e\u5408\u8a08)-\u2464',{click:kCl||'',cost:kCo||'',sales:kSa||'',units:kUn||'',avg_cpc:_calcAvgCpc(kCo,kCl),cvr:_calcCvr(kUn,kCl),roas:_calcRoas(kSa,kCo)}); outRows.push(w);
+          var y=newRow();setF(y,bl,'\u5e83\u544a\u5408\u8a08-\u2463',{click:iCl||'',cost:iCo||'',sales:iSa||'',units:iUn||'',avg_cpc:_calcAvgCpc(iCo,iCl),cvr:_calcCvr(iUn,iCl),roas:_calcRoas(iSa,iCo)});outRows.push(y);
+          if(itI.length){var z=newRow();setF(z,bl,'\u5546\u54c1CPC(20\u5186\u51fa\u8bf3\u5206)-\u2464',{click:dCl||'',cost:dCo||'',sales:dSa||'',units:dUn||'',avg_cpc:_calcAvgCpc(dCo,dCl),cvr:_calcCvr(dUn,dCl),roas:_calcRoas(dSa,dCo)});outRows.push(z);}
+          var w=newRow();setF(w,bl,'KW\u5408\u8a08(\u4e0b\u8a18KW\u306e\u5408\u8a08)-\u2464',{click:kCl||'',cost:kCo||'',sales:kSa||'',units:kUn||'',avg_cpc:_calcAvgCpc(kCo,kCl),cvr:_calcCvr(kUn,kCl),roas:_calcRoas(kSa,kCo)});outRows.push(w);
           var totalVol=0;
+          so.forEach(function(kw){var cl=_parseNum(kw['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0),ctr=_parseNum(kw['CTR(%)']||0);totalVol+=ctr>0?Math.floor(cl/ctr*100):0;});
           so.forEach(function(kw){
-            var cl=_parseNum(kw['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0);
-            var ctr=_parseNum(kw['CTR(%)']||0);
-            totalVol += ctr>0 ? Math.floor(cl/ctr*100) : 0;
-          });
-          so.forEach(function(kw){
-            var c1=_parseNum(kw['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0);
-            var c2=_parseNum(kw['\u5b9f\u7e3e\u984d(\u5408\u8a08)']||0);
-            var s1=_parseNum(kw['\u58f2\u4e0a\u91d1\u984d(\u5408\u8a08720\u6642\u9593)']||0);
-            var u1=_parseNum(kw['\u58f2\u4e0a\u4ef6\u6570(\u5408\u8a08720\u6642\u9593)']||0);
-            var ctr=_parseNum(kw['CTR(%)']||0);
-            var kwvol = ctr>0 ? Math.floor(c1/ctr*100) : 0;
-            var kwshare = totalVol>0 ? Math.round(kwvol/totalVol*10000)/100 : 0; kwshare = Number.isInteger(kwshare) ? kwshare.toFixed(1) : kwshare;
+            var c1=_parseNum(kw['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0),c2=_parseNum(kw['\u5b9f\u7e3e\u984d(\u5408\u8a08)']||0),s1=_parseNum(kw['\u58f2\u4e0a\u91d1\u984d(\u5408\u8a08720\u6642\u9593)']||0),u1=_parseNum(kw['\u58f2\u4e0a\u4ef6\u6570(\u5408\u8a08720\u6642\u9593)']||0),ctr=_parseNum(kw['CTR(%)']||0);
+            var kwvol=ctr>0?Math.floor(c1/ctr*100):0;
+            var kwshare=totalVol>0?Math.round(kwvol/totalVol*10000)/100:0;kwshare=Number.isInteger(kwshare)?kwshare.toFixed(1):kwshare;
             var rk=newRow();
-            setF(rk,bl,kw['\u30ad\u30fc\u30ef\u30fc\u30c9']||'',{
-              kwvol:kwvol||'', share:kwshare||'',
-              ctr:(function(){var v=parseFloat(kw['CTR(%)'||'']);return isNaN(v)||v===0?'':Number.isInteger(v)?v.toFixed(1):v;})(), click:c1||'', cost:c2||'',
-              sales:s1||'', units:u1||'',
-              avg_cpc:_calcAvgCpc(c2,c1),
-              target_cpc:(kw['\u76ee\u5b89CPC']==='-'?'':kw['\u76ee\u5b89CPC']||''),
-              cvr:_calcCvr(u1,c1), roas:_calcRoas(s1,c2)
-            });
+            setF(rk,bl,kw['\u30ad\u30fc\u30ef\u30fc\u30c9']||'',{kwvol:kwvol||'',share:kwshare||'',ctr:(function(){var v=parseFloat(kw['CTR(%)'||'']);return isNaN(v)||v===0?'':Number.isInteger(v)?v.toFixed(1):v;})(),click:c1||'',cost:c2||'',sales:s1||'',units:u1||'',avg_cpc:_calcAvgCpc(c2,c1),target_cpc:(kw['\u76ee\u5b89CPC']==='-'?'':kw['\u76ee\u5b89CPC']||''),cvr:_calcCvr(u1,c1),roas:_calcRoas(s1,c2)});
             outRows.push(rk);
           });
         }
-        var x2=newRow(); setF(x2,bl,'------------------------------'); outRows.push(x2);
-        if(cpn){ var r5=newRow(); setF(r5,bl,'\u30af\u30fc\u30dd\u30f3\u30a2\u30c9\u30d0\u30f3\u30b9-\u2465',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)}); outRows.push(r5); }
+        var x2=newRow();setF(x2,bl,'------------------------------');outRows.push(x2);
+        if(cpn){var r5=newRow();setF(r5,bl,'\u30af\u30fc\u30dd\u30f3\u30a2\u30c9\u30d0\u30f3\u30b9-\u2465',{cost:cpn.cost||'',sales:cpn.sales||'',roas:_calcRoas(cpn.sales,cpn.cost)});outRows.push(r5);}
       }
       eb('\u2606',sh);
     });
