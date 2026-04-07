@@ -58,40 +58,10 @@
   .btn-primary:hover { opacity:.88; }
   .btn-secondary { background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:7px; padding:.6rem 1.1rem; font-size:.875rem; font-weight:500; cursor:pointer; font-family:inherit; transition:background .15s; }
   .btn-secondary:hover { background:var(--tab-hover-bg); }
-  .dropzone { border:2px dashed var(--border); border-radius:var(--radius); background:var(--surface); min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.75rem; cursor:pointer; transition:border-color .2s,background .2s; padding:2rem; }
-  .dropzone:hover { border-color:var(--red); background:var(--red-light); }
-  .dropzone .dz-label { font-size:.95rem; font-weight:600; }
-  .dropzone .dz-sub { font-size:.82rem; color:var(--text-muted); }
-  .dropzone .btn-select { background:var(--red); color:#fff; border:none; border-radius:7px; padding:.55rem 1.4rem; font-size:.875rem; font-weight:600; cursor:pointer; font-family:inherit; }
-  .badge-tai { display:inline-block; background:#2563eb; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
-  .badge-ra { display:inline-block; background:#E94C3D; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; margin-left:0; vertical-align:middle; line-height:1.4; flex-shrink:0; }
-  .kanri-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; }
-  .kanri-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; display:flex; flex-direction:column; gap:.75rem; }
-  .kanri-title { font-size:.9rem; font-weight:700; color:var(--text); }
-  .kanri-url { font-size:.72rem; color:#2563eb; text-decoration:none; word-break:break-all; }
-  .kanri-url:hover { text-decoration:underline; }
-  .kanri-drop { border:2px dashed var(--border); border-radius:8px; padding:1.5rem 1rem; text-align:center; transition:background .15s,border-color .15s; cursor:default; min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.4rem; }
-  .kanri-drop.dragover { background:#f0f4ff; border-color:#2563eb; }
-  .kanri-drop-label { font-size:.85rem; color:var(--text-muted); }
-  .kanri-drop-sub { font-size:.72rem; color:var(--text-muted); }
-  .kanri-drop-files { width:100%; display:flex; flex-direction:column; gap:.3rem; margin-top:.5rem; }
-  .kanri-file-item { font-size:.75rem; background:#f0f4ff; border-radius:4px; padding:.25rem .5rem; color:#2563eb; text-align:left; display:flex; justify-content:space-between; align-items:center; }
-  .kanri-file-remove { cursor:pointer; color:var(--text-muted); font-size:.8rem; margin-left:.5rem; }
-  .kanri-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-  .kanri-card-header { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; border-bottom:1px solid var(--border); background:#fafafa; }
-  .kanri-card-title { font-size:.85rem; font-weight:700; color:var(--text); }
-  .kanri-url-btn { font-size:.75rem; color:#2563eb; text-decoration:none; padding:.25rem .6rem; border:1px solid #2563eb; border-radius:4px; transition:background .15s; white-space:nowrap; }
-  .kanri-url-btn:hover { background:#eff6ff; }
-  .kanri-dropzone { position:relative; min-height:140px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
-  .kanri-dropzone.dragover { background:#eff6ff; border:2px dashed #2563eb; }
-  .kanri-dz-inner { display:flex; flex-direction:column; align-items:center; gap:.4rem; padding:1.5rem; pointer-events:none; }
-  .kanri-dz-icon { font-size:2rem; opacity:.4; }
-  .kanri-dz-label { font-size:.85rem; font-weight:600; color:var(--text-muted); }
-  .kanri-dz-sub { font-size:.75rem; color:var(--text-muted); opacity:.7; }
-  .kanri-file-input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-  .kanri-file-name { font-size:.78rem; color:#16a34a; padding:.25rem 1rem .5rem; text-align:center; }
+  .badge-tai { display:inline-block; background:#2563eb; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; vertical-align:middle; line-height:1.4; flex-shrink:0; }
+  .badge-ra { display:inline-block; background:#E94C3D; color:#fff; font-size:0.62rem; font-weight:700; border-radius:3px; padding:1px 4px; vertical-align:middle; line-height:1.4; flex-shrink:0; }
 
-  /* ===== セット商品コード: 3列対応 ===== */
+  /* ===== セット商品コード 3列 ===== */
   .set-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; align-items:start; }
   .set-block { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
   .set-header { display:grid; grid-template-columns:2fr 3fr 1fr; background:#f0f4ff; border-bottom:1px solid var(--border); font-size:.75rem; font-weight:700; color:#2563eb; }
@@ -104,38 +74,39 @@
   .btn-add-row { width:100%; background:none; border:none; border-top:1px dashed var(--border); padding:.4rem; font-size:.78rem; color:var(--text-muted); cursor:pointer; font-family:inherit; transition:background .15s; }
   .btn-add-row:hover { background:var(--tab-hover-bg); color:var(--text); }
 
-  footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
-  footer .heart { color:var(--red); }
-  @media (max-width:900px) { .data-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media (max-width:600px) { .data-grid { grid-template-columns:1fr; } header { padding:0 1rem; } main { padding:1rem; } }
-
+  /* ===== kanri ===== */
+  .kanri-url { font-size:.72rem; color:#2563eb; text-decoration:none; word-break:break-all; }
+  .kanri-url:hover { text-decoration:underline; }
   .kanri-drop-single { border:2px dashed var(--border); border-radius:12px; padding:2rem; text-align:center; cursor:default; margin-bottom:1.25rem; transition:background .15s,border-color .15s; }
   .kanri-drop-single.dragover { background:rgba(99,102,241,.08); border-color:#6366f1; }
   .kanri-drop-icon { font-size:2.5rem; margin-bottom:.5rem; }
   .kanri-drop-label { font-size:1rem; font-weight:600; color:var(--text); margin-bottom:.25rem; }
-  .kanri-drop-sub { font-size:.8rem; color:var(--muted); margin-bottom:.75rem; }
+  .kanri-drop-sub { font-size:.8rem; color:var(--text-muted); margin-bottom:.75rem; }
   .kanri-drop-files-all { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; min-height:1.2rem; }
   .kanri-desc-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
-  .kanri-desc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.1rem; }
-  .kanri-desc-num { font-size:1.1rem; font-weight:700; color:#6366f1; margin-bottom:.2rem; }
+  .kanri-desc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.1rem; position:relative; }
+  .kanri-desc-header { display:flex; align-items:center; gap:.4rem; margin-bottom:.3rem; }
+  .kanri-desc-num { font-size:1.1rem; font-weight:700; color:#6366f1; }
+  .kanri-desc-name { font-size:.85rem; font-weight:600; color:#6366f1; }
   .kanri-desc-title { font-size:.8rem; color:#444; margin-bottom:.25rem; }
-  .kanri-desc-steps { margin:.4rem 0 0 0; padding-left:1.2rem; color:var(--muted); font-size:.78rem; line-height:1.7; }
+  .kanri-desc-steps { margin:.4rem 0 0 0; padding-left:1.2rem; color:var(--text-muted); font-size:.78rem; line-height:1.7; }
   .kanri-month-badge { position:absolute; bottom:.6rem; right:.75rem; font-size:.75rem; font-weight:600; color:#6366f1; background:#eef2ff; border:1px solid #c7d2fe; border-radius:4px; padding:.1rem .5rem; min-width:4rem; text-align:center; pointer-events:none; }
-  .kanri-desc-card { position:relative; }
-  .kanri-check-area { display:flex; align-items:center; gap:1rem; margin-top:1rem; }
+  .kanri-check-area { display:flex; align-items:center; gap:.75rem; margin-top:1rem; flex-wrap:wrap; justify-content:flex-end; }
+  .btn-check { background:#3b82f6; color:#fff; border:none; border-radius:6px; padding:.45rem 1.1rem; font-size:.875rem; font-weight:600; cursor:pointer; transition:background .15s; white-space:nowrap; }
+  .btn-check:hover { background:#2563eb; }
   .kanri-check-result { font-size:.875rem; font-weight:600; }
   .kanri-check-result.ok { color:#16a34a; }
   .kanri-check-result.ng { color:#dc2626; }
   .kanri-desc-card.card-ok { border-color:#86efac; background:#f0fdf4; }
   .kanri-desc-card.card-ng { border-color:#fca5a5; background:#fef2f2; }
-  .kanri-desc-header { display:flex; align-items:center; gap:.4rem; margin-bottom:.3rem; }
-  .kanri-desc-name { font-size:.85rem; font-weight:600; color:#6366f1; }
-  .kanri-check-area { display:flex; align-items:center; gap:.75rem; margin-top:1rem; flex-wrap:wrap; justify-content:flex-end; }
-  .btn-check { background:#3b82f6; color:#fff; border:none; border-radius:6px; padding:.45rem 1.1rem; font-size:.875rem; font-weight:600; cursor:pointer; transition:background .15s; white-space:nowrap; }
-  .btn-check:hover { background:#2563eb; }
   .badge-found { background:#eff6ff; border-color:#93c5fd; color:#1d4ed8; }
   .badge-unset { background:#fafafa; border-color:#d1d5db; color:#9ca3af; }
   .badge-unknown { background:#fef9c3; border-color:#fde047; color:#92400e; }
+
+  footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
+  footer .heart { color:var(--red); }
+  @media (max-width:900px) { .data-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:600px) { .data-grid { grid-template-columns:1fr; } header { padding:0 1rem; } main { padding:1rem; } }
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -178,67 +149,66 @@
   </div>
   <div class="tool-panel" id="panel-shohin-kanri">
     <div class="kanri-drop-single" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDropAll(event)">
-        <div class="kanri-drop-icon">📂</div>
-        <div class="kanri-drop-label">4つのファイルをまとめてドロップ</div>
-        <div class="kanri-drop-sub">売上 / 商品別レポート / KW別レポート / クーポンアドバンス</div>
-        <div class="kanri-drop-files-all" id="files-all"></div>
+      <div class="kanri-drop-icon">📂</div>
+      <div class="kanri-drop-label">4つのファイルをまとめてドロップ</div>
+      <div class="kanri-drop-sub">売上 / 商品別レポート / KW別レポート / クーポンアドバンス</div>
+      <div class="kanri-drop-files-all" id="files-all"></div>
+    </div>
+    <div class="kanri-desc-grid">
+      <div class="kanri-desc-card" id="desc-sales">
+        <div class="kanri-desc-header"><span class="kanri-desc-num">①</span><span class="kanri-desc-name">xxxx_Item_SalesList</span></div>
+        <div class="kanri-desc-title">楽天全商品売上データ</div>
+        <a class="kanri-url" href="https://datatool.rms.rakuten.co.jp/realtime/item" target="_blank">datatool.rms.rakuten.co.jp/realtime/item</a>
+        <ol class="kanri-desc-steps">
+          <li>月次で対象月を選択</li>
+          <li>CSVダウンロード</li>
+          <li>全件を選択</li>
+          <li>ダウンロード</li>
+        </ol>
+        <div class="kanri-month-badge" id="badge-sales">―</div>
       </div>
-      <div class="kanri-desc-grid">
-        <div class="kanri-desc-card" id="desc-sales">
-          <div class="kanri-desc-header"><span class="kanri-desc-num">①</span><span class="kanri-desc-name">xxxx_Item_SalesList</span></div>
-          <div class="kanri-desc-title">楽天全商品売上データ</div>
-          <a class="kanri-url" href="https://datatool.rms.rakuten.co.jp/realtime/item" target="_blank">datatool.rms.rakuten.co.jp/realtime/item</a>
-          <ol class="kanri-desc-steps">
-            <li>月次で対象月を選択</li>
-            <li>CSVダウンロード</li>
-            <li>全件を選択</li>
-            <li>ダウンロード</li>
-          </ol>
-          <div class="kanri-month-badge" id="badge-sales">―</div>
-        </div>
-        <div class="kanri-desc-card" id="desc-item">
-          <div class="kanri-desc-header"><span class="kanri-desc-num">②</span><span class="kanri-desc-name">rpp_item_reports</span></div>
-          <div class="kanri-desc-title">RPP商品別レポート</div>
-          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
-          <ol class="kanri-desc-steps">
-            <li>商品別を選択</li>
-            <li>月ごとに表示、対象月を選択</li>
-            <li>新規顧客/既存顧客/12時間のチェックを外す</li>
-            <li>全商品レポートダウンロード</li>
-            <li>KW別でも同じようにやる</li>
-          </ol>
-          <div class="kanri-month-badge" id="badge-item">―</div>
-        </div>
-        <div class="kanri-desc-card" id="desc-keyword">
-          <div class="kanri-desc-header"><span class="kanri-desc-num">③</span><span class="kanri-desc-name">rpp_keyword_reports</span></div>
-          <div class="kanri-desc-title">RPP KW別レポート</div>
-          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
-          <ol class="kanri-desc-steps">
-            <li>KW別を選択</li>
-            <li>月ごとに表示、対象月を選択</li>
-            <li>新規顧客/既存顧客/12時間のチェックを外す</li>
-            <li>全商品レポートダウンロード</li>
-          </ol>
-          <div class="kanri-month-badge" id="badge-keyword">―</div>
-        </div>
-        <div class="kanri-desc-card" id="desc-coupon">
-          <div class="kanri-desc-header"><span class="kanri-desc-num">④</span><span class="kanri-desc-name">CouponAdvance_PerformanceReport</span></div>
-          <div class="kanri-desc-title">クーポンアドバンスレポート</div>
-          <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank">ad.rms.rakuten.co.jp/cpnadv/performance_reports</a>
-          <ol class="kanri-desc-steps">
-            <li>商品別を選択</li>
-            <li>月ごとに表示、対象月を選択</li>
-            <li>この条件でダウンロード</li>
-          </ol>
-          <div class="kanri-month-badge" id="badge-coupon">―</div>
-        </div>
+      <div class="kanri-desc-card" id="desc-item">
+        <div class="kanri-desc-header"><span class="kanri-desc-num">②</span><span class="kanri-desc-name">rpp_item_reports</span></div>
+        <div class="kanri-desc-title">RPP商品別レポート</div>
+        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
+        <ol class="kanri-desc-steps">
+          <li>商品別を選択</li>
+          <li>月ごとに表示、対象月を選択</li>
+          <li>新規顧客/既存顧客/12時間のチェックを外す</li>
+          <li>全商品レポートダウンロード</li>
+          <li>KW別でも同じようにやる</li>
+        </ol>
+        <div class="kanri-month-badge" id="badge-item">―</div>
       </div>
-      <div class="kanri-check-area">
-        <button class="btn-check" onclick="kanriCheck()">✓ チェック</button>
-        <div class="kanri-check-result" id="check-result"></div>
-        <button class="btn-secondary" onclick="kanriClear()">クリア</button>
-        <button class="btn-primary" onclick="kanriRun()">► 実行</button>
+      <div class="kanri-desc-card" id="desc-keyword">
+        <div class="kanri-desc-header"><span class="kanri-desc-num">③</span><span class="kanri-desc-name">rpp_keyword_reports</span></div>
+        <div class="kanri-desc-title">RPP KW別レポート</div>
+        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/rpp/reports" target="_blank">ad.rms.rakuten.co.jp/rpp/reports</a>
+        <ol class="kanri-desc-steps">
+          <li>KW別を選択</li>
+          <li>月ごとに表示、対象月を選択</li>
+          <li>新規顧客/既存顧客/12時間のチェックを外す</li>
+          <li>全商品レポートダウンロード</li>
+        </ol>
+        <div class="kanri-month-badge" id="badge-keyword">―</div>
       </div>
+      <div class="kanri-desc-card" id="desc-coupon">
+        <div class="kanri-desc-header"><span class="kanri-desc-num">④</span><span class="kanri-desc-name">CouponAdvance_PerformanceReport</span></div>
+        <div class="kanri-desc-title">クーポンアドバンスレポート</div>
+        <a class="kanri-url" href="https://ad.rms.rakuten.co.jp/cpnadv/performance_reports" target="_blank">ad.rms.rakuten.co.jp/cpnadv/performance_reports</a>
+        <ol class="kanri-desc-steps">
+          <li>商品別を選択</li>
+          <li>月ごとに表示、対象月を選択</li>
+          <li>この条件でダウンロード</li>
+        </ol>
+        <div class="kanri-month-badge" id="badge-coupon">―</div>
+      </div>
+    </div>
+    <div class="kanri-check-area">
+      <button class="btn-check" onclick="kanriCheck()">✓ チェック</button>
+      <div class="kanri-check-result" id="check-result"></div>
+      <button class="btn-secondary" onclick="kanriClear()">クリア</button>
+      <button class="btn-primary" onclick="kanriRun()">► 実行</button>
     </div>
   </div>
   <div class="tool-panel" id="panel-set-code">
