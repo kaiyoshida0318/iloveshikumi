@@ -64,13 +64,9 @@
   /* ===== セット商品コード 3列 ===== */
   .set-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; align-items:start; }
   .set-block { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-  .set-header { display:grid; grid-template-columns:1fr 1fr 1fr; background:#f0f4ff; border-bottom:1px solid var(--border); font-size:.75rem; font-weight:700; color:#2563eb; }
+  .set-header { display:grid; grid-template-columns:1fr 1fr 1fr auto; background:#f0f4ff; border-bottom:1px solid var(--border); font-size:.75rem; font-weight:700; color:#2563eb; }
   .set-header span { padding:.5rem .75rem; }
   .set-header span:not(:last-child) { border-right:1px solid var(--border); }
-  .set-row { display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:1px solid var(--border); }
-  .set-row input { border:none; border-radius:0; height:32px; padding:0 .75rem; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; width:100%; box-sizing:border-box; }
-  .set-row input:not(:last-child) { border-right:1px solid var(--border); }
-  .set-row input:focus { background:#fafcff; }
   .set-row { cursor:default; user-select:none; display:grid; grid-template-columns:1fr 1fr 1fr auto; border-bottom:1px solid var(--border); }
   .set-row input { border:none; border-radius:0; height:32px; padding:0 .75rem; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; width:100%; box-sizing:border-box; }
   .set-row input:not(:last-of-type) { border-right:1px solid var(--border); }
