@@ -73,6 +73,11 @@
   .set-row input:focus { background:#fafcff; }
   .btn-add-row { width:100%; background:none; border:none; border-top:1px dashed var(--border); padding:.4rem; font-size:.78rem; color:var(--text-muted); cursor:pointer; font-family:inherit; transition:background .15s; }
   .btn-add-row:hover { background:var(--tab-hover-bg); color:var(--text); }
+  .set-row { cursor:default; user-select:none; }
+  .set-row.row-selected { background:#dbeafe; }
+  .set-row.row-selected input { background:#dbeafe; }
+  .set-row.row-copied { background:#bbf7d0; transition:background .3s; }
+  .set-row.row-copied input { background:#bbf7d0; }
 
   /* ===== kanri ===== */
   .kanri-url { font-size:.72rem; color:#2563eb; text-decoration:none; word-break:break-all; }
