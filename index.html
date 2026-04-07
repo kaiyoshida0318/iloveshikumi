@@ -71,13 +71,18 @@
   .set-row input { border:none; border-radius:0; height:32px; padding:0 .75rem; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; width:100%; box-sizing:border-box; }
   .set-row input:not(:last-child) { border-right:1px solid var(--border); }
   .set-row input:focus { background:#fafcff; }
-  .btn-add-row { width:100%; background:none; border:none; border-top:1px dashed var(--border); padding:.4rem; font-size:.78rem; color:var(--text-muted); cursor:pointer; font-family:inherit; transition:background .15s; }
-  .btn-add-row:hover { background:var(--tab-hover-bg); color:var(--text); }
-  .set-row { cursor:default; user-select:none; }
+  .set-row { cursor:default; user-select:none; display:grid; grid-template-columns:1fr 1fr 1fr auto; border-bottom:1px solid var(--border); }
+  .set-row input { border:none; border-radius:0; height:32px; padding:0 .75rem; font-size:.8rem; font-family:inherit; color:var(--text); background:var(--surface); outline:none; width:100%; box-sizing:border-box; }
+  .set-row input:not(:last-of-type) { border-right:1px solid var(--border); }
+  .set-row input:focus { background:#fafcff; }
+  .set-row .btn-row-del { border:none; background:none; color:#ccc; font-size:.8rem; cursor:pointer; padding:0 .5rem; height:32px; transition:color .15s,background .15s; border-left:1px solid var(--border); }
+  .set-row .btn-row-del:hover { color:var(--red); background:var(--red-light); }
   .set-row.row-selected { background:#dbeafe; }
   .set-row.row-selected input { background:#dbeafe; }
   .set-row.row-copied { background:#bbf7d0; transition:background .3s; }
   .set-row.row-copied input { background:#bbf7d0; }
+  .btn-add-table { display:inline-flex; align-items:center; gap:.4rem; background:none; border:1.5px dashed #2563eb; color:#2563eb; border-radius:7px; padding:.45rem 1.1rem; font-size:.82rem; font-weight:700; cursor:pointer; font-family:inherit; transition:background .15s; margin-bottom:.75rem; }
+  .btn-add-table:hover { background:#eff6ff; }
 
   /* ===== kanri ===== */
   .kanri-url { font-size:.72rem; color:#2563eb; text-decoration:none; word-break:break-all; }
@@ -217,24 +222,9 @@
     </div>
   </div>
   <div class="tool-panel" id="panel-set-code">
-    <p style="font-size:.78rem; color:var(--text-muted); margin-bottom:.6rem;">📋 エクセルからコピーしてセルをクリック後 <kbd style="background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:.75rem;">Ctrl+V</kbd> で一括貼り付けできます</p>
-    <div class="set-grid">
-      <div class="set-block">
-        <div class="set-header"><span>対応部分</span><span>商品コード</span><span>個数</span></div>
-        <div id="set-rows-1"></div>
-        <button class="btn-add-row" onclick="addSetRow(1)">＋ 行を追加</button>
-      </div>
-      <div class="set-block">
-        <div class="set-header"><span>対応部分</span><span>商品コード</span><span>個数</span></div>
-        <div id="set-rows-2"></div>
-        <button class="btn-add-row" onclick="addSetRow(2)">＋ 行を追加</button>
-      </div>
-      <div class="set-block">
-        <div class="set-header"><span>対応部分</span><span>商品コード</span><span>個数</span></div>
-        <div id="set-rows-3"></div>
-        <button class="btn-add-row" onclick="addSetRow(3)">＋ 行を追加</button>
-      </div>
-    </div>
+    <p style="font-size:.78rem; color:var(--text-muted); margin-bottom:.6rem;">📋 エクセルからコピーしてセルをクリック後 <kbd style="background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:.75rem;">Ctrl+V</kbd> で一括貼り付け／行クリックで選択→<kbd style="background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:.75rem;">Ctrl+C</kbd> でコピーできます</p>
+    <button class="btn-add-table" onclick="addSetBlock()">＋ 表を追加</button>
+    <div class="set-grid" id="set-grid"></div>
     <div class="form-actions" style="margin-top:1.25rem;">
       <button class="btn-secondary" onclick="clearSet()">クリア</button>
       <button class="btn-primary" onclick="downloadSet()">📥 セット商品コード出力</button>
