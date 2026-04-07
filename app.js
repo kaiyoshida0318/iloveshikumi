@@ -613,3 +613,73 @@ async function kanriRun() {
     _kanriLog('  \u5546\u54c1\u6570:'+mgmtNos.length+' \u884c\u6570:'+outRows.length,'#a3e635');
   } catch(e) { _kanriLog('\u300c\u30a8\u30e9\u30fc\u300d'+e.message,'#f87171'); console.error(e); }
 }
+
+// ===== セット商品コード 行選択＆コピー =====
+(function() {
+  var selectedRows = new Set();
+  var lastClickedRow = null;
+
+  document.addEventListener('click', function(e) {
+    var row = e.target.closest && e.target.closest('.set-row');
+    if (!row) { clearSelection(); return; }
+    // inputフォーカス時は選択しない
+    if (e.target.tagName === 'INPUT') return;
+
+    var container = row.parentElement;
+    var allRows = Array.from(container.querySelectorAll('.set-row'));
+
+    if (e.shiftKey && lastClickedRow && lastClickedRow.parentElement === container) {
+      // Shift+クリック：範囲選択
+      var from = allRows.indexOf(lastClickedRow);
+      var to   = allRows.indexOf(row);
+      if (from > to) { var tmp = from; from = to; to = tmp; }
+      clearSelection();
+      for (var i = from; i <= to; i++) selectRow(allRows[i]);
+    } else {
+      // 通常クリック：単一選択
+      clearSelection();
+      selectRow(row);
+      lastClickedRow = row;
+    }
+  });
+
+  function selectRow(row) {
+    selectedRows.add(row);
+    row.classList.add('row-selected');
+  }
+  function clearSelection() {
+    selectedRows.forEach(function(r) { r.classList.remove('row-selected'); });
+    selectedRows.clear();
+    lastClickedRow = null;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (!((e.ctrlKey || e.metaKey) && e.key === 'c')) return;
+    if (selectedRows.size === 0) return;
+    var panel = document.getElementById('panel-set-code');
+    if (!panel || !panel.classList.contains('active')) return;
+
+    // 選択行をDOM順にソートしてタブ区切りでコピー
+    var allSetRows = Array.from(document.querySelectorAll('#panel-set-code .set-row'));
+    var sorted = allSetRows.filter(function(r) { return selectedRows.has(r); });
+    var text = sorted.map(function(r) {
+      return Array.from(r.querySelectorAll('input')).map(function(inp) { return inp.value; }).join('\t');
+    }).join('\n');
+
+    navigator.clipboard.writeText(text).then(function() {
+      // コピー完了フィードバック
+      sorted.forEach(function(r) { r.classList.add('row-copied'); });
+      setTimeout(function() { sorted.forEach(function(r) { r.classList.remove('row-copied'); }); }, 400);
+    }).catch(function() {
+      // fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    });
+
+    e.preventDefault();
+  });
+})();
