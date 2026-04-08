@@ -292,6 +292,25 @@ document.addEventListener('paste', function(e) {
   e.preventDefault();
 });
 
+// ===== 日月次 ドロップ =====
+var _nichinichiFiles = [];
+function handleDropNichinichi(event) {
+  event.preventDefault();
+  document.getElementById('nichinichi-drop').classList.remove('dragover');
+  var files = event.dataTransfer && event.dataTransfer.files;
+  if (!files || !files.length) return;
+  var filesEl = document.getElementById('nichinichi-files');
+  for (var i = 0; i < files.length; i++) {
+    _nichinichiFiles.push(files[i]);
+    if (filesEl) {
+      var span = document.createElement('span');
+      span.style.cssText = 'color:#4f46e5;font-size:.78rem;background:#eef2ff;border:1px solid #c7d2fe;border-radius:4px;padding:.15rem .5rem;';
+      span.textContent = '\u2705 ' + files[i].name;
+      filesEl.appendChild(span);
+    }
+  }
+}
+
 const kanriFiles = {};
 function handleDrop(event, group) {
   event.preventDefault();
