@@ -768,40 +768,55 @@ async function _readNichText(file) {
     var zip = await JSZip.loadAsync(file);
     var csvFile = null;
     zip.forEach(function(p, f) { if (!f.dir && p.toLowerCase().endsWith('.csv') && !csvFile) csvFile = f; });
-    if (!csvFile) throw new Error('ZIP内にCSVがありません');
+    if (!csvFile) throw new Error('ZIP\u5185\u306bCSV\u304c\u3042\u308a\u307e\u305b\u3093');
     var buf = await csvFile.async('arraybuffer');
     return new TextDecoder('Shift-JIS', {fatal:false}).decode(new Uint8Array(buf));
   }
   return _readFileAsText(file, 'Shift-JIS');
 }
 
-function _extractDate(text) {
-  var m = text.match(/集計期間.*?(20\d\d-[01]\d-[0-3]\d)/);
-  if (m) return m[1];
-  var m2 = text.match(/(20\d\d)年([01]\d)月([0-3]\d)日/);
-  if (m2) return m2[1] + '-' + m2[2] + '-' + m2[3];
+// 日付を抽出し、期間かどうかも返す
+// 戻り値: { start: '2026-04-01', end: '2026-04-07', isPeriod: true/false }
+function _extractDateInfo(text) {
+  var lines = text.split(/\r?\n/);
+  for (var i = 0; i < Math.min(20, lines.length); i++) {
+    var l = lines[i];
+    // 「2026-04-01 - 2026-04-07」形式（集計期間行）
+    var m = l.match(/(20\d\d-[01]\d-[0-3]\d)\s*-\s*(20\d\d-[01]\d-[0-3]\d)/);
+    if (m) {
+      return { start: m[1], end: m[2], isPeriod: m[1] !== m[2] };
+    }
+    // 「2026年04月01日〜2026年04月07日」形式（データ行）
+    var m2 = l.match(/(20\d\d)\u5e74([01]\d)\u6708([0-3]\d)\u65e5\uff5e(20\d\d)\u5e74([01]\d)\u6708([0-3]\d)\u65e5/);
+    if (m2) {
+      var s = m2[1]+'-'+m2[2]+'-'+m2[3], e = m2[4]+'-'+m2[5]+'-'+m2[6];
+      return { start: s, end: e, isPeriod: s !== e };
+    }
+    // 単日「2026年04月01日」形式
+    var m3 = l.match(/(20\d\d)\u5e74([01]\d)\u6708([0-3]\d)\u65e5(?!\uff5e)/);
+    if (m3) {
+      var s = m3[1]+'-'+m3[2]+'-'+m3[3];
+      return { start: s, end: s, isPeriod: false };
+    }
+  }
   return null;
 }
 
-function _dateToCode(d) { return d.replace(/-/g, ''); }
-
 async function _classifyAllFiles() {
-  var map = {}; // { '2026-04-01': { rpp: File, kw: File } }
+  var map = {}; // { '2026-04-01': { rpp: File, kw: File, isPeriod: bool, end: '...' } }
   for (var i = 0; i < _nichinichiFiles.length; i++) {
     var file = _nichinichiFiles[i];
     var type = _nichFileType(file.name);
     if (!type) continue;
     try {
       var text = await _readNichText(file);
-      var lines = text.split(/\r?\n/);
-      var date = null;
-      for (var li = 0; li < Math.min(20, lines.length); li++) {
-        date = _extractDate(lines[li]);
-        if (date) break;
-      }
-      if (!date) continue;
-      if (!map[date]) map[date] = {};
-      map[date][type] = file;
+      var info = _extractDateInfo(text);
+      if (!info) continue;
+      var key = info.start;
+      if (!map[key]) map[key] = { isPeriod: info.isPeriod, end: info.end };
+      map[key][type] = file;
+      map[key].isPeriod = info.isPeriod;
+      map[key].end = info.end;
     } catch(e) { /* skip */ }
   }
   return map;
@@ -809,137 +824,166 @@ async function _classifyAllFiles() {
 
 async function nichinichiCheck() {
   var result = document.getElementById('nichinichi-check-result');
-  result.textContent = 'チェック中...';
+  result.textContent = '\u30c1\u30a7\u30c3\u30af\u4e2d...';
   result.className = 'kanri-check-result';
   result.style.whiteSpace = 'pre';
 
   if (_nichinichiFiles.length === 0) {
-    result.textContent = '⚠️ ファイルがセットされていません';
+    result.textContent = '\u26a0\ufe0f \u30d5\u30a1\u30a4\u30eb\u304c\u30bb\u30c3\u30c8\u3055\u308c\u3066\u3044\u307e\u305b\u3093';
     result.className = 'kanri-check-result ng'; return;
   }
 
   var map = await _classifyAllFiles();
   var dates = Object.keys(map).sort();
   if (dates.length === 0) {
-    result.textContent = '❌ 日付が取得できませんでした';
+    result.textContent = '\u274c \u65e5\u4ed8\u304c\u53d6\u5f97\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f';
     result.className = 'kanri-check-result ng'; return;
   }
 
-  var lines = ['日付          RPP    KW     状態', '─────────────────────────────'];
+  var lines = ['\u65e5\u4ed8          RPP    KW     \u30bf\u30a4\u30d7    \u72b6\u614b', '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'];
   var allOk = true;
   dates.forEach(function(d) {
-    var hasRpp = !!map[d].rpp;
-    var hasKw  = !!map[d].kw;
-    var status = (hasRpp && hasKw) ? '✅ 両方あり' : (!hasRpp && !hasKw) ? '❌ 両方なし' : '⚠️ 片方のみ';
+    var hasRpp = !!map[d].rpp, hasKw = !!map[d].kw;
+    var isPeriod = map[d].isPeriod;
+    var type = isPeriod ? '\u671f\u9593' : '\u65e5\u5225';
+    var label = isPeriod ? d + '\uff5e' + map[d].end : d;
+    var status = (hasRpp && hasKw) ? '\u2705 \u4e21\u65b9\u3042\u308a' : '\u26a0\ufe0f \u7247\u65b9\u306e\u307f';
     if (!hasRpp || !hasKw) allOk = false;
-    lines.push(d + '  ' + (hasRpp?'✅':'❌') + '     ' + (hasKw?'✅':'❌') + '    ' + status);
+    lines.push(label + '  ' + (hasRpp?'\u2705':'\u274c') + '     ' + (hasKw?'\u2705':'\u274c') + '    ' + type + '    ' + status);
   });
-  lines.push('─────────────────────────────');
-  lines.push(allOk ? '✅ 全日付OK（' + dates.length + '日分）' : '⚠️ 揃っていない日付があります（揃っている日のみ出力されます）');
-
+  lines.push('\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500');
+  lines.push(allOk ? '\u2705 \u5168\u30c7\u30fc\u30bf\u6e96\u5099OK\uff08' + dates.length + '\u4ef6\uff09' : '\u26a0\ufe0f \u63c3\u3063\u3066\u3044\u306a\u3044\u65e5\u4ed8\u304c\u3042\u308a\u307e\u3059');
   result.textContent = lines.join('\n');
   result.className = 'kanri-check-result ' + (allOk ? 'ok' : 'ng');
+}
+
+async function _processOneFile(rppFile, kwFile, isPeriod, endDate) {
+  // rpp_reports読み込み
+  var rText = await _readNichText(rppFile);
+  var rLines = rText.replace(/\r/g,'').split('\n');
+  var rHdrIdx = -1;
+  for (var li = 0; li < rLines.length; li++) {
+    if (rLines[li].indexOf('\u65e5\u4ed8') >= 0 && rLines[li].indexOf('\u30af\u30ea\u30c3\u30af\u6570') >= 0) { rHdrIdx = li; break; }
+  }
+  var rHdr = rLines[rHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
+  var dateCode='', cl=0, cost=0, cpc=0, sales=0, units=0, cvr=0, roas=0, cpa=0, month='', rowCount=0;
+  for (var ri = rHdrIdx+1; ri < rLines.length; ri++) {
+    if (!rLines[ri].trim()) continue;
+    var rv = rLines[ri].split(',').map(function(v){return v.replace(/"/g,'').trim();});
+    var rrow = {}; rHdr.forEach(function(h,idx){rrow[h]=rv[idx]||'';});
+    if (!dateCode) {
+      // 単日: 2026年04月01日, 期間: 2026年04月01日〜2026年04月07日
+      var dm = rrow['\u65e5\u4ed8'].match(/(20\d\d)\u5e74([01]\d)\u6708([0-3]\d)\u65e5/);
+      if (dm) {
+        dateCode = dm[1]+dm[2]+dm[3];
+        month = dm[1]+'\u5e74'+dm[2]+'\u6708';
+      }
+    }
+    cl    += parseInt(rrow['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0)||0;
+    cost  += parseInt(rrow['\u5b9f\u7e3e\u984d(\u5408\u8a08)']||0)||0;
+    sales += parseInt(rrow['\u58f2\u4e0a\u91d1\u984d(\u5408\u8a08720\u6642\u9593)']||0)||0;
+    units += parseInt(rrow['\u58f2\u4e0a\u4ef6\u6570(\u5408\u8a08720\u6642\u9593)']||0)||0;
+    if (rowCount===0) {
+      cpc  = parseFloat(rrow['CPC\u5b9f\u7e3e(\u5408\u8a08)']||0)||0;
+      cvr  = parseFloat(rrow['CVR(\u5408\u8a08720\u6642\u9593)(%)']||0)||0;
+      roas = parseFloat(rrow['ROAS(\u5408\u8a08720\u6642\u9593)(%)']||0)||0;
+      cpa  = parseFloat(rrow['\u6ce8\u6587\u7372\u5f97\u5358\u4fa1(\u5408\u8a08720\u6642\u9593)']||0)||0;
+    }
+    rowCount++;
+  }
+  if (rowCount > 1) {
+    cpc  = cl>0 ? Math.round(cost/cl) : 0;
+    cvr  = cl>0 ? Math.round(units/cl*10000)/100 : 0;
+    roas = cost>0 ? Math.round(sales/cost*10000)/100 : 0;
+    cpa  = units>0 ? Math.round(cost/units) : 0;
+  }
+
+  // rpp_keyword読み込み
+  var kText = await _readNichText(kwFile);
+  var kLines = kText.replace(/\r/g,'').split('\n');
+  var kHdrIdx = -1;
+  for (var kli = 0; kli < kLines.length; kli++) {
+    if (kLines[kli].indexOf('\u30af\u30ea\u30c3\u30af\u6570') >= 0 && kLines[kli].indexOf('\u30ad\u30fc\u30ef\u30fc\u30c9') >= 0) { kHdrIdx = kli; break; }
+  }
+  var kHdr = kLines[kHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
+  var kCost=0, kCl=0, kSales=0, kUnits=0;
+  for (var ki = kHdrIdx+1; ki < kLines.length; ki++) {
+    if (!kLines[ki].trim()) continue;
+    var kv = kLines[ki].split(',').map(function(v){return v.replace(/"/g,'').trim();});
+    var krow = {}; kHdr.forEach(function(h,idx){krow[h]=kv[idx]||'';});
+    kCost  += parseInt(krow['\u5b9f\u7e3e\u984d(\u5408\u8a08)']||0)||0;
+    kCl    += parseInt(krow['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0)||0;
+    kSales += parseInt(krow['\u58f2\u4e0a\u91d1\u984d(\u5408\u8a08720\u6642\u9593)']||0)||0;
+    kUnits += parseInt(krow['\u58f2\u4e0a\u4ef6\u6570(\u5408\u8a08720\u6642\u9593)']||0)||0;
+  }
+
+  if (isPeriod) {
+    // 期間ファイル: 日付コード,月,CL数■,...
+    var monthCode = dateCode.substring(0,6);
+    return { isPeriod: true, dateCode: dateCode, endCode: endDate.replace(/-/g,''), row: [monthCode, month, cl, cost, cpc, sales, units, cvr, roas, cpa, kCost, kCl, kSales, kUnits] };
+  } else {
+    // 日別ファイル: 日付コード,日付,CL数■,...
+    var dateDisp = dateCode.substring(0,4)+'/'+dateCode.substring(4,6)+'/'+dateCode.substring(6,8);
+    return { isPeriod: false, dateCode: dateCode, row: [dateCode, dateDisp, cl, cost, cpc, sales, units, cvr, roas, cpa, kCost, kCl, kSales, kUnits] };
+  }
 }
 
 async function nichinichiRun() {
   var result = document.getElementById('nichinichi-check-result');
   result.style.whiteSpace = 'pre';
-  result.textContent = '処理中...';
+  result.textContent = '\u51e6\u7406\u4e2d...';
   result.className = 'kanri-check-result';
 
   try {
     var map = await _classifyAllFiles();
     var dates = Object.keys(map).sort();
-    var allRows = [];
+
+    var dailyRows = [], periodRows = [];
 
     for (var di = 0; di < dates.length; di++) {
-      var date = dates[di];
-      var rppFile = map[date].rpp;
-      var kwFile  = map[date].kw;
-      if (!rppFile || !kwFile) continue; // 両方揃っている日のみ
-
-      // rpp_reports集計
-      var rText = await _readNichText(rppFile);
-      var rLines = rText.replace(/\r/g,'').split('\n');
-      var rHdrIdx = -1;
-      for (var li = 0; li < rLines.length; li++) {
-        if (rLines[li].indexOf('日付') >= 0 && rLines[li].indexOf('クリック数') >= 0) { rHdrIdx = li; break; }
-      }
-      var rHdr = rLines[rHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
-      var dateCode='', bid='', cl=0, cost=0, cpc=0, sales=0, units=0, cvr=0, roas=0, cpa=0, rowCount=0;
-      for (var ri = rHdrIdx+1; ri < rLines.length; ri++) {
-        if (!rLines[ri].trim()) continue;
-        var rv = rLines[ri].split(',').map(function(v){return v.replace(/"/g,'').trim();});
-        var rrow = {}; rHdr.forEach(function(h,idx){rrow[h]=rv[idx]||'';});
-        if (!dateCode) {
-          var dm = rrow['日付'].match(/(20\d\d)年([01]\d)月([0-3]\d)日/);
-          if (dm) dateCode = dm[1]+dm[2]+dm[3];
-        }
-        if (!bid) bid = rrow['入札単価'];
-        cl    += parseInt(rrow['クリック数(合計)']||0)||0;
-        cost  += parseInt(rrow['実績額(合計)']||0)||0;
-        sales += parseInt(rrow['売上金額(合計720時間)']||0)||0;
-        units += parseInt(rrow['売上件数(合計720時間)']||0)||0;
-        if (rowCount===0) {
-          cpc  = parseFloat(rrow['CPC実績(合計)']||0)||0;
-          cvr  = parseFloat(rrow['CVR(合計720時間)(%)']||0)||0;
-          roas = parseFloat(rrow['ROAS(合計720時間)(%)']||0)||0;
-          cpa  = parseFloat(rrow['注文獲得単価(合計720時間)']||0)||0;
-        }
-        rowCount++;
-      }
-      if (rowCount > 1) {
-        cpc  = cl > 0 ? Math.round(cost/cl) : 0;
-        cvr  = cl > 0 ? Math.round(units/cl*10000)/100 : 0;
-        roas = cost > 0 ? Math.round(sales/cost*10000)/100 : 0;
-        cpa  = units > 0 ? Math.round(cost/units) : 0;
-      }
-
-      // rpp_keyword集計
-      var kText = await _readNichText(kwFile);
-      var kLines = kText.replace(/\r/g,'').split('\n');
-      var kHdrIdx = -1;
-      for (var kli = 0; kli < kLines.length; kli++) {
-        if (kLines[kli].indexOf('クリック数') >= 0 && kLines[kli].indexOf('キーワード') >= 0) { kHdrIdx = kli; break; }
-      }
-      var kHdr = kLines[kHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
-      var kCost=0, kCl=0, kSales=0, kUnits=0;
-      for (var ki = kHdrIdx+1; ki < kLines.length; ki++) {
-        if (!kLines[ki].trim()) continue;
-        var kv = kLines[ki].split(',').map(function(v){return v.replace(/"/g,'').trim();});
-        var krow = {}; kHdr.forEach(function(h,idx){krow[h]=kv[idx]||'';});
-        kCost  += parseInt(krow['実績額(合計)']||0)||0;
-        kCl    += parseInt(krow['クリック数(合計)']||0)||0;
-        kSales += parseInt(krow['売上金額(合計720時間)']||0)||0;
-        kUnits += parseInt(krow['売上件数(合計720時間)']||0)||0;
-      }
-
-      var dateDisp = dateCode.substring(0,4)+'/'+dateCode.substring(4,6)+'/'+dateCode.substring(6,8);
-      allRows.push([dateCode, dateDisp, bid, cl, cost, cpc, sales, units, cvr, roas, cpa, kCost, kCl, kSales, kUnits]);
+      var d = dates[di];
+      if (!map[d].rpp || !map[d].kw) continue;
+      var res = await _processOneFile(map[d].rpp, map[d].kw, map[d].isPeriod, map[d].end);
+      if (res.isPeriod) periodRows.push(res);
+      else dailyRows.push(res);
     }
 
-    if (allRows.length === 0) {
-      result.textContent = '⚠️ 出力できる日付がありません（RPPとKWが両方揃っている日が必要です）';
+    var outputs = [];
+
+    // 日別CSV（複数行、降順）
+    if (dailyRows.length > 0) {
+      dailyRows.sort(function(a,b){ return b.dateCode > a.dateCode ? 1 : -1; });
+      var hdr = ['\u65e5\u4ed8\u30b3\u30fc\u30c9','\u65e5\u4ed8','CL\u6570\u25a0','\u5b9f\u7e3e\u984d\u25a0','CPC\u5b9f\u7e3e\u25a0','\u58f2\u4e0a\u91d1\u984d\u25a0','\u58f2\u4e0a\u4ef6\u6570\u25a0','CVR\u25a0','ROAS\u25a0','\u7372\u5f97\u5358\u4fa1\u25a0','\u5b9f\u7e3e\u984d-KW','CL\u6570-KW','\u58f2\u4e0a\u91d1\u984d-KW','\u58f2\u4e0a\u4ef6\u6570-KW'];
+      var csv = '\uFEFF' + hdr.join(',') + '\n' + dailyRows.map(function(r){return r.row.join(',');}).join('\n') + '\n';
+      var codes = dailyRows.map(function(r){return r.dateCode;}).sort();
+      var fname = codes[0] + '-' + codes[codes.length-1] + '.csv';
+      outputs.push({ csv: csv, fname: fname });
+    }
+
+    // 期間CSV（1行ずつ別ファイル）
+    periodRows.forEach(function(res) {
+      var hdr = ['\u65e5\u4ed8\u30b3\u30fc\u30c9','\u6708','CL\u6570\u25a0','\u5b9f\u7e3e\u984d\u25a0','CPC\u5b9f\u7e3e\u25a0','\u58f2\u4e0a\u91d1\u984d\u25a0','\u58f2\u4e0a\u4ef6\u6570\u25a0','CVR\u25a0','ROAS\u25a0','\u7372\u5f97\u5358\u4fa1\u25a0','\u5b9f\u7e3e\u984d-KW','CL\u6570-KW','\u58f2\u4e0a\u91d1\u984d-KW','\u58f2\u4e0a\u4ef6\u6570-KW'];
+      var csv = '\uFEFF' + hdr.join(',') + '\n' + res.row.join(',') + '\n';
+      var fname = res.dateCode + '-' + res.endCode + '.csv';
+      outputs.push({ csv: csv, fname: fname });
+    });
+
+    if (outputs.length === 0) {
+      result.textContent = '\u26a0\ufe0f \u51fa\u529b\u3067\u304d\u308b\u30c7\u30fc\u30bf\u304c\u3042\u308a\u307e\u305b\u3093';
       result.className = 'kanri-check-result ng'; return;
     }
 
-    // 降順ソート（日付コード降順）
-    allRows.sort(function(a,b){ return b[0] > a[0] ? 1 : -1; });
+    // ダウンロード
+    outputs.forEach(function(o) {
+      var blob = new Blob([o.csv], {type:'text/csv;charset=utf-8;'});
+      var a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=o.fname; a.click(); URL.revokeObjectURL(a.href);
+    });
 
-    var header = ['日付コード','日付','入札単価','CL数■','実績額■','CPC実績■','売上金額■','売上件数■','CVR■','ROAS■','獲得単価■','実績額-KW','CL数-KW','売上金額-KW','売上件数-KW'];
-    var csv = '\uFEFF' + header.join(',') + '\n' + allRows.map(function(r){return r.join(',');}).join('\n') + '\n';
-
-    // ファイル名：最古-最新.csv
-    var codes = allRows.map(function(r){return r[0];}).sort();
-    var fname = codes[0] + '-' + codes[codes.length-1] + '.csv';
-
-    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    var a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname; a.click(); URL.revokeObjectURL(a.href);
-    result.textContent = '✅ 完了: ' + fname + '\n出力行数: ' + allRows.length + '日分';
+    result.textContent = '\u2705 \u5b8c\u4e86\uff1a' + outputs.map(function(o){return o.fname;}).join(', ');
     result.className = 'kanri-check-result ok';
 
   } catch(e) {
-    result.textContent = '❌ エラー: ' + e.message;
+    result.textContent = '\u274c \u30a8\u30e9\u30fc: ' + e.message;
     result.className = 'kanri-check-result ng'; console.error(e);
   }
 }
