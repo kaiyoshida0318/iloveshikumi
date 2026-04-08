@@ -112,9 +112,19 @@
   .badge-unset { background:#fafafa; border-color:#d1d5db; color:#9ca3af; }
   .badge-unknown { background:#fef9c3; border-color:#fde047; color:#92400e; }
   /* ===== 日月次ドロップゾーン ===== */
-  .nichinichi-drop { border:2.5px dashed #6366f1; border-radius:16px; padding:3rem 4rem; text-align:center; cursor:default; background:var(--surface); transition:background .15s,border-color .15s; min-width:400px; }
+  .nichinichi-drop { border:2.5px dashed #6366f1; border-radius:16px; padding:2rem; text-align:center; cursor:default; background:var(--surface); transition:background .15s,border-color .15s; margin-bottom:1.25rem; }
   .nichinichi-drop.dragover { background:#eef2ff; border-color:#4f46e5; }
   .nichinichi-drop-files { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; margin-top:1rem; min-height:1.2rem; }
+  .nichinichi-desc-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; }
+  .nichinichi-desc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; }
+  .nichinichi-desc-title { font-size:.95rem; font-weight:700; color:#6366f1; margin-bottom:.75rem; border-bottom:2px solid #e0e7ff; padding-bottom:.4rem; }
+  .nichinichi-desc-steps { padding-left:1.2rem; color:var(--text); font-size:.82rem; line-height:2; margin-bottom:1rem; }
+  .nichinichi-img-note { background:#f8faff; border:1px solid #e0e7ff; border-radius:6px; padding:.75rem 1rem; font-size:.78rem; line-height:2; color:var(--text-muted); }
+  .nichinichi-badge { display:inline-flex; align-items:center; justify-content:center; width:1.3rem; height:1.3rem; border-radius:50%; font-size:.68rem; font-weight:700; color:#fff; margin-right:.3rem; vertical-align:middle; }
+  .nichinichi-badge.n1 { background:#e94c3d; }
+  .nichinichi-badge.n2 { background:#2563eb; }
+  .nichinichi-badge.n3 { background:#16a34a; }
+  .nichinichi-badge.n4 { background:#d97706; }
 
   footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
   footer .heart { color:var(--red); }
@@ -156,15 +166,49 @@
 </div>
 <main>
   <div class="tool-panel" id="panel-nichinichi-kanri">
-    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; gap:1.5rem;">
-      <div class="nichinichi-drop" id="nichinichi-drop"
-        ondragover="event.preventDefault();this.classList.add('dragover')"
-        ondragleave="this.classList.remove('dragover')"
-        ondrop="handleDropNichinichi(event)">
-        <div style="font-size:3rem; margin-bottom:.75rem;">📂</div>
-        <div style="font-size:1.1rem; font-weight:700; color:var(--text); margin-bottom:.4rem;">日or月次ファイルをまとめてドロップ</div>
-        <div style="font-size:.82rem; color:var(--text-muted);">対応ファイルをここにドラッグ＆ドロップしてください</div>
-        <div class="nichinichi-drop-files" id="nichinichi-files"></div>
+    <div class="nichinichi-drop" id="nichinichi-drop"
+      ondragover="event.preventDefault();this.classList.add('dragover')"
+      ondragleave="this.classList.remove('dragover')"
+      ondrop="handleDropNichinichi(event)">
+      <div style="font-size:2.5rem; margin-bottom:.5rem;">📂</div>
+      <div style="font-size:1rem; font-weight:700; color:var(--text); margin-bottom:.3rem;">日or月次ファイルをまとめてドロップ</div>
+      <div style="font-size:.8rem; color:var(--text-muted);">ダウンロードしたCSVをここにドラッグ＆ドロップしてください</div>
+      <div class="nichinichi-drop-files" id="nichinichi-files"></div>
+    </div>
+    <div class="nichinichi-desc-grid">
+      <div class="nichinichi-desc-card">
+        <div class="nichinichi-desc-title">① 日別ファイル</div>
+        <ol class="nichinichi-desc-steps">
+          <li>キャンペーンを選択</li>
+          <li>日ごとに表示</li>
+          <li>ボタン選択（下記通りに）</li>
+          <li>この条件でダウンロード</li>
+          <li>全件を選択（まとめてアップ可能）</li>
+          <li>上記にドロップ</li>
+        </ol>
+        <div class="nichinichi-img-note">
+          <div class="nichinichi-badge n1">①</div><span>集計単位：キャンペーン</span><br>
+          <div class="nichinichi-badge n2">②</div><span>集計期間：日ごとに表示</span><br>
+          <div class="nichinichi-badge n3">③</div><span>表示/出力項目：画像通りに選択</span><br>
+          <div class="nichinichi-badge n4">④</div><span>この条件でダウンロード</span>
+        </div>
+      </div>
+      <div class="nichinichi-desc-card">
+        <div class="nichinichi-desc-title">① 月別ファイル</div>
+        <ol class="nichinichi-desc-steps">
+          <li>キャンペーンを選択</li>
+          <li>月ごとに表示</li>
+          <li>ボタン選択（下記通りに）</li>
+          <li>この条件でダウンロード</li>
+          <li>全件を選択（まとめてアップ可能）</li>
+          <li>上記にドロップ</li>
+        </ol>
+        <div class="nichinichi-img-note">
+          <div class="nichinichi-badge n1">①</div><span>集計単位：キャンペーン</span><br>
+          <div class="nichinichi-badge n2">②</div><span>集計期間：月ごとに表示</span><br>
+          <div class="nichinichi-badge n3">③</div><span>表示/出力項目：画像通りに選択</span><br>
+          <div class="nichinichi-badge n4">④</div><span>この条件でダウンロード</span>
+        </div>
       </div>
     </div>
   </div>
