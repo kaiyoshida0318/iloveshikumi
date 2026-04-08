@@ -749,154 +749,196 @@ function handleDropNichinichi(event) {
 
 function nichinichiClear() {
   _nichinichiFiles = [];
-  var filesEl = document.getElementById('nichinichi-files');
-  if (filesEl) filesEl.innerHTML = '';
-  var result = document.getElementById('nichinichi-check-result');
-  if (result) { result.textContent = ''; result.className = 'kanri-check-result'; }
+  var el = document.getElementById('nichinichi-files');
+  if (el) el.innerHTML = '';
+  var r = document.getElementById('nichinichi-check-result');
+  if (r) { r.textContent = ''; r.className = 'kanri-check-result'; r.style.whiteSpace = 'normal'; }
 }
 
-function _classifyNichinichi(name) {
+function _nichFileType(name) {
   name = name.toLowerCase();
-  if (name.indexOf('keyword') >= 0) return 'keyword';
-  if (name.indexOf('rpp') >= 0) return 'reports';
+  if (name.indexOf('keyword') >= 0) return 'kw';
+  if (name.indexOf('rpp') >= 0) return 'rpp';
   return null;
 }
 
-async function _readNichFile(file) {
+async function _readNichText(file) {
   var name = file.name.toLowerCase();
   if (name.endsWith('.zip')) {
     var zip = await JSZip.loadAsync(file);
     var csvFile = null;
-    zip.forEach(function(p,f){ if(!f.dir && p.toLowerCase().endsWith('.csv') && !csvFile) csvFile=f; });
-    if (!csvFile) throw new Error('ZIP\u5185\u306bCSV\u304c\u3042\u308a\u307e\u305b\u3093');
+    zip.forEach(function(p, f) { if (!f.dir && p.toLowerCase().endsWith('.csv') && !csvFile) csvFile = f; });
+    if (!csvFile) throw new Error('ZIP内にCSVがありません');
     var buf = await csvFile.async('arraybuffer');
-    return new TextDecoder('Shift-JIS',{fatal:false}).decode(new Uint8Array(buf));
+    return new TextDecoder('Shift-JIS', {fatal:false}).decode(new Uint8Array(buf));
   }
   return _readFileAsText(file, 'Shift-JIS');
 }
 
-function _extractNichDate(text) {
-  // 「集計期間: 日ごとに集計 2026-04-01」or「2026年04月01日〜」
-  var m = text.match(/\u96c6\u8a08\u671f\u9593.*?(20\d\d-[01]\d-[0-3]\d)/);
+function _extractDate(text) {
+  var m = text.match(/集計期間.*?(20\d\d-[01]\d-[0-3]\d)/);
   if (m) return m[1];
-  var m2 = text.match(/(20\d\d)\u5e74([01]\d)\u6708([0-3]\d)\u65e5/);
-  if (m2) return m2[1]+'-'+m2[2]+'-'+m2[3];
+  var m2 = text.match(/(20\d\d)年([01]\d)月([0-3]\d)日/);
+  if (m2) return m2[1] + '-' + m2[2] + '-' + m2[3];
   return null;
+}
+
+function _dateToCode(d) { return d.replace(/-/g, ''); }
+
+async function _classifyAllFiles() {
+  var map = {}; // { '2026-04-01': { rpp: File, kw: File } }
+  for (var i = 0; i < _nichinichiFiles.length; i++) {
+    var file = _nichinichiFiles[i];
+    var type = _nichFileType(file.name);
+    if (!type) continue;
+    try {
+      var text = await _readNichText(file);
+      var lines = text.split(/\r?\n/);
+      var date = null;
+      for (var li = 0; li < Math.min(20, lines.length); li++) {
+        date = _extractDate(lines[li]);
+        if (date) break;
+      }
+      if (!date) continue;
+      if (!map[date]) map[date] = {};
+      map[date][type] = file;
+    } catch(e) { /* skip */ }
+  }
+  return map;
 }
 
 async function nichinichiCheck() {
   var result = document.getElementById('nichinichi-check-result');
-  result.textContent = '\u30c1\u30a7\u30c3\u30af\u4e2d...';
+  result.textContent = 'チェック中...';
   result.className = 'kanri-check-result';
+  result.style.whiteSpace = 'pre';
+
   if (_nichinichiFiles.length === 0) {
-    result.textContent = '\u26a0\ufe0f \u30d5\u30a1\u30a4\u30eb\u304c\u30bb\u30c3\u30c8\u3055\u308c\u3066\u3044\u307e\u305b\u3093';
+    result.textContent = '⚠️ ファイルがセットされていません';
     result.className = 'kanri-check-result ng'; return;
   }
-  var lines = [];
-  var allDates = [];
-  for (var i=0; i<_nichinichiFiles.length; i++) {
-    try {
-      var text = await _readNichFile(_nichinichiFiles[i]);
-      var tlines = text.split(/\r?\n/);
-      var date = null;
-      for (var li=0; li<Math.min(20,tlines.length); li++) {
-        date = _extractNichDate(tlines[li]);
-        if (date) break;
-      }
-      var type = _classifyNichinichi(_nichinichiFiles[i].name);
-      var label = type==='keyword' ? 'KW\u5225' : type==='reports' ? '\u30ad\u30e3\u30f3\u30da\u30fc\u30f3\u5225' : '\u4e0d\u660e';
-      lines.push((date?'\u2705':'\u274c')+' ['+label+'] '+_nichinichiFiles[i].name+' \u2192 '+(date||'\u65e5\u4ed8\u53d6\u5f97\u4e0d\u53ef'));
-      if (date) allDates.push(date);
-    } catch(e) { lines.push('\u274c '+_nichinichiFiles[i].name+': '+e.message); }
+
+  var map = await _classifyAllFiles();
+  var dates = Object.keys(map).sort();
+  if (dates.length === 0) {
+    result.textContent = '❌ 日付が取得できませんでした';
+    result.className = 'kanri-check-result ng'; return;
   }
-  var allSame = allDates.length>=2 && allDates.every(function(d){return d===allDates[0];});
-  var summary = allSame ? '\u2705 OK\uff08'+allDates[0]+'\u3001\u5168\u30d5\u30a1\u30a4\u30eb\u4e00\u81f4\uff09' :
-    allDates.length<2 ? '\u26a0\ufe0f \u65e5\u4ed8\u304c\u53d6\u5f97\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f' :
-    '\u274c NG\uff1a\u65e5\u4ed8\u4e0d\u4e00\u81f4';
-  result.textContent = summary + '\n' + lines.join('\n');
-  result.className = 'kanri-check-result ' + (allSame ? 'ok' : 'ng');
+
+  var lines = ['日付          RPP    KW     状態', '─────────────────────────────'];
+  var allOk = true;
+  dates.forEach(function(d) {
+    var hasRpp = !!map[d].rpp;
+    var hasKw  = !!map[d].kw;
+    var status = (hasRpp && hasKw) ? '✅ 両方あり' : (!hasRpp && !hasKw) ? '❌ 両方なし' : '⚠️ 片方のみ';
+    if (!hasRpp || !hasKw) allOk = false;
+    lines.push(d + '  ' + (hasRpp?'✅':'❌') + '     ' + (hasKw?'✅':'❌') + '    ' + status);
+  });
+  lines.push('─────────────────────────────');
+  lines.push(allOk ? '✅ 全日付OK（' + dates.length + '日分）' : '⚠️ 揃っていない日付があります（揃っている日のみ出力されます）');
+
+  result.textContent = lines.join('\n');
+  result.className = 'kanri-check-result ' + (allOk ? 'ok' : 'ng');
 }
 
 async function nichinichiRun() {
   var result = document.getElementById('nichinichi-check-result');
   result.style.whiteSpace = 'pre';
-  result.textContent = '\u51e6\u7406\u4e2d...';
+  result.textContent = '処理中...';
   result.className = 'kanri-check-result';
+
   try {
-    var reportsFile=null, keywordFile=null;
-    for (var i=0; i<_nichinichiFiles.length; i++) {
-      var t = _classifyNichinichi(_nichinichiFiles[i].name);
-      if (t==='keyword' && !keywordFile) keywordFile=_nichinichiFiles[i];
-      if (t==='reports' && !reportsFile) reportsFile=_nichinichiFiles[i];
+    var map = await _classifyAllFiles();
+    var dates = Object.keys(map).sort();
+    var allRows = [];
+
+    for (var di = 0; di < dates.length; di++) {
+      var date = dates[di];
+      var rppFile = map[date].rpp;
+      var kwFile  = map[date].kw;
+      if (!rppFile || !kwFile) continue; // 両方揃っている日のみ
+
+      // rpp_reports集計
+      var rText = await _readNichText(rppFile);
+      var rLines = rText.replace(/\r/g,'').split('\n');
+      var rHdrIdx = -1;
+      for (var li = 0; li < rLines.length; li++) {
+        if (rLines[li].indexOf('日付') >= 0 && rLines[li].indexOf('クリック数') >= 0) { rHdrIdx = li; break; }
+      }
+      var rHdr = rLines[rHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
+      var dateCode='', bid='', cl=0, cost=0, cpc=0, sales=0, units=0, cvr=0, roas=0, cpa=0, rowCount=0;
+      for (var ri = rHdrIdx+1; ri < rLines.length; ri++) {
+        if (!rLines[ri].trim()) continue;
+        var rv = rLines[ri].split(',').map(function(v){return v.replace(/"/g,'').trim();});
+        var rrow = {}; rHdr.forEach(function(h,idx){rrow[h]=rv[idx]||'';});
+        if (!dateCode) {
+          var dm = rrow['日付'].match(/(20\d\d)年([01]\d)月([0-3]\d)日/);
+          if (dm) dateCode = dm[1]+dm[2]+dm[3];
+        }
+        if (!bid) bid = rrow['入札単価'];
+        cl    += parseInt(rrow['クリック数(合計)']||0)||0;
+        cost  += parseInt(rrow['実績額(合計)']||0)||0;
+        sales += parseInt(rrow['売上金額(合計720時間)']||0)||0;
+        units += parseInt(rrow['売上件数(合計720時間)']||0)||0;
+        if (rowCount===0) {
+          cpc  = parseFloat(rrow['CPC実績(合計)']||0)||0;
+          cvr  = parseFloat(rrow['CVR(合計720時間)(%)']||0)||0;
+          roas = parseFloat(rrow['ROAS(合計720時間)(%)']||0)||0;
+          cpa  = parseFloat(rrow['注文獲得単価(合計720時間)']||0)||0;
+        }
+        rowCount++;
+      }
+      if (rowCount > 1) {
+        cpc  = cl > 0 ? Math.round(cost/cl) : 0;
+        cvr  = cl > 0 ? Math.round(units/cl*10000)/100 : 0;
+        roas = cost > 0 ? Math.round(sales/cost*10000)/100 : 0;
+        cpa  = units > 0 ? Math.round(cost/units) : 0;
+      }
+
+      // rpp_keyword集計
+      var kText = await _readNichText(kwFile);
+      var kLines = kText.replace(/\r/g,'').split('\n');
+      var kHdrIdx = -1;
+      for (var kli = 0; kli < kLines.length; kli++) {
+        if (kLines[kli].indexOf('クリック数') >= 0 && kLines[kli].indexOf('キーワード') >= 0) { kHdrIdx = kli; break; }
+      }
+      var kHdr = kLines[kHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
+      var kCost=0, kCl=0, kSales=0, kUnits=0;
+      for (var ki = kHdrIdx+1; ki < kLines.length; ki++) {
+        if (!kLines[ki].trim()) continue;
+        var kv = kLines[ki].split(',').map(function(v){return v.replace(/"/g,'').trim();});
+        var krow = {}; kHdr.forEach(function(h,idx){krow[h]=kv[idx]||'';});
+        kCost  += parseInt(krow['実績額(合計)']||0)||0;
+        kCl    += parseInt(krow['クリック数(合計)']||0)||0;
+        kSales += parseInt(krow['売上金額(合計720時間)']||0)||0;
+        kUnits += parseInt(krow['売上件数(合計720時間)']||0)||0;
+      }
+
+      allRows.push([dateCode, bid, cl, cost, cpc, sales, units, cvr, roas, cpa, kCost, kCl, kSales, kUnits]);
     }
-    if (!reportsFile || !keywordFile) {
-      result.textContent = '\u26a0\ufe0f rpp_reports\u3068rpp_keyword_reports\u306e\u4e21\u65b9\u304c\u5fc5\u8981\u3067\u3059';
+
+    if (allRows.length === 0) {
+      result.textContent = '⚠️ 出力できる日付がありません（RPPとKWが両方揃っている日が必要です）';
       result.className = 'kanri-check-result ng'; return;
     }
-    // rpp_reports読み込み
-    var rText = await _readNichFile(reportsFile);
-    var rLines = rText.replace(/\r/g,'').split('\n');
-    var rHdrIdx = -1;
-    for (var li=0; li<rLines.length; li++) {
-      if (rLines[li].indexOf('\u65e5\u4ed8')>=0 && rLines[li].indexOf('\u30af\u30ea\u30c3\u30af\u6570')>=0) { rHdrIdx=li; break; }
-    }
-    var rHdr = rLines[rHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
-    var dateCode='', bid='', cl=0, cost=0, cpc=0, sales=0, units=0, cvr=0, roas=0, cpa=0, rowCount=0;
-    for (var ri=rHdrIdx+1; ri<rLines.length; ri++) {
-      if (!rLines[ri].trim()) continue;
-      var rv=rLines[ri].split(',').map(function(v){return v.replace(/"/g,'').trim();});
-      var rrow={}; rHdr.forEach(function(h,idx){rrow[h]=rv[idx]||'';});
-      if (!dateCode) {
-        var dm=rrow['\u65e5\u4ed8'].match(/(20\d\d)\u5e74([01]\d)\u6708([0-3]\d)\u65e5/);
-        if (dm) dateCode=dm[1]+dm[2]+dm[3];
-      }
-      if (!bid) bid=rrow['\u5165\u672d\u5358\u4fa1'];
-      cl    += parseInt(rrow['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0)||0;
-      cost  += parseInt(rrow['\u5b9f\u7e3e\u984d(\u5408\u8a08)']||0)||0;
-      sales += parseInt(rrow['\u58f2\u4e0a\u91d1\u984d(\u5408\u8a08720\u6642\u9593)']||0)||0;
-      units += parseInt(rrow['\u58f2\u4e0a\u4ef6\u6570(\u5408\u8a08720\u6642\u9593)']||0)||0;
-      if (rowCount===0) {
-        cpc  = parseFloat(rrow['CPC\u5b9f\u7e3e(\u5408\u8a08)']||0)||0;
-        cvr  = parseFloat(rrow['CVR(\u5408\u8a08720\u6642\u9593)(%)']||0)||0;
-        roas = parseFloat(rrow['ROAS(\u5408\u8a08720\u6642\u9593)(%)']||0)||0;
-        cpa  = parseFloat(rrow['\u6ce8\u6587\u7372\u5f97\u5358\u4fa1(\u5408\u8a08720\u6642\u9593)']||0)||0;
-      }
-      rowCount++;
-    }
-    if (rowCount>1) {
-      cpc  = cl>0 ? Math.round(cost/cl) : 0;
-      cvr  = cl>0 ? Math.round(units/cl*10000)/100 : 0;
-      roas = cost>0 ? Math.round(sales/cost*10000)/100 : 0;
-      cpa  = units>0 ? Math.round(cost/units) : 0;
-    }
-    // rpp_keyword読み込み
-    var kText = await _readNichFile(keywordFile);
-    var kLines = kText.replace(/\r/g,'').split('\n');
-    var kHdrIdx=-1;
-    for (var kli=0; kli<kLines.length; kli++) {
-      if (kLines[kli].indexOf('\u30af\u30ea\u30c3\u30af\u6570')>=0 && kLines[kli].indexOf('\u30ad\u30fc\u30ef\u30fc\u30c9')>=0) { kHdrIdx=kli; break; }
-    }
-    var kHdr=kLines[kHdrIdx].split(',').map(function(h){return h.replace(/"/g,'').trim();});
-    var kCost=0,kCl=0,kSales=0,kUnits=0;
-    for (var ki=kHdrIdx+1; ki<kLines.length; ki++) {
-      if (!kLines[ki].trim()) continue;
-      var kv=kLines[ki].split(',').map(function(v){return v.replace(/"/g,'').trim();});
-      var krow={}; kHdr.forEach(function(h,idx){krow[h]=kv[idx]||'';});
-      kCost  += parseInt(krow['\u5b9f\u7e3e\u984d(\u5408\u8a08)']||0)||0;
-      kCl    += parseInt(krow['\u30af\u30ea\u30c3\u30af\u6570(\u5408\u8a08)']||0)||0;
-      kSales += parseInt(krow['\u58f2\u4e0a\u91d1\u984d(\u5408\u8a08720\u6642\u9593)']||0)||0;
-      kUnits += parseInt(krow['\u58f2\u4e0a\u4ef6\u6570(\u5408\u8a08720\u6642\u9593)']||0)||0;
-    }
-    // CSV出力
-    var header = ['\u65e5\u4ed8\u30b3\u30fc\u30c9','\u5165\u672d\u5358\u4fa1','CL\u6570\u25a0','\u5b9f\u7e3e\u984d\u25a0','CPC\u5b9f\u7e3e\u25a0','\u58f2\u4e0a\u91d1\u984d\u25a0','\u58f2\u4e0a\u4ef6\u6570\u25a0','CVR\u25a0','ROAS\u25a0','\u7372\u5f97\u5358\u4fa1\u25a0','\u5b9f\u7e3e\u984d-KW','CL\u6570-KW','\u58f2\u4e0a\u91d1\u984d-KW','\u58f2\u4e0a\u4ef6\u6570-KW'];
-    var dataRow = [dateCode,bid,cl,cost,cpc,sales,units,cvr,roas,cpa,kCost,kCl,kSales,kUnits];
-    var csv = '\uFEFF' + header.join(',') + '\n' + dataRow.join(',') + '\n';
-    var blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    var a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=dateCode+'.csv'; a.click(); URL.revokeObjectURL(a.href);
-    result.textContent = '\u2705 \u5b8c\u4e86: '+dateCode+'.csv';
+
+    // 降順ソート（日付コード降順）
+    allRows.sort(function(a,b){ return b[0] > a[0] ? 1 : -1; });
+
+    var header = ['日付コード','入札単価','CL数■','実績額■','CPC実績■','売上金額■','売上件数■','CVR■','ROAS■','獲得単価■','実績額-KW','CL数-KW','売上金額-KW','売上件数-KW'];
+    var csv = '\uFEFF' + header.join(',') + '\n' + allRows.map(function(r){return r.join(',');}).join('\n') + '\n';
+
+    // ファイル名：最古-最新.csv
+    var codes = allRows.map(function(r){return r[0];}).sort();
+    var fname = codes[0] + '-' + codes[codes.length-1] + '.csv';
+
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname; a.click(); URL.revokeObjectURL(a.href);
+    result.textContent = '✅ 完了: ' + fname + '\n出力行数: ' + allRows.length + '日分';
     result.className = 'kanri-check-result ok';
+
   } catch(e) {
-    result.textContent = '\u274c \u30a8\u30e9\u30fc: '+e.message;
+    result.textContent = '❌ エラー: ' + e.message;
     result.className = 'kanri-check-result ng'; console.error(e);
   }
 }
