@@ -919,7 +919,7 @@ async function _processOneFile(rppFile, kwFile, isPeriod, endDate) {
 
   if (isPeriod) {
     // 期間ファイル: 日付コード,月,CL数■,...
-    var monthCode = dateCode.substring(0,6);
+    var monthCode = dateCode.substring(0,4)+'-'+dateCode.substring(4,6);
     return { isPeriod: true, dateCode: dateCode, endCode: endDate.replace(/-/g,''), row: [monthCode, month, cl, cost, cpc, sales, units, cvr, roas, cpa, kCost, kCl, kSales, kUnits] };
   } else {
     // 日別ファイル: 日付コード,日付,CL数■,...
