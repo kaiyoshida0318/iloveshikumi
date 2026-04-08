@@ -111,6 +111,10 @@
   .badge-found { background:#eff6ff; border-color:#93c5fd; color:#1d4ed8; }
   .badge-unset { background:#fafafa; border-color:#d1d5db; color:#9ca3af; }
   .badge-unknown { background:#fef9c3; border-color:#fde047; color:#92400e; }
+  /* ===== 日月次ドロップゾーン ===== */
+  .nichinichi-drop { border:2.5px dashed #6366f1; border-radius:16px; padding:3rem 4rem; text-align:center; cursor:default; background:var(--surface); transition:background .15s,border-color .15s; min-width:400px; }
+  .nichinichi-drop.dragover { background:#eef2ff; border-color:#4f46e5; }
+  .nichinichi-drop-files { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; margin-top:1rem; min-height:1.2rem; }
 
   footer { text-align:center; padding:1.5rem; font-size:.78rem; color:var(--text-muted); border-top:1px solid var(--border); margin-top:2rem; }
   footer .heart { color:var(--red); }
@@ -152,8 +156,16 @@
 </div>
 <main>
   <div class="tool-panel" id="panel-nichinichi-kanri">
-    <div style="max-width:600px; margin:2rem auto; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">
-      📈 【日月次】売上・広告費用<br><br>中身は今後追加予定です。
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; gap:1.5rem;">
+      <div class="nichinichi-drop" id="nichinichi-drop"
+        ondragover="event.preventDefault();this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="handleDropNichinichi(event)">
+        <div style="font-size:3rem; margin-bottom:.75rem;">📂</div>
+        <div style="font-size:1.1rem; font-weight:700; color:var(--text); margin-bottom:.4rem;">日or月次ファイルをまとめてドロップ</div>
+        <div style="font-size:.82rem; color:var(--text-muted);">対応ファイルをここにドラッグ＆ドロップしてください</div>
+        <div class="nichinichi-drop-files" id="nichinichi-files"></div>
+      </div>
     </div>
   </div>
   <div class="tool-panel" id="panel-master-kw">
