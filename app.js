@@ -914,7 +914,8 @@ async function nichinichiRun() {
         kUnits += parseInt(krow['売上件数(合計720時間)']||0)||0;
       }
 
-      allRows.push([dateCode, bid, cl, cost, cpc, sales, units, cvr, roas, cpa, kCost, kCl, kSales, kUnits]);
+      var dateDisp = dateCode.substring(0,4)+'/'+dateCode.substring(4,6)+'/'+dateCode.substring(6,8);
+      allRows.push([dateCode, dateDisp, bid, cl, cost, cpc, sales, units, cvr, roas, cpa, kCost, kCl, kSales, kUnits]);
     }
 
     if (allRows.length === 0) {
@@ -925,7 +926,7 @@ async function nichinichiRun() {
     // 降順ソート（日付コード降順）
     allRows.sort(function(a,b){ return b[0] > a[0] ? 1 : -1; });
 
-    var header = ['日付コード','入札単価','CL数■','実績額■','CPC実績■','売上金額■','売上件数■','CVR■','ROAS■','獲得単価■','実績額-KW','CL数-KW','売上金額-KW','売上件数-KW'];
+    var header = ['日付コード','日付','入札単価','CL数■','実績額■','CPC実績■','売上金額■','売上件数■','CVR■','ROAS■','獲得単価■','実績額-KW','CL数-KW','売上金額-KW','売上件数-KW'];
     var csv = '\uFEFF' + header.join(',') + '\n' + allRows.map(function(r){return r.join(',');}).join('\n') + '\n';
 
     // ファイル名：最古-最新.csv
